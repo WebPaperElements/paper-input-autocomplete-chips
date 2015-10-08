@@ -37,10 +37,10 @@
     </template>
 
 	<div style="position:relative;">
-		<paper-input value="{{inputValue}}" on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"></paper-input>
+		<paper-input value="{{inputValue}}" class="autocomplete-input" on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"></paper-input>
 		<template is="dom-if" if="{{_suggestions.length}}">
 			<paper-material>
-				<paper-menu >
+				<paper-menu class="autocomplete-suggestions">
 				<template is="dom-repeat" items="{{_suggestions}}">
 					<paper-item  on-mouseover="_selecton" on-tap="_select">
 					<span>{{item}}</span>
@@ -119,8 +119,7 @@
           ptinput._suggestions = [];
         }
       });
-      var input = this.querySelector('paper-input');
-      input.$.input.autocomplete = 'address-level4';
+      this._inputElement.autocomplete = 'address-level4';
     },
 
     attached: function() {
