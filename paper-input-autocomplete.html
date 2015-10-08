@@ -5,6 +5,8 @@
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../paper-material/paper-material.html">
 
+<link rel="import" href="input-autocomplete-behavior.html">
+
 <dom-module id="paper-input-autocomplete">
   <style>
     :host {
@@ -56,6 +58,10 @@
 
     is: 'paper-input-autocomplete',
 
+    behaviors: [
+      WebPaperElem.InputAutoCompleteBehavior
+    ],
+
     properties: {
 
       /**
@@ -73,13 +79,6 @@
         value:'Please enter values here'
       },
       /**
-       * The candidates from local variable.
-       */
-      localCandidates:{
-        type:Array,
-        value:[]
-      },
-      /**
        * Url for a prefectched list in json format for the list of suggestion candidates. The response should be something like: ["a","b"] 
        */
       prefetchUrl:String,
@@ -89,20 +88,6 @@
       _prefetchedCandidates:{
         type:Array,
         value:[]
-      },
-      /**
-       * Internal variable holding all matched suggestions.
-       */
-      _suggestions:{
-        type:Array,
-        value:[]
-      },
-      /**
-       * Maximum number of suggestions to show up in typeahead.
-       */
-      maxSuggestions:{
-        type:Number,
-        value:5
       },
       /**
        * Remote url to perform a search using the value in the input. The input value will be passed in as url parameter. The placeholder should be %QUERY.
@@ -143,160 +128,6 @@
 
     detached: function() {
     },
-
-    // Element Behavior
-    /**
-     * Callback for keydown event
-     *
-     * @param {e} event
-     */
-    _keydown: function(e) {
-      if (e.which == 40 || e.which == 38){
-          e.preventDefault();
-      }
-    },
-    /**
-     * Callback on click event on paper-item
-     *
-     */
-    _selecton:function(e){
-      var suggestionsMenu = this.querySelector('paper-menu');
-      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-        var selectedItem = e.currentTarget;
-        index = Number(suggestionsMenu.indexOf(selectedItem));
-        suggestionsMenu.select(index);
-        var input = this.querySelector('paper-input');
-        input.$.input.focus();
-      }
-      else{
-        console.log("suggestionsMenu not defined");
-      }
-    },
-    /**
-     * Callback on click event on paper-item
-     *
-     */
-    _select: function(e) {
-      var suggestionsMenu = this.querySelector('paper-menu');
-      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-        var selectedItem = e.currentTarget;
-        index = Number(suggestionsMenu.indexOf(selectedItem));
-        this.inputValue = this._suggestions[index];
-        this._suggestions = [];
-        e.stopPropagation();
-      }
-      else{
-        console.log("suggestionsMenu not defined");
-      }
-    },
-    /**
-     * Callback for keyup event
-     *
-     * @param {e} event
-     */
-    _keyup: function(e) {
-      if (e.which == 40){
-        //down button
-        console.log("down");
-        var suggestionsMenu = this.querySelector('paper-menu');
-        var selectedItem = suggestionsMenu.focusedItem;
-        var index = 0;
-        if (typeof(selectedItem) != 'undefined'){
-          index = Number(suggestionsMenu.indexOf(selectedItem));
-          index = Math.min(index + 1, this._suggestions.length - 1);
-        }
-        console.log("index");
-        console.log(index);
-        suggestionsMenu.select(index);
-        var input = this.querySelector('paper-input');
-        input.$.input.focus();
-      }
-      else if (e.which == 38){
-        //up
-        var suggestionsMenu = this.querySelector('paper-menu');
-        var selectedItem = suggestionsMenu.focusedItem;
-        if (typeof(selectedItem) != 'undefined'){
-          index = Number(suggestionsMenu.indexOf(selectedItem));
-          index = Math.max(index - 1, -1);
-          suggestionsMenu.select(index);
-        }
-        var input = this.querySelector('paper-input');
-        input.$.input.focus();
-      }
-      else if (e.which == 13){
-        var suggestionsMenu = this.querySelector('paper-menu');
-        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-          var selectedItem = suggestionsMenu.focusedItem;
-          if (typeof(selectedItem) != 'undefined'){
-            index = Number(suggestionsMenu.indexOf(selectedItem));
-            this.inputValue = this._suggestions[index];
-            this._suggestions = [];
-          }
-        }
-      }
-      else{
-        var suggestionsMenu = this.querySelector('paper-menu');
-        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-          suggestionsMenu.select(-1);
-        }
-        // if (this.inputValue.length >= 3){
-        this._search(this.inputValue.trim());
-        // this._suggestions = this._search(this.inputValue.trim());
-        // }
-      }
-    },
-    _search:function(term){
-      if (term == ""){
-        this._suggestions = [];
-        return;
-      }
-      var patt =  new RegExp(term.toLowerCase());
-      var matched = [];
-      if (typeof(this.localCandidates) != 'undefined'){
-        for (var i = 0; i < this.localCandidates.length; i ++){
-          if (matched.length == this.maxSuggestions){
-            break;
-          }
-          if (patt.test(this.localCandidates[i].toLowerCase()) == true){
-            matched.push(this.localCandidates[i]);
-          }
-        }
-      }
-      
-      if (typeof(this._prefetchedCandidates) != 'undefined'){
-        for (var i = 0; i < this._prefetchedCandidates.length; i ++){
-          if (matched.length == this.maxSuggestions){
-            break;
-          }
-          if (patt.test(this._prefetchedCandidates[i].toLowerCase()) == true){
-            matched.push(this._prefetchedCandidates[i]);
-          }
-        }
-      }
-      // this._suggestions = this._suggestions.concat(matched);
-      if (typeof(this.remoteUrl) != 'undefined'){
-        var url = this.remoteUrl.replace("%QUERY", term);
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open('GET', url, true);
-        xmlhttp.setRequestHeader("Content-type", "application/json");
-        var ptinput = this;
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-              var resp = xmlhttp.response;
-              var remoteMatched = JSON.parse(resp);
-              var cuttedMatched = remoteMatched.slice(0,ptinput.maxSuggestions);
-              console.log(cuttedMatched);
-              matched = matched.concat(cuttedMatched);
-              // ptinput._suggestions = ptinput._suggestions.concat(cuttedMatched);
-              ptinput._suggestions = matched;
-            }
-        }
-        xmlhttp.send();
-      }
-      else{
-        this._suggestions = matched;
-      }
-    }
 
   });
 
