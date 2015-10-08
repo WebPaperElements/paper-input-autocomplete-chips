@@ -1,0 +1,206 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="paper-chip.html">
+<link rel="import" href="paper-input-autocomplete.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <paper-input-autocomplete-chips></paper-input-autocomplete-chips>
+
+@group Seed Elements
+@element paper-input-autocomplete-chips
+@demo demo/index.html
+@hero hero.svg
+-->
+<dom-module id="paper-input-autocomplete-chips">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+        line-height: 48px;
+
+        --paper-chip: {
+          display: inline-block;
+        }
+      }
+     
+      .complete-input-container {
+        display: block;
+        overflow-x: hidden;
+        -webkit-flex: 1;
+        flex: 1;
+        direction: ltr;
+      }
+
+      paper-input-container::shadow .input-content.paper-input-container {
+        align-items: flex-start;
+      }
+
+      paper-input-container label {
+        top: auto; 
+        bottom: 0; 
+      }
+      
+      paper-input-container::shadow .input-content.label-is-floating label {
+        
+        top: 0; 
+        bottom: auto; 
+      }
+            
+      input#input {
+        display: inline-block;
+        resize: none;
+      }
+      
+      div.prefix-content {
+        height: 100%;
+      }
+
+      input:not(.no-selected-item) {
+        width: 50%;
+      }
+            
+      input.no-selected-item {
+        width: 100%;
+      }
+    </style>
+    
+    <paper-input-container no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
+
+      <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}"> 
+
+      <content select="[prefix]"></content>
+
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <div class="complete-input-container" id="tags-items">
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>asbc</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>jddsdfsfdss</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>asbc</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>asbc</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>asbc</h1>
+        </paper-chip>
+        <paper-chip label="Jane Doe">
+          <div class="icon">J</div>
+          <h1>asbc</h1>
+        </paper-chip>
+        <input is="iron-input" id="input" class=""
+          aria-labelledby$="[[_ariaLabelledBy]]"
+          aria-describedby$="[[_ariaDescribedBy]]"
+          disabled$="[[disabled]]"
+          bind-value="{{inputValue}}"
+          invalid="{{invalid}}"
+          prevent-invalid-input="[[preventInvalidInput]]"
+          allowed-pattern="[[allowedPattern]]"
+          validator="[[validator]]"
+          type$="[[type]]"
+          pattern$="[[pattern]]"
+          required$="[[required]]"
+          autocomplete$="[[autocomplete]]"
+          autofocus$="[[autofocus]]"
+          inputmode$="[[inputmode]]"
+          minlength$="[[minlength]]"
+          maxlength$="[[maxlength]]"
+          min$="[[min]]"
+          max$="[[max]]"
+          step$="[[step]]"
+          name$="[[name]]"
+          placeholder$="[[placeholder]]"
+          readonly$="[[readonly]]"
+          list$="[[list]]"
+          size$="[[size]]"
+          autocapitalize$="[[autocapitalize]]"
+          autocorrect$="[[autocorrect]]"
+          on-change="_onChange"
+          autosave$="[[autosave]]"
+          results$="[[results]]">
+      </div>
+      
+      <content select="[suffix]"></content>
+      
+    </paper-input-container>
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'paper-input-autocomplete-chips',
+
+    behaviors: [
+      Polymer.IronFormElementBehavior,
+      Polymer.PaperInputBehavior,
+      Polymer.IronControlState
+    ],
+
+    properties: {
+      // paper-input-autocomplete
+      /**
+       * The candidates from local variable.
+       */
+      localCandidates:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Hidden Input value.
+       */
+      hiddenValue: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * Input value.
+       */
+      inputValue: {
+        type: String,
+        notify: true,
+      },
+    },
+
+    // Element Lifecycle
+
+    ready: function() {
+    },
+
+    attached: function() {
+      
+      this.hiddenValue = ' ';
+    },
+
+    detached: function() {
+    },
+
+    // Element Behavior
+
+  });
+
+</script>

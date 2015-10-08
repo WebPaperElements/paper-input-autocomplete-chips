@@ -1,0 +1,303 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-material/paper-material.html">
+
+<dom-module id="paper-input-autocomplete">
+  <style>
+    :host {
+      display: block;
+    }
+    
+    paper-material{
+      left:0;
+      right:0;
+      position: absolute;
+      z-index: 10; 
+    }
+    
+    paper-item{
+      cursor: pointer;
+    }
+    
+    .iron-selected{
+      background: #E0E0E0;
+    }
+  </style>
+  <template>
+    <template is="dom-if" if="{{label}}">
+     <h3>{{label}}</h3> 
+    </template>
+    <template is="dom-if" if="{{prefetchUrl}}">
+    	<iron-ajax auto url="{{prefetchUrl}}" handle-as="json" last-response="{{_prefetchedCandidates}}"></iron-ajax>
+    </template>
+
+	<div style="position:relative;">
+		<paper-input value="{{inputValue}}" on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"></paper-input>
+		<template is="dom-if" if="{{_suggestions.length}}">
+			<paper-material>
+				<paper-menu >
+				<template is="dom-repeat" items="{{_suggestions}}">
+					<paper-item  on-mouseover="_selecton" on-tap="_select">
+					<span>{{item}}</span>
+					</paper-item>
+				</template>
+				</paper-menu>
+			</paper-material>
+		</template>
+	</div>
+  </template>
+</dom-module>
+<script>
+
+  Polymer({
+
+    is: 'paper-input-autocomplete',
+
+    properties: {
+
+      /**
+       * The label that will show up as the label for tags input. It not specified, no label will show up.
+       */
+      label:{
+        type:String,
+        value:''
+      },
+      /**
+       * The placeholder for the paper-input element.
+       */
+      placeholder:{
+        type:String,
+        value:'Please enter values here'
+      },
+      /**
+       * The candidates from local variable.
+       */
+      localCandidates:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Url for a prefectched list in json format for the list of suggestion candidates. The response should be something like: ["a","b"] 
+       */
+      prefetchUrl:String,
+      /**
+      * The prefetched candidates get by prefetchUrl
+      */
+      _prefetchedCandidates:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Internal variable holding all matched suggestions.
+       */
+      _suggestions:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Maximum number of suggestions to show up in typeahead.
+       */
+      maxSuggestions:{
+        type:Number,
+        value:5
+      },
+      /**
+       * Remote url to perform a search using the value in the input. The input value will be passed in as url parameter. The placeholder should be %QUERY.
+       */
+      remoteUrl:String,
+      /**
+       * Input value.
+       */
+      inputValue: {
+        type: String,
+        notify: true,
+      },
+
+    },
+
+    // Element Lifecycle
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+      document.addEventListener("click", function(){
+        var ptinputs = document.querySelectorAll('paper-input-autocomplete')
+        for (var i = 0; i < ptinputs.length; i ++){
+          var ptinput = ptinputs[i];
+          ptinput._suggestions = [];
+        }
+      });
+      var input = this.querySelector('paper-input');
+      input.$.input.autocomplete = 'address-level4';
+    },
+
+    attached: function() {
+    },
+
+    detached: function() {
+    },
+
+    // Element Behavior
+    /**
+     * Callback for keydown event
+     *
+     * @param {e} event
+     */
+    _keydown: function(e) {
+      if (e.which == 40 || e.which == 38){
+          e.preventDefault();
+      }
+    },
+    /**
+     * Callback on click event on paper-item
+     *
+     */
+    _selecton:function(e){
+      var suggestionsMenu = this.querySelector('paper-menu');
+      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+        var selectedItem = e.currentTarget;
+        index = Number(suggestionsMenu.indexOf(selectedItem));
+        suggestionsMenu.select(index);
+        var input = this.querySelector('paper-input');
+        input.$.input.focus();
+      }
+      else{
+        console.log("suggestionsMenu not defined");
+      }
+    },
+    /**
+     * Callback on click event on paper-item
+     *
+     */
+    _select: function(e) {
+      var suggestionsMenu = this.querySelector('paper-menu');
+      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+        var selectedItem = e.currentTarget;
+        index = Number(suggestionsMenu.indexOf(selectedItem));
+        this.inputValue = this._suggestions[index];
+        this._suggestions = [];
+        e.stopPropagation();
+      }
+      else{
+        console.log("suggestionsMenu not defined");
+      }
+    },
+    /**
+     * Callback for keyup event
+     *
+     * @param {e} event
+     */
+    _keyup: function(e) {
+      if (e.which == 40){
+        //down button
+        console.log("down");
+        var suggestionsMenu = this.querySelector('paper-menu');
+        var selectedItem = suggestionsMenu.focusedItem;
+        var index = 0;
+        if (typeof(selectedItem) != 'undefined'){
+          index = Number(suggestionsMenu.indexOf(selectedItem));
+          index = Math.min(index + 1, this._suggestions.length - 1);
+        }
+        console.log("index");
+        console.log(index);
+        suggestionsMenu.select(index);
+        var input = this.querySelector('paper-input');
+        input.$.input.focus();
+      }
+      else if (e.which == 38){
+        //up
+        var suggestionsMenu = this.querySelector('paper-menu');
+        var selectedItem = suggestionsMenu.focusedItem;
+        if (typeof(selectedItem) != 'undefined'){
+          index = Number(suggestionsMenu.indexOf(selectedItem));
+          index = Math.max(index - 1, -1);
+          suggestionsMenu.select(index);
+        }
+        var input = this.querySelector('paper-input');
+        input.$.input.focus();
+      }
+      else if (e.which == 13){
+        var suggestionsMenu = this.querySelector('paper-menu');
+        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+          var selectedItem = suggestionsMenu.focusedItem;
+          if (typeof(selectedItem) != 'undefined'){
+            index = Number(suggestionsMenu.indexOf(selectedItem));
+            this.inputValue = this._suggestions[index];
+            this._suggestions = [];
+          }
+        }
+      }
+      else{
+        var suggestionsMenu = this.querySelector('paper-menu');
+        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+          suggestionsMenu.select(-1);
+        }
+        // if (this.inputValue.length >= 3){
+        this._search(this.inputValue.trim());
+        // this._suggestions = this._search(this.inputValue.trim());
+        // }
+      }
+    },
+    _search:function(term){
+      if (term == ""){
+        this._suggestions = [];
+        return;
+      }
+      var patt =  new RegExp(term.toLowerCase());
+      var matched = [];
+      if (typeof(this.localCandidates) != 'undefined'){
+        for (var i = 0; i < this.localCandidates.length; i ++){
+          if (matched.length == this.maxSuggestions){
+            break;
+          }
+          if (patt.test(this.localCandidates[i].toLowerCase()) == true){
+            matched.push(this.localCandidates[i]);
+          }
+        }
+      }
+      
+      if (typeof(this._prefetchedCandidates) != 'undefined'){
+        for (var i = 0; i < this._prefetchedCandidates.length; i ++){
+          if (matched.length == this.maxSuggestions){
+            break;
+          }
+          if (patt.test(this._prefetchedCandidates[i].toLowerCase()) == true){
+            matched.push(this._prefetchedCandidates[i]);
+          }
+        }
+      }
+      // this._suggestions = this._suggestions.concat(matched);
+      if (typeof(this.remoteUrl) != 'undefined'){
+        var url = this.remoteUrl.replace("%QUERY", term);
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open('GET', url, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        var ptinput = this;
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+              var resp = xmlhttp.response;
+              var remoteMatched = JSON.parse(resp);
+              var cuttedMatched = remoteMatched.slice(0,ptinput.maxSuggestions);
+              console.log(cuttedMatched);
+              matched = matched.concat(cuttedMatched);
+              // ptinput._suggestions = ptinput._suggestions.concat(cuttedMatched);
+              ptinput._suggestions = matched;
+            }
+        }
+        xmlhttp.send();
+      }
+      else{
+        this._suggestions = matched;
+      }
+    }
+
+  });
+
+</script>
