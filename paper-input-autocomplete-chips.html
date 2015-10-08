@@ -21,7 +21,6 @@ Example:
     <style>
       :host {
         display: block;
-        line-height: 48px;
 
         --paper-chip: {
           display: inline-block;
@@ -40,20 +39,23 @@ Example:
         align-items: flex-start;
       }
 
-      paper-input-container label {
+      paper-input-container::shadow .input-content.paper-input-container label {
         top: auto; 
         bottom: 0; 
+        line-height: 48px;
       }
-      
-      paper-input-container::shadow .input-content.label-is-floating label {
+            
+      paper-input-container::shadow .input-content.paper-input-container.label-is-floating label {
         
         top: 0; 
         bottom: auto; 
+        line-height: 24px;
       }
             
       input#input {
         display: inline-block;
         resize: none;
+        line-height: 48px;
       }
       
       div.prefix-content {
@@ -82,31 +84,31 @@ Example:
           <div class="icon">J</div>
           <h1>asbc</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>jdoe@example.com</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>jddsdfsfdss</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>jdoe@example.com</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>asbc</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>asbc</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>asbc</h1>
         </paper-chip>
-        <paper-chip label="Jane Doe">
+        <paper-chip label="Jane Doe" removable>
           <div class="icon">J</div>
           <h1>asbc</h1>
         </paper-chip>
