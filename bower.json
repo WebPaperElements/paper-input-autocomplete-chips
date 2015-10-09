@@ -1,14 +1,16 @@
 {
   "name": "paper-input-autocomplete-chips",
-  "version": "1.0.3",
+  "version": "0.10.1",
   "authors": [
-    "Anonymous <anonymous@example.com>"
+    "Vinicius Patrinhani <patrinhani@ciandt.com>"
   ],
-  "description": "An element providing a solution to no problem in particular.",
+  "description": "Web Component for Input autocomplete chips based on Polymer Paper Elements.",
   "keywords": [
     "web-component",
     "polymer",
-    "seed"
+    "material",
+    "autocomplete",
+    "chips"
   ],
   "main": "paper-input-autocomplete-chips.html",
   "license": "http://polymer.github.io/LICENSE.txt",
