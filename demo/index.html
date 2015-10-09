@@ -14,6 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>paper-input-autocomplete-chips Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../paper-button/paper-button.html">
     <link rel="import" href="../../paper-material/paper-material.html">
     <link rel="import" href="../../iron-icons/iron-icons.html">
     <link rel="import" href="../paper-chip.html">
@@ -33,14 +34,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin: 24px;
     }
     
+    paper-chip[data-tag='read-only'] #chip {
+      background-color: #FFB74D;
+    }
+    
   </style>
   <body unresolved>
 
     <template is="dom-bind" id="app">
       <paper-material class="demo-paper">
       <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+      
+      <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
   
-      <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
+      <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
         <!--<iron-icon icon="visibility" prefix></iron-icon>
         <iron-icon icon="visibility" suffix></iron-icon>-->
       </paper-input-autocomplete-chips>
@@ -89,67 +96,111 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           
           var app = document.querySelector('#app');
           
+          app.onSetDefaultValue = function () {
+            document.getElementById('myAutoComplete').selectedObject = app.states[0];
+          };
+          
           app.states = [
-            "Alabama",
-            "Alaska",
-            "American Samoa",
-            "Arizona",
-            "Arkansas",
-            "California",
-            "Colorado",
-            "Connecticut",
-            "Delaware",
-            "District Of Columbia",
-            "Federated States Of Micronesia",
-            "Florida",
-            "Georgia",
-            "Guam",
-            "Hawaii",
-            "Idaho",
-            "Illinois",
-            "Indiana",
-            "Iowa",
-            "Kansas",
-            "Kentucky",
-            "Louisiana",
-            "Maine",
-            "Marshall Islands",
-            "Maryland",
-            "Massachusetts",
-            "Michigan",
-            "Minnesota",
-            "Mississippi",
-            "Missouri",
-            "Montana",
-            "Nebraska",
-            "Nevada",
-            "New Hampshire",
-            "New Jersey",
-            "New Mexico",
-            "New York",
-            "North Carolina",
-            "North Dakota",
-            "Northern Mariana Islands",
-            "Ohio",
-            "Oklahoma",
-            "Oregon",
-            "Palau",
-            "Pennsylvania",
-            "Puerto Rico",
-            "Rhode Island",
-            "South Carolina",
-            "South Dakota",
-            "Tennessee",
-            "Texas",
-            "Utah",
-            "Vermont",
-            "Virgin Islands",
-            "Virginia",
-            "Washington",
-            "West Virginia",
-            "Wisconsin",
-            "Wyoming"
+            {
+              key: 1,
+              text: "Alabama",
+              imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
+              tag: 'read-only',
+              readOnly: true
+            },
+            {
+              key: 2,
+              text: "Alaska",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 3,
+              text: "American Samoa",
+              imgUrl: 'http://lorempixel.com/200/200/sports/1/'
+            },
+            {
+              key: 4,
+              text: "Arizona",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 5,
+              text: "Arkansas",
+              imgUrl: null
+            },
+            {
+              key: 6,
+              text: "California",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 7,
+              text: "Colorado",
+              imgUrl: null
+            }
           ];
+          // 
+          // app.states = [
+          //   "Alabama",
+          //   "Alaska",
+          //   "American Samoa",
+          //   "Arizona",
+          //   "Arkansas",
+          //   "California",
+          //   "Colorado",
+          //   "Connecticut",
+          //   "Delaware",
+          //   "District Of Columbia",
+          //   "Federated States Of Micronesia",
+          //   "Florida",
+          //   "Georgia",
+          //   "Guam",
+          //   "Hawaii",
+          //   "Idaho",
+          //   "Illinois",
+          //   "Indiana",
+          //   "Iowa",
+          //   "Kansas",
+          //   "Kentucky",
+          //   "Louisiana",
+          //   "Maine",
+          //   "Marshall Islands",
+          //   "Maryland",
+          //   "Massachusetts",
+          //   "Michigan",
+          //   "Minnesota",
+          //   "Mississippi",
+          //   "Missouri",
+          //   "Montana",
+          //   "Nebraska",
+          //   "Nevada",
+          //   "New Hampshire",
+          //   "New Jersey",
+          //   "New Mexico",
+          //   "New York",
+          //   "North Carolina",
+          //   "North Dakota",
+          //   "Northern Mariana Islands",
+          //   "Ohio",
+          //   "Oklahoma",
+          //   "Oregon",
+          //   "Palau",
+          //   "Pennsylvania",
+          //   "Puerto Rico",
+          //   "Rhode Island",
+          //   "South Carolina",
+          //   "South Dakota",
+          //   "Tennessee",
+          //   "Texas",
+          //   "Utah",
+          //   "Vermont",
+          //   "Virgin Islands",
+          //   "Virginia",
+          //   "Washington",
+          //   "West Virginia",
+          //   "Wisconsin",
+          //   "Wyoming"
+          // ];
         });        
       </script>
     </template>

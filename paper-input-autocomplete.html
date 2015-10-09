@@ -39,10 +39,10 @@
 	<div style="position:relative;">
 		<paper-input value="{{inputValue}}" class="autocomplete-input" on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"></paper-input>
 		<template is="dom-if" if="{{_suggestions.length}}">
-			<paper-material>
-				<paper-menu class="autocomplete-suggestions">
+      <paper-material class="autocomplete-suggestion-container">
+        <paper-menu class="autocomplete-suggestions">
 				<template is="dom-repeat" items="{{_suggestions}}">
-					<paper-item  on-mouseover="_selecton" on-tap="_select">
+					<paper-item on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
 					<span>{{item}}</span>
 					</paper-item>
 				</template>
@@ -100,7 +100,6 @@
         type: String,
         notify: true,
       },
-
     },
 
     // Element Lifecycle

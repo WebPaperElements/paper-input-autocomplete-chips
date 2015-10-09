@@ -129,7 +129,7 @@ Basic chip with single letter instead of an icon
       }
       
       #label {
-        font-family: 'Roboto Regular';
+        font-family: 'Roboto', 'Noto', sans-serif;
         padding-top: 8px;
         padding-right: 12px;
         padding-bottom: 8px;
@@ -381,7 +381,7 @@ Basic chip with single letter instead of an icon
        * @event remove
        */
       remove: function() {
-        var e = this.fire('remove', {}, this, false, true);
+        var e = this.fire('remove', {}, {cancelable: true});
         if (!e.defaultPrevented) {
           this.parentNode.removeChild(this);
         }
