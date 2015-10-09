@@ -278,9 +278,7 @@ Example:
       
       var hasSelectedObjects = (this.selectedObjects.length > 0);
       
-      this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? 'xxx' : inputValue;
-      
-      console.log(inputValue, hasSelectedObjects, this.hiddenValue);
+      this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
     },
     
     _onSelectedObjectsChange: function (selectedObjects) {
