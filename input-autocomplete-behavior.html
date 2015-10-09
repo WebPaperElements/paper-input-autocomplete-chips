@@ -58,7 +58,9 @@
      * @param {e} event
      */
     _keydown: function(e) {
-      if (e.which == 40 || e.which == 38){
+      if ((e.which === 27) || /* ESC Key */
+          (e.which === 40) || 
+          (e.which === 38)) {
          e.preventDefault();
       }
     },
@@ -98,7 +100,17 @@
      * @param {e} event
      */
     _keyup: function(e) {
-      if (e.which == 40){
+      if (e.which == 27) {
+        // ESC Key
+        this.inputValue = '';
+        
+        var searchTerm = this.inputValue || '';
+
+        this._checkIntegrityOfSelectedItem();        
+        
+        // if (this.inputValue.length >= 3){
+        this._search(searchTerm.trim());
+      } else if (e.which == 40){
         // Down Key
         // console.log("down");
         var suggestionsMenu = this._menuElement;
@@ -112,8 +124,7 @@
         // console.log(index);
         suggestionsMenu.select(index);
         this._inputElement.focus();
-      }
-      else if (e.which == 38){
+      } else if (e.which == 38){
         // Up Key
         var suggestionsMenu = this._menuElement;
         var selectedItem = suggestionsMenu.focusedItem;
@@ -123,15 +134,13 @@
           suggestionsMenu.select(index);
         }
         this._inputElement.focus();
-      }
-      else if (e.which == 13){
+      } else if (e.which == 13){
         // Return Key
         var suggestionsMenu = this._menuElement;
         if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
           this._setSelectedItem(suggestionsMenu.focusedItem);
         }
-      }
-      else{
+      } else{
         var suggestionsMenu = this._menuElement;
         if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
           suggestionsMenu.select(-1);
@@ -139,12 +148,12 @@
         
         this._checkIntegrityOfSelectedItem();
         
-        if (this.inputValue) {
-          // if (this.inputValue.length >= 3){
-          this._search(this.inputValue.trim());
-          // this._suggestions = this._search(this.inputValue.trim());
-          // }
-        }
+        var searchTerm = this.inputValue || '';
+        
+        // if (this.inputValue.length >= 3){
+        this._search(searchTerm.trim());
+        // this._suggestions = this._search(this.inputValue.trim());
+        // }
       }
     },
     _checkIntegrityOfSelectedItem: function () {
@@ -184,7 +193,7 @@
       }
     },
     _search:function(term){
-      if (term == ""){
+      if (term === ''){
         this._suggestions = [];
         return;
       }
