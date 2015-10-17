@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-avatar-image/paper-avatar-image.html">
-<link rel="import" href="paper-chip.html">
+<link rel="import" href="paper-chip-new.html">
 <link rel="import" href="paper-input-autocomplete.html">
 
 <!--
@@ -120,9 +120,8 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
 				<template is="dom-repeat" items="{{selectedObjects}}">
-          <paper-chip label="[[item]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]">
-            <paper-avatar-image src="[[item.imgUrl]]" icon="[[item.icon]]" text-icon="[[item.text]]" class="icon" no-border></paper-avatar-image>
-            <h1>[[item.text]]</h1>
+          <paper-chip img-src="[[item.imgUrl]]" icon="[[item.icon]]" label="[[item.text]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]"
+             data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]">
           </paper-chip>
 				</template>
         <input is="iron-input" id="input" class="autocomplete-input" 

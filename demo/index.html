@@ -17,8 +17,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../paper-button/paper-button.html">
     <link rel="import" href="../../paper-material/paper-material.html">
     <link rel="import" href="../../iron-icons/iron-icons.html">
-    <link rel="import" href="../paper-avatar-image/paper-avatar-image.html">
+    <link rel="import" href="../../paper-avatar-image/paper-avatar-image.html">
     <link rel="import" href="../paper-chip.html">
+    <link rel="import" href="../paper-chip-new.html">
     <link rel="import" href="../paper-input-autocomplete.html">
     <link rel="import" href="../paper-input-autocomplete-chips.html">
   </head>
@@ -48,10 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       
       <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
   
-      <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
-        <!--<iron-icon icon="visibility" prefix></iron-icon>
-        <iron-icon icon="visibility" suffix></iron-icon>-->
-      </paper-input-autocomplete-chips>
+      <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips"></paper-input-autocomplete-chips>
   
       </paper-material>
 
@@ -69,26 +67,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <paper-material class="demo-paper">
       <p>An example of <code>&lt;paper-chip&gt;</code>:</p>
-  
-      <paper-chip label="Jane Doe" style="display: block;" removable openable>
-        <paper-avatar-image text-icon="John Doe" class="icon" no-border></paper-avatar-image>
-        <h1>jdoe@example.com</h1>
-      </paper-chip>
 
-      <paper-chip label="Jane Doe" style="display: block;" removable openable animated>
-        <paper-avatar-image text-icon="John Doe" class="icon" no-border not-animated></paper-avatar-image>
-        <h1>jdoe@example.com</h1>
-      </paper-chip>
+      <paper-chip label="Jane Doe" openable no-image></paper-chip>
+      <paper-chip label="Jane Doe" removable openable no-image></paper-chip>
+      <paper-chip label="Jane Doe" removable openable></paper-chip>
+      <paper-chip label="Jane Doe" text="jdoe@example.com" removable openable></paper-chip>
+      <paper-chip icon="account-balance" label="Jane Doe" text="jdoe@example.com" removable openable></paper-chip>
+      <paper-chip icon="account-balance" label="Jane Doe" text="jdoe@example.com" removable openable animated></paper-chip>
+  
+      <paper-chip label="Jane Doe" style="display: block;" removable openable></paper-chip>
+
+      <paper-chip label="Jane Doe" style="display: block;" removable openable animated></paper-chip>
   
       </paper-material>
 
       <paper-material class="demo-paper" style="height: 300px; overflow: auto;">
       <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
   
-      <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
-        <!--<iron-icon icon="visibility" prefix></iron-icon>
-        <iron-icon icon="visibility" suffix></iron-icon>-->
-      </paper-input-autocomplete-chips>
+      <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips"></paper-input-autocomplete-chips>
   
       </paper-material>
     
