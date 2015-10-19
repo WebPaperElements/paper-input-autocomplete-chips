@@ -6,16 +6,24 @@
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../paper-avatar-image/paper-avatar-image.html">
-  
+
 <!--
-Material Design: [Chips](http://www.google.com.br/design/spec/components/chips.html)
+Material Design: [Chips](http://www.google.com/design/spec/components/chips.html)
 
 `paper-chip` is a small element that represents a complex entity such as a
 calendar event or a contact. The chip can be in an opened or closed state. In
 its closed state, it contains an icon and a short title. In its open state, the
 chip expands to show more detail about the represented entity, as well as
 (optionally) a "remove" button that removes the chip element from the DOM.
+
+The following child elements may be placed within the chip tag define its
+content:
+
+  * .icon: The icon representing the chip. This may be any element, for
+            example, a `<iron-icon>` or a simple `<span>` with a single letter
+  * h1: The chip label, shown in both closed and opened states
+  * h2: A secondary label, shown only in the opened state
+  * all other content will be shown in the opened chip
 
 The `removable` attribute can be used to add a button which removes the chip
 from the DOM.
@@ -24,20 +32,26 @@ from the DOM.
 
 Removable chip with iron-icon
 
-    <paper-chip removable></paper-chip>
+    <paper-chip removable>
+      <iron-icon class="icon" icon="avatars:avatar-1"></iron-icon>
+      <h1>John Doe</h1>
+      <h2>jdoe@example.com</h2>
+    </paper-chip>
 
 Basic chip with single letter instead of an icon
 
-    <paper-chip label="Jane Doe"></paper-chip>
+    <paper-chip label="Jane Doe">
+      <div class="icon">J</div>
+      <h1>jdoe@example.com</h1>
+    </paper-chip>
 
 
 @element paper-chip
 @blurb A basic "chip" element representing an icon/image and a short piece of text.
+@homepage http://bendavis78.github.io/paper-chip/
 @demo demo/index.html
-
-Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
 -->
-<dom-module id="paper-chip">
+<dom-module id="paper-chip-old">
   <template>
     <style>
       :host {
@@ -50,9 +64,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         margin: 8px 0;
         height: 32px;
         overflow: visible;
-        
-        font-family: 'Roboto', 'Noto', sans-serif;
-        
         @apply(--paper-chip);
       }
       :host([animated]) *,
@@ -61,27 +72,24 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
       }
       
       /* initially hidden elements */
-      :host(:not([opened])) #labelContainer h2 {
+      :host(:not([opened])) #label ::content h2 {
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
         font-size: 0;
         height: 0;
       }
-      :host([no-image]) #iconContainer {
-        display: none;
-      }
 
-      #mainContainer, #iconContainer {
+      #main, #chip {
         border-radius: 16px;
       }
       
-      #mainContainer {
+      #main {
         background-color: var(--paper-chip-background-color, --paper-grey-200);
         position: relative;
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
         @apply(--layout-vertical);
       }
       
-      #chipContainer {
+      #chip {
         box-sizing: border-box;
         height: 32px;
         @apply(--layout-horizontal);
@@ -92,85 +100,61 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         border-radius: 16px;
       }
 
-      #iconContainer {
-        width: 32px;
-        height: 32px;
+      #icon {
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--layout-center-justified);
       }
-      #iconContainer .icon {
+      #icon ::content .icon {
         width: 32px;
         height: 32px;
-
-        --paper-avatar-image-icon: {
-          border-radius: 0px;
-          width: 24px;
-          height: 24px;
-        }
-              
-        --paper-avatar-text-icon: {
-          line-height: 70%;
-          font-size: 20px;
-          font-weight: bold;
-        }
+        line-height: 32px;
+        font-size: 16px;
+        font-weight: bold;
       }
-      
-      #labelContainer {
+      #label {
         font-family: 'Roboto', 'Noto', sans-serif;
-        padding-top: 8px; 
+        padding-top: 8px;
         padding-right: 12px;
         padding-bottom: 8px;
         padding-left: 8px;
         @apply(--layout-flex-auto);
         @apply(--layout-self-center);
       }
-      #labelContainer h1,
-      #labelContainer h2 {
+      #label ::content h1,
+      #label ::content h2 {
         white-space: nowrap;
         margin: 0;
         font-weight: normal;
         font-size: 14px;
       }
+      
+      .icon-btn-wrapper {
+        @apply(--layout-self-center);
+      }
 
-      :host([no-image]) #labelContainer {
-        padding-left: 12px;
+      :host(:not([opened])) #removeBtn {
+        background-color: transparent;
       }
-      
-      :host([removable]) #labelContainer {
-        padding-right: 4px;
-      }
-      
-      #removeBtnContainer {
-        width: 24px;
-        height: 24px;
-        margin-left: 0px;
-        margin-right: 4px;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-      }
-  
       #removeBtn {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         border-radius: 100%;
+        margin-left: -4px;
+        margin-right: 8px;
         cursor: pointer;
-        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-600);
-        color: var(--paper-chip-removebtn-icon-color, --text-primary-color);
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
       }
       #removeBtn iron-icon {
         padding: 2px;
         width: 16px;
         height: 16px;
       }
-      :host(:not([removable])) #removeBtnContainer {
+      :host(:not([removable])) #removeBtn {
         display: none;
       }
       
       /* pressed state */
-      :host([pressed]) #mainContainer {
+      :host([pressed]) #main {
         background-color: var(--paper-chip-pressed-background-color, --paper-grey-300);
       }
             
@@ -180,12 +164,12 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         min-width: 100%;
         overflow: hidden;
       }
-      :host(:not([opened])) #labelContainer h1 {
+      :host(:not([opened])) #label ::content h1 {
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
       }
 
       /* opened state */
-      :host([opened]) #mainContainer, :host([opened]) #chipContainer {
+      :host([opened]) #main, :host([opened]) #chip {
         border-radius: 0;
       }
       :host([opened]) #content {
@@ -194,15 +178,15 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         min-width: 100%;
         overflow: hidden;
       }
-      :host([opened]) #chipContainer {
+      :host([opened]) #chip {
         height: 72px;
       }
-      :host([opened]) #chipContainer,
+      :host([opened]) #chip,
       :host([opened]) #content ::content > * {
         padding: 16px 12px;
         background-color: var(--paper-chip-opened-background-color, --paper-grey-50);
       }
-      :host([opened]) #labelContainer h1 {
+      :host([opened]) #label ::content h1 {
         color: var(--paper-chip-primary-text-color, --primary-text-color);
         font-size: 16px;
       }
@@ -213,29 +197,16 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         background-color: var(--paper-chip-removebtn-background-color, --paper-grey-400);
         color: var(--paper-chip-removebtn-icon-color, --text-primary-color);
       }
-      :host([opened]) #iconContainer {
-        width: 40px;
-        height: 40px;
-      }
-      :host([opened]) #iconContainer .icon {
+      :host([opened]) #icon ::content .icon,
+      :host([opened]) #icon ::content iron-icon.icon svg {
+        font-size: 20px;
         width: 40px;
         height: 40px;
         line-height: 40px;
-        
-        --paper-avatar-image-icon: {
-          width: 32px;
-          height: 32px;
-        }
-              
-        --paper-avatar-text-icon: {
-          line-height: 70%;
-          font-size: 32px;
-          font-weight: bold;
-        }
       }
 
       /* open + active state */
-      :host([opened][active]) #chipContainer,
+      :host([opened][active]) #chip,
       :host([opened][active]) ::content {
         background-color: var(--paper-chip-active-color, --accent-color);
         color: var(--paper-chip-active-text-color, --text-primary-color);
@@ -244,32 +215,26 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         background-color: var(--paper-chip-active-text-color, --text-primary-color);
         color: var(--paper-chip-active-color, --accent-color);
       }
-      :host([opened][active]) #chipContainer #labelContainer h1 {
+      :host([opened][active]) #chip #label ::content h1 {
         color: var(--paper-chip-active-text-color, --text-primary-color);
       }
-      :host([opened][active]) #chipContainer #labelContainer h2 {
+      :host([opened][active]) #chip #label ::content h2 {
         color: var(--paper-chip-active-secondary-text-color, --text-primary-color);
       }
     </style>
     <iron-a11y-keys target="{{}}" keys="space enter" on-keys-pressed="toggleOpened"></iron-a11y-keys>
-    <iron-a11y-keys target="{{}}" keys="del" on-keys-pressed="remove"></iron-a11y-keys>
-    <paper-material elevation="{{_elevation}}" animated$="{{animated}}">
-      <div id="mainContainer">
-        <div id="chipContainer">
-          <div id="iconContainer">
-            <paper-avatar-image src="[[imgSrc]]" icon="[[icon]]" text-icon="[[label]]" mode="rounded" class="icon" no-border not-animated></paper-avatar-image>
-            <!--<content select=".icon"></content>-->
+    <paper-material id="shadow" elevation="{{_elevation}}" animated$="{{animated}}">
+      <div id="main">
+        <div id="chip">
+          <div id="icon">
+            <content select=".icon"></content>
           </div>
-          <div id="labelContainer">
-            <h1>[[label]]</h1>
-            <h2>[[text]]</h2>
-            <!--<content select="h1"></content>
-            <content select="h2"></content>-->
+          <div id="label">
+            <content select="h1"></content>
+            <content select="h2"></content>
           </div>
-          <div id="removeBtnContainer">
-            <div id="removeBtn" on-tap="remove" aria-label="remove button">
-              <iron-icon icon="close"></iron-icon>
-            </div>
+          <div id="removeBtn" on-tap="remove" aria-label="remove button">
+            <iron-icon icon="close"></iron-icon>
           </div>
         </div>
         <div id="content">
@@ -281,47 +246,12 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
 
   <script>
     Polymer({
-      is: 'paper-chip',
+      is: 'paper-chip-old',
       behaviors: [
         Polymer.IronButtonState,
         Polymer.IronControlState,
       ],
       properties: {
-        /**
-        * The URL of an image for the icon. If the src property is specified,
-        * the icon property should not be.
-        *
-        * @attribute src
-        * @type String
-        * @default ''
-        */
-        imgSrc: {
-          type: String,
-          value: null
-        },
-        /**
-        * Specifies the icon name or index in the set of icons available in
-        * the icon's icon set. If the icon property is specified,
-        * the src property should not be.
-        *
-        * @attribute icon
-        * @type String
-        * @default null
-        */
-        icon: {
-          type: String,
-          value: null
-        },
-        /**
-        *
-        * @attribute label
-        * @type String
-        * @default null
-        */
-        label: {
-          type: String,
-          value: null
-        },
         /**
          * Whether or not the chip is removable. If `true`, a remove button will
          * be shown.
@@ -388,13 +318,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
          * @default false
          */
         active: {
-          type: Boolean,
-          value: false,
-          notify: true,
-          reflectToAttribute: true
-        },
-
-        noImage: {
           type: Boolean,
           value: false,
           notify: true,
