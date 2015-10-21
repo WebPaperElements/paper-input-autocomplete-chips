@@ -76,8 +76,11 @@ Example:
       paper-material.autocomplete-suggestion-container {
         left:0;
         right:0;
+        bottom: 45px;
         position: absolute;
         z-index: 10; 
+        max-height: 180px;
+        overflow-y: scroll;
       }
       paper-material.autocomplete-suggestion-container paper-item{
         cursor: pointer;
