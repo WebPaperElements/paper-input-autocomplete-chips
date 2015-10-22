@@ -64,6 +64,9 @@ Basic chip with single letter instead of an icon
         margin: 8px 0;
         height: 32px;
         overflow: visible;
+        
+        font-family: 'Roboto', 'Noto', sans-serif;
+        
         @apply(--paper-chip);
       }
       :host([animated]) *,
@@ -72,40 +75,42 @@ Basic chip with single letter instead of an icon
       }
       
       /* initially hidden elements */
-      :host(:not([opened])) #label ::content h2 {
+      :host(:not([opened])) #labelContainer ::content h2 {
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
         font-size: 0;
         height: 0;
       }
-
-      #main, #chip {
+      :host([no-image]) #iconContainer {
+        display: none;
+      }
+      #mainContainer, #iconContainer {
         border-radius: 16px;
       }
       
-      #main {
-        background-color: var(--paper-chip-background-color, --paper-grey-200);
+      #mainContainer {
+        background-color: var(--paper-chip-background-color, --paper-grey-300);
         position: relative;
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
         @apply(--layout-vertical);
       }
       
-      #chip {
+      #chipContainer {
         box-sizing: border-box;
         height: 32px;
         @apply(--layout-horizontal);
         @apply(--layout-center);
       }
-
       paper-material {
         border-radius: 16px;
       }
-
-      #icon {
+      #iconContainer {
+        width: 32px;
+        height: 32px;
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--layout-center-justified);
       }
-      #icon ::content .icon {
+      #iconContainer ::content .icon {
         width: 32px;
         height: 32px;
         line-height: 32px;
@@ -115,7 +120,7 @@ Basic chip with single letter instead of an icon
         vertical-align: middle;
         font-size: 16px;
         font-weight: bold;
-        background-color: var(--paper-chip-icon-background-color, --paper-grey-500);
+        background-color: var(--paper-chip-icon-background-color, --secondary-text-color);
         color: var(--paper-chip-icon-text-color, --text-primary-color);
         @apply(--layout-flex);
       }
@@ -127,50 +132,65 @@ Basic chip with single letter instead of an icon
         width: 32px;
         height: 32px;
       }
-      
-      #label {
+            
+      #labelContainer {
         font-family: 'Roboto', 'Noto', sans-serif;
-        padding-top: 8px;
+        padding-top: 8px; 
         padding-right: 12px;
         padding-bottom: 8px;
         padding-left: 8px;
         @apply(--layout-flex-auto);
         @apply(--layout-self-center);
       }
-      #label ::content h1,
-      #label ::content h2 {
+      #labelContainer ::content h1 {
+        font-size: 13px;
+        font-weight: normal;
+        color: var(--paper-chip-label-text-color, --primary-text-color);
+      }
+      #labelContainer ::content h2 {
+        font-size: 14px;
         white-space: nowrap;
         margin: 0;
         font-weight: normal;
-        font-size: 14px;
+      }
+      :host([no-image]) #labelContainer {
+        padding-left: 12px;
       }
       
-      .icon-btn-wrapper {
-        @apply(--layout-self-center);
+      :host([removable]) #labelContainer {
+        padding-right: 4px;
       }
-
-      :host(:not([opened])) #removeBtn {
-        background-color: transparent;
+      
+      #removeBtnContainer {
+        width: 24px;
+        height: 24px;
+        margin-left: 0px;
+        margin-right: 4px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
       }
+  
       #removeBtn {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         border-radius: 100%;
-        margin-left: -4px;
-        margin-right: 8px;
         cursor: pointer;
+        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-500);
+        color: var(--paper-chip-removebtn-icon-color, --text-primary-color);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
       }
       #removeBtn iron-icon {
         padding: 2px;
         width: 16px;
         height: 16px;
       }
-      :host(:not([removable])) #removeBtn {
+      :host(:not([removable])) #removeBtnContainer {
         display: none;
       }
       
       /* pressed state */
-      :host([pressed]) #main {
+      :host([pressed]) #mainContainer {
         background-color: var(--paper-chip-pressed-background-color, --paper-grey-300);
       }
             
@@ -180,12 +200,9 @@ Basic chip with single letter instead of an icon
         min-width: 100%;
         overflow: hidden;
       }
-      :host(:not([opened])) #label ::content h1 {
-        color: var(--paper-chip-secondary-text-color, --secondary-text-color);
-      }
-
+      
       /* opened state */
-      :host([opened]) #main, :host([opened]) #chip {
+      :host([opened]) #mainContainer, :host([opened]) #chipContainer {
         border-radius: 0;
       }
       :host([opened]) #content {
@@ -194,15 +211,15 @@ Basic chip with single letter instead of an icon
         min-width: 100%;
         overflow: hidden;
       }
-      :host([opened]) #chip {
+      :host([opened]) #chipContainer {
         height: 72px;
       }
-      :host([opened]) #chip,
+      :host([opened]) #chipContainer,
       :host([opened]) #content ::content > * {
         padding: 16px 12px;
         background-color: var(--paper-chip-opened-background-color, --paper-grey-50);
       }
-      :host([opened]) #label ::content h1 {
+      :host([opened]) #labelContainer ::content h1 {
         color: var(--paper-chip-primary-text-color, --primary-text-color);
         font-size: 16px;
       }
@@ -210,8 +227,12 @@ Basic chip with single letter instead of an icon
         border-radius: 0; 
       }
       :host([opened]) #removeBtn {
-        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-400);
+        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-600);
         color: var(--paper-chip-removebtn-icon-color, --text-primary-color);
+      }
+      :host([opened]) #iconContainer {
+        width: 40px;
+        height: 40px;
       }
       :host([opened]) #icon ::content .icon,
       :host([opened]) #icon ::content iron-icon.icon svg {
@@ -220,9 +241,8 @@ Basic chip with single letter instead of an icon
         height: 40px;
         line-height: 40px;
       }
-
       /* open + active state */
-      :host([opened][active]) #chip,
+      :host([opened][active]) #chipContainer,
       :host([opened][active]) ::content {
         background-color: var(--paper-chip-active-color, --accent-color);
         color: var(--paper-chip-active-text-color, --text-primary-color);
@@ -231,26 +251,29 @@ Basic chip with single letter instead of an icon
         background-color: var(--paper-chip-active-text-color, --text-primary-color);
         color: var(--paper-chip-active-color, --accent-color);
       }
-      :host([opened][active]) #chip #label ::content h1 {
+      :host([opened][active]) #chipContainer #labelContainer ::content h1 {
         color: var(--paper-chip-active-text-color, --text-primary-color);
       }
-      :host([opened][active]) #chip #label ::content h2 {
+      :host([opened][active]) #chipContainer #labelContainer ::content h2 {
         color: var(--paper-chip-active-secondary-text-color, --text-primary-color);
       }
     </style>
     <iron-a11y-keys target="{{}}" keys="space enter" on-keys-pressed="toggleOpened"></iron-a11y-keys>
-    <paper-material id="shadow" elevation="{{_elevation}}" animated$="{{animated}}">
-      <div id="main">
-        <div id="chip">
-          <div id="icon">
+    <iron-a11y-keys target="{{}}" keys="del" on-keys-pressed="remove"></iron-a11y-keys>
+    <paper-material elevation="{{_elevation}}" animated$="{{animated}}">
+      <div id="mainContainer">
+        <div id="chipContainer">
+          <div id="iconContainer">
             <content select=".icon"></content>
           </div>
-          <div id="label">
+          <div id="labelContainer">
             <content select="h1"></content>
             <content select="h2"></content>
           </div>
-          <div id="removeBtn" on-tap="remove" aria-label="remove button">
-            <iron-icon icon="close"></iron-icon>
+          <div id="removeBtnContainer">
+            <div id="removeBtn" on-tap="remove" aria-label="remove button">
+              <iron-icon icon="close"></iron-icon>
+            </div>
           </div>
         </div>
         <div id="content">
