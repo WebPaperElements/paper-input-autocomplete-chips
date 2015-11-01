@@ -75,7 +75,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
       }
       
       #mainContainer {
-        background-color: var(--paper-chip-background-color, --paper-grey-200);
+        background-color: var(--paper-chip-background-color, --paper-grey-300);
         position: relative;
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
         @apply(--layout-vertical);
@@ -87,7 +87,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         @apply(--layout-horizontal);
         @apply(--layout-center);
       }
-
       paper-material {
         border-radius: 16px;
       }
@@ -115,7 +114,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
           font-weight: bold;
         }
       }
-      
+
       #labelContainer {
         font-family: 'Roboto', 'Noto', sans-serif;
         padding-top: 8px; 
@@ -125,12 +124,24 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         @apply(--layout-flex-auto);
         @apply(--layout-self-center);
       }
+
       #labelContainer h1,
       #labelContainer h2 {
         white-space: nowrap;
         margin: 0;
         font-weight: normal;
+      }
+      #labelContainer h1 {
+        font-size: 13px;
+        font-weight: normal;
+        color: var(--paper-chip-label-text-color, --primary-text-color);
+      }
+      #labelContainer h2 {
         font-size: 14px;
+      }
+
+      :host([no-image]) #labelContainer {
+        padding-left: 12px;
       }
 
       :host([no-image]) #labelContainer {
@@ -155,7 +166,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         height: 18px;
         border-radius: 100%;
         cursor: pointer;
-        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-600);
+        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-500);
         color: var(--paper-chip-removebtn-icon-color, --text-primary-color);
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
@@ -180,6 +191,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         min-width: 100%;
         overflow: hidden;
       }
+
       :host(:not([opened])) #labelContainer h1 {
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
       }
@@ -210,7 +222,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         border-radius: 0; 
       }
       :host([opened]) #removeBtn {
-        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-400);
+        background-color: var(--paper-chip-removebtn-background-color, --paper-grey-600);
         color: var(--paper-chip-removebtn-icon-color, --text-primary-color);
       }
       :host([opened]) #iconContainer {
