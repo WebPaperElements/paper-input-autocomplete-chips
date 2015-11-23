@@ -1,7 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
-<link rel="import" href="../paper-avatar-image/paper-avatar-image.html">
-<link rel="import" href="paper-chip-new.html">
+<link rel="import" href="paper-chip.html">
 <link rel="import" href="paper-input-autocomplete.html">
 
 <!--
@@ -90,25 +89,42 @@ Example:
         background: #E0E0E0;
       }
 
+      paper-item .avatar-chip-icon {
+        @apply(--layout-vertical);
+        @apply(--layout-center);
+        @apply(--layout-center-justified);
+      }
+      paper-item .avatar-chip-icon svg, .avatar-chip-icon img {
+        width: 100%;
+        height: 100%;
+      }
+
+      paper-item .avatar-result-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 8px;
+        border-radius: 100%;
+        overflow: hidden;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: var(--paper-chip-icon-background-color, --paper-grey-500);
+        color: var(--paper-chip-icon-text-color, --text-primary-color);
+        @apply(--layout-vertical);
+        @apply(--layout-center);
+        @apply(--layout-center-justified);
+      }
+      paper-item .avatar-result-icon svg, .avatar-result-icon img {
+        width: 100%;
+        height: 100%;
+      }
+      
       .autocomplete-suggestions paper-item {
         padding-top: 16px;
         padding-bottom: 16px;
         font-family: 'Roboto', 'Noto', sans-serif;
         font-size: 14px;
-      }
-      
-      paper-avatar-image.icon {
-        --paper-avatar-text-icon: {
-          font-size: 16px;
-          font-weight: bold;
-        }
-      }
-      
-      paper-avatar-image.chip-open{
-        --paper-avatar-text-icon: {
-          font-size: 24px;
-          font-weight: bold;
-        }
       }
 
     </style>
@@ -123,8 +139,14 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
 				<template is="dom-repeat" items="{{selectedObjects}}">
-          <paper-chip img-src="[[item.imgUrl]]" icon="[[item.icon]]" label="[[item.text]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]"
-             data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]">
+          <paper-chip label="[[item]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]">
+            <template is="dom-if" if="{{item.imgUrl}}">
+              <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
+            </template>
+            <template is="dom-if" if="{{!item.imgUrl}}">
+              <div class="icon avatar-chip-icon">[[getInitialsFrom(item.text)]]</div>
+            </template>
+            <h1>[[item.text]]</h1>
           </paper-chip>
 				</template>
         <input is="iron-input" id="input" class="autocomplete-input" 
@@ -163,7 +185,12 @@ Example:
             <paper-menu class="autocomplete-suggestions">
               <template is="dom-repeat" items="{{_suggestions}}">
       					<paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
-                  <paper-avatar-image src="[[item.imgUrl]]" icon="[[item.icon]]" text-icon="[[item.text]]" class="chip-open" no-border></paper-avatar-image>
+                  <template is="dom-if" if="{{item.imgUrl}}">
+                    <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
+                  </template>
+                  <template is="dom-if" if="{{!item.imgUrl}}">
+                    <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
+                  </template>
                   <span>{{item.text}}</span>
                 </paper-item>
               </template>
