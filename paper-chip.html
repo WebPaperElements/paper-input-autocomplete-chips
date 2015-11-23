@@ -6,16 +6,24 @@
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../paper-avatar-image/paper-avatar-image.html">
-  
+
 <!--
-Material Design: [Chips](http://www.google.com.br/design/spec/components/chips.html)
+Material Design: [Chips](http://www.google.com/design/spec/components/chips.html)
 
 `paper-chip` is a small element that represents a complex entity such as a
 calendar event or a contact. The chip can be in an opened or closed state. In
 its closed state, it contains an icon and a short title. In its open state, the
 chip expands to show more detail about the represented entity, as well as
 (optionally) a "remove" button that removes the chip element from the DOM.
+
+The following child elements may be placed within the chip tag define its
+content:
+
+  * .icon: The icon representing the chip. This may be any element, for
+            example, a `<iron-icon>` or a simple `<span>` with a single letter
+  * h1: The chip label, shown in both closed and opened states
+  * h2: A secondary label, shown only in the opened state
+  * all other content will be shown in the opened chip
 
 The `removable` attribute can be used to add a button which removes the chip
 from the DOM.
@@ -24,18 +32,24 @@ from the DOM.
 
 Removable chip with iron-icon
 
-    <paper-chip removable></paper-chip>
+    <paper-chip removable>
+      <iron-icon class="icon" icon="avatars:avatar-1"></iron-icon>
+      <h1>John Doe</h1>
+      <h2>jdoe@example.com</h2>
+    </paper-chip>
 
 Basic chip with single letter instead of an icon
 
-    <paper-chip label="Jane Doe"></paper-chip>
+    <paper-chip label="Jane Doe">
+      <div class="icon">J</div>
+      <h1>jdoe@example.com</h1>
+    </paper-chip>
 
 
 @element paper-chip
 @blurb A basic "chip" element representing an icon/image and a short piece of text.
+@homepage http://bendavis78.github.io/paper-chip/
 @demo demo/index.html
-
-Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
 -->
 <dom-module id="paper-chip">
   <template>
@@ -61,7 +75,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
       }
       
       /* initially hidden elements */
-      :host(:not([opened])) #labelContainer h2 {
+      :host(:not([opened])) #labelContainer ::content h2 {
         color: var(--paper-chip-secondary-text-color, --secondary-text-color);
         font-size: 0;
         height: 0;
@@ -69,7 +83,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
       :host([no-image]) #iconContainer {
         display: none;
       }
-
       #mainContainer, #iconContainer {
         border-radius: 16px;
       }
@@ -90,7 +103,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
       paper-material {
         border-radius: 16px;
       }
-
       #iconContainer {
         width: 32px;
         height: 32px;
@@ -98,23 +110,29 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         @apply(--layout-center);
         @apply(--layout-center-justified);
       }
-      #iconContainer .icon {
+      #iconContainer ::content .icon {
         width: 32px;
         height: 32px;
-
-        --paper-avatar-image-icon: {
-          border-radius: 0px;
-          width: 24px;
-          height: 24px;
-        }
-              
-        --paper-avatar-text-icon: {
-          line-height: 70%;
-          font-size: 20px;
-          font-weight: bold;
-        }
+        line-height: 32px;
+        border-radius: 100%;
+        overflow: hidden;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: var(--paper-chip-icon-background-color, --secondary-text-color);
+        color: var(--paper-chip-icon-text-color, --text-primary-color);
+        @apply(--layout-flex);
       }
-
+      #icon ::content iron-icon.icon {
+        vertical-align: bottom;
+      }
+      #icon ::content iron-icon.icon,
+      #icon ::content iron-icon.icon svg {
+        width: 32px;
+        height: 32px;
+      }
+            
       #labelContainer {
         font-family: 'Roboto', 'Noto', sans-serif;
         padding-top: 8px; 
@@ -124,26 +142,18 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         @apply(--layout-flex-auto);
         @apply(--layout-self-center);
       }
-
-      #labelContainer h1,
-      #labelContainer h2 {
-        white-space: nowrap;
+      #labelContainer ::content h1 {
         margin: 0;
-        font-weight: normal;
-      }
-      #labelContainer h1 {
         font-size: 13px;
         font-weight: normal;
         color: var(--paper-chip-label-text-color, --primary-text-color);
       }
-      #labelContainer h2 {
+      #labelContainer ::content h2 {
+        margin: 0;
         font-size: 14px;
+        white-space: nowrap;
+        font-weight: normal;
       }
-
-      :host([no-image]) #labelContainer {
-        padding-left: 12px;
-      }
-
       :host([no-image]) #labelContainer {
         padding-left: 12px;
       }
@@ -191,11 +201,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         min-width: 100%;
         overflow: hidden;
       }
-
-      :host(:not([opened])) #labelContainer h1 {
-        color: var(--paper-chip-secondary-text-color, --secondary-text-color);
-      }
-
+      
       /* opened state */
       :host([opened]) #mainContainer, :host([opened]) #chipContainer {
         border-radius: 0;
@@ -214,7 +220,7 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         padding: 16px 12px;
         background-color: var(--paper-chip-opened-background-color, --paper-grey-50);
       }
-      :host([opened]) #labelContainer h1 {
+      :host([opened]) #labelContainer ::content h1 {
         color: var(--paper-chip-primary-text-color, --primary-text-color);
         font-size: 16px;
       }
@@ -229,23 +235,13 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         width: 40px;
         height: 40px;
       }
-      :host([opened]) #iconContainer .icon {
+      :host([opened]) #icon ::content .icon,
+      :host([opened]) #icon ::content iron-icon.icon svg {
+        font-size: 20px;
         width: 40px;
         height: 40px;
         line-height: 40px;
-        
-        --paper-avatar-image-icon: {
-          width: 32px;
-          height: 32px;
-        }
-              
-        --paper-avatar-text-icon: {
-          line-height: 70%;
-          font-size: 32px;
-          font-weight: bold;
-        }
       }
-
       /* open + active state */
       :host([opened][active]) #chipContainer,
       :host([opened][active]) ::content {
@@ -256,10 +252,10 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         background-color: var(--paper-chip-active-text-color, --text-primary-color);
         color: var(--paper-chip-active-color, --accent-color);
       }
-      :host([opened][active]) #chipContainer #labelContainer h1 {
+      :host([opened][active]) #chipContainer #labelContainer ::content h1 {
         color: var(--paper-chip-active-text-color, --text-primary-color);
       }
-      :host([opened][active]) #chipContainer #labelContainer h2 {
+      :host([opened][active]) #chipContainer #labelContainer ::content h2 {
         color: var(--paper-chip-active-secondary-text-color, --text-primary-color);
       }
     </style>
@@ -269,14 +265,11 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
       <div id="mainContainer">
         <div id="chipContainer">
           <div id="iconContainer">
-            <paper-avatar-image src="[[imgSrc]]" icon="[[icon]]" text-icon="[[label]]" mode="rounded" class="icon" no-border not-animated></paper-avatar-image>
-            <!--<content select=".icon"></content>-->
+            <content select=".icon"></content>
           </div>
           <div id="labelContainer">
-            <h1>[[label]]</h1>
-            <h2>[[text]]</h2>
-            <!--<content select="h1"></content>
-            <content select="h2"></content>-->
+            <content select="h1"></content>
+            <content select="h2"></content>
           </div>
           <div id="removeBtnContainer">
             <div id="removeBtn" on-tap="remove" aria-label="remove button">
@@ -299,41 +292,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
         Polymer.IronControlState,
       ],
       properties: {
-        /**
-        * The URL of an image for the icon. If the src property is specified,
-        * the icon property should not be.
-        *
-        * @attribute src
-        * @type String
-        * @default ''
-        */
-        imgSrc: {
-          type: String,
-          value: null
-        },
-        /**
-        * Specifies the icon name or index in the set of icons available in
-        * the icon's icon set. If the icon property is specified,
-        * the src property should not be.
-        *
-        * @attribute icon
-        * @type String
-        * @default null
-        */
-        icon: {
-          type: String,
-          value: null
-        },
-        /**
-        *
-        * @attribute label
-        * @type String
-        * @default null
-        */
-        label: {
-          type: String,
-          value: null
-        },
         /**
          * Whether or not the chip is removable. If `true`, a remove button will
          * be shown.
@@ -400,13 +358,6 @@ Component inspired by http://bendavis78.github.io/paper-chip/. Thank you !!!
          * @default false
          */
         active: {
-          type: Boolean,
-          value: false,
-          notify: true,
-          reflectToAttribute: true
-        },
-
-        noImage: {
           type: Boolean,
           value: false,
           notify: true,
