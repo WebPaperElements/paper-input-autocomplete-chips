@@ -43,52 +43,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template is="dom-bind" id="app">
       <paper-material class="demo-paper">
-      <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
-      
-      <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
-  
-      <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
-        <!--<iron-icon icon="visibility" prefix></iron-icon>
-        <iron-icon icon="visibility" suffix></iron-icon>-->
-      </paper-input-autocomplete-chips>
-  
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+        
+        <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
+    
+        <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
+          <!--<iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>-->
+        </paper-input-autocomplete-chips>
       </paper-material>
 
       <paper-material class="demo-paper">
-      <p>An example of <code>&lt;paper-input-autocomplete&gt;</code>:</p>
-  
-      <paper-input-autocomplete max-suggestions="3" local-candidates="{{states}}"  placeholder="US states">
-      </paper-input-autocomplete>
-  
-  		<paper-input label="Teste">
-        <iron-icon icon="visibility" prefix></iron-icon>
-      </paper-input>
-  
+        <p>An example of <code>&lt;paper-input-autocomplete&gt;</code>:</p>
+    
+        <paper-input-autocomplete max-suggestions="3" local-candidates="{{states}}"  placeholder="US states">
+        </paper-input-autocomplete>
+    
+        <paper-input label="Teste">
+          <iron-icon icon="visibility" prefix></iron-icon>
+        </paper-input>
       </paper-material>
 
       <paper-material class="demo-paper">
-      <p>An example of <code>&lt;paper-chip&gt;</code>:</p>
+        <p>An example of <code>&lt;paper-chip&gt;</code>:</p>
+    
+        <paper-chip label="Jane Doe" style="display: block;" removable openable>
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
   
-      <paper-chip label="Jane Doe" style="display: block;" removable openable>
-        <div class="icon">J</div>
-        <h1>jdoe@example.com</h1>
-      </paper-chip>
-
-      <paper-chip label="Jane Doe" style="display: block;" removable openable animated>
-        <div class="icon">J</div>
-        <h1>jdoe@example.com</h1>
-      </paper-chip>
-  
+        <paper-chip label="Jane Doe" style="display: block;" removable openable animated>
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
       </paper-material>
 
       <paper-material class="demo-paper" style="height: 300px; overflow: auto;">
-      <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
-  
-      <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
-        <!--<iron-icon icon="visibility" prefix></iron-icon>
-        <iron-icon icon="visibility" suffix></iron-icon>-->
-      </paper-input-autocomplete-chips>
-  
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+    
+        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
+          <!--<iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>-->
+        </paper-input-autocomplete-chips>
       </paper-material>
     
       <script>
