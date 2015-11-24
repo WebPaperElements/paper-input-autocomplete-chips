@@ -35,12 +35,16 @@ Example:
         line-height: var(--autocomplete-line-height, 40px);
       }
 
-      .prefix-container {
+     .prefix-container {
         align-self: flex-start;
+        
+        @apply(--prefix-container);
       }
 
       .suffix-container {
         align-self: flex-end;
+        
+        @apply(--suffix-container);
       }
      
       .complete-input-container {
