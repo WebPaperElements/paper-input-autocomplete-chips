@@ -18,12 +18,29 @@ Example:
 <dom-module id="paper-input-autocomplete-chips">
   <template>
     <style>
+
       :host {
+        --autocomplete-chip-margin: 4px 4px 4px 0px;
+        --autocomplete-line-height: 40px;
+
         display: block;
 
         --paper-chip: {
           display: inline-block;
         }
+      }
+      
+      .prefix-container
+      ,.suffix-container {
+        line-height: var(--autocomplete-line-height, 40px);
+      }
+
+      .prefix-container {
+        align-self: flex-start;
+      }
+
+      .suffix-container {
+        align-self: flex-end;
       }
      
       .complete-input-container {
@@ -35,23 +52,28 @@ Example:
       }
 
       paper-input-container::shadow .input-content.paper-input-container {
-        align-items: flex-start;
+        align-items: center;
       }
 
-      paper-input-container::shadow .input-content.paper-input-container label {
-        top: auto; 
-        bottom: 0; 
+      paper-input-container::shadow .input-content.paper-input-container paper-chip {
+        margin: var(--autocomplete-chip-margin, 4px 0px);
       }
-            
+
       paper-input-container::shadow .input-content.paper-input-container.label-is-floating label {
-        
         top: 0; 
         bottom: auto; 
         line-height: 24px;
       }
 
+      paper-input-container::shadow .input-content.paper-input-container label {
+        top: auto; 
+        bottom: 0; 
+        height: 38px;        
+        line-height: var(--autocomplete-line-height, 40px);
+      }
+                  
       paper-input-container::shadow div.complete-input-container.chip-item-added label {
-        line-height: 48px;
+        line-height: var(--autocomplete-line-height, 40px);
       }
 
       input#input {
@@ -59,8 +81,12 @@ Example:
         resize: none;
       }
 
+      paper-input-container::shadow div.complete-input-container input#input {
+        height: 38px;        
+        line-height: var(--autocomplete-line-height, 40px);
+      }
+      
       paper-input-container::shadow div.complete-input-container.chip-item-added input#input {
-        line-height: 48px;
         width: 60%;
       }
 
@@ -81,7 +107,7 @@ Example:
         max-height: 180px;
         overflow-y: scroll;
       }
-      paper-material.autocomplete-suggestion-container paper-item{
+      paper-material.autocomplete-suggestion-container paper-item {
         cursor: pointer;
       }
       
@@ -132,13 +158,15 @@ Example:
     <paper-input-container no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
 
       <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}"> 
-
-      <content select="[prefix]"></content>
+      
+      <div class="prefix-container" prefix>
+        <content select="[prefix]"></content>
+      </div>
 
       <label hidden$="[[!label]]">[[label]]</label>
 
       <div class="complete-input-container" id="inputTagsContainer">
-				<template is="dom-repeat" items="{{selectedObjects}}">
+				<template is="dom-repeat" items="[[selectedObjects]]">
           <paper-chip label="[[item]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
@@ -171,7 +199,7 @@ Example:
           max$="[[max]]"
           step$="[[step]]"
           name$="[[name]]"
-          placeholder$="[[placeholder]]"
+          placeholder$="[[_placeholderAfterSelected]]"
           readonly$="[[readonly]]"
           list$="[[list]]"
           size$="[[size]]"
@@ -199,8 +227,9 @@ Example:
         </template>
       </div>
       
-      <content select="[suffix]"></content>
-      
+      <div class="suffix-container" suffix>
+        <content select="[suffix]"></content>
+      </div>      
     </paper-input-container>
   </template>
 
@@ -224,8 +253,9 @@ Example:
       /**
        * The candidates from local variable.
        */
-      selectedObjects:{
-        type:Array,
+      selectedObjects: {
+        type: Array,
+        notify: true,
         value:[]
       },
       /**
@@ -250,7 +280,13 @@ Example:
         notify: true,
       },
       
+      placeholderAfterSelected: {
+        type: String,
+      },
       
+      _placeholderAfterSelected: {
+        type: String,
+      }
     },
 
     listeners: {
@@ -260,14 +296,38 @@ Example:
     observers: [
       '_onInputValueChange(inputValue)',
       '_onSelectedObjectsChange(selectedObjects)',
+      '_onSelectedObjectsChange(selectedObjects.splices)',
       '_onAutoCompleteSelectedObjectChange(selectedObject)'
     ],
+    
+    _cptInputPlaceholder: function (alwaysFloatLabel, placeholder, placeholderAfterSelected, selectedObjects, selectedObjectsSplices) {
+      console.debug('[_cptInputPlaceholder]');
+      
+      if ((alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
+        return placeholder;
+      } else if ((this.selectedObjects) && (this.selectedObjects.length > 0)) {
+        return placeholderAfterSelected;
+      }
+      
+      return null;
+    },
     
     _onTap: function (e) {
       
       if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
         
         this._inputElement.focus();
+      }
+    },
+    
+    _updatePlaceholderAfterSelected: function () {
+      if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
+        this._placeholderAfterSelected = this.placeholder;
+      } else if ((this.selectedObjects) && (this.selectedObjects.length > 0)) {
+        this._placeholderAfterSelected = this.placeholderAfterSelected;
+      }
+      else {
+        this._placeholderAfterSelected = null;
       }
     },
     
@@ -278,14 +338,14 @@ Example:
     },
     
     _onInputValueChange: function (inputValue) {
-      
-      var hasSelectedObjects = (this.selectedObjects.length > 0);
+      var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
       
       this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
     },
     
     _onSelectedObjectsChange: function (selectedObjects) {
-      
+      console.debug('[_onSelectedObjectsChange]');
+      this._updatePlaceholderAfterSelected();
       this._updateHiddenInputTextForFloatLabel();
     },
     
@@ -293,11 +353,16 @@ Example:
       
       if (!selectedObject) { return; }
       
+      if (!this.selectedObjects) {
+        this.selectedObjects = [];
+      }
+      
       var itemIndexONSelectedList = this.selectedObjects.indexOf(selectedObject);
       
       if (itemIndexONSelectedList < 0) {
-        
+        console.debug('[_onAutoCompleteSelectedObjectChange]: ', this.selectedObjects.length);                
         this.push('selectedObjects', selectedObject);
+        console.debug('[_onAutoCompleteSelectedObjectChange]: ', this.selectedObjects.length);                
       }
       
       this.inputValue = null;
@@ -320,7 +385,7 @@ Example:
     
     _updateHiddenInputTextForFloatLabel: function () {
       
-      var hasSelectedObjects = (this.selectedObjects.length > 0);
+      var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
 
       this.hiddenValue = (hasSelectedObjects) ? ' ' : null;
       

@@ -61,7 +61,6 @@ Basic chip with single letter instead of an icon
         outline: none;
         font-size: 14px;
         cursor: default;
-        margin: 8px 0;
         height: 32px;
         overflow: visible;
         
@@ -259,8 +258,8 @@ Basic chip with single letter instead of an icon
         color: var(--paper-chip-active-secondary-text-color, --text-primary-color);
       }
     </style>
-    <iron-a11y-keys target="{{}}" keys="space enter" on-keys-pressed="toggleOpened"></iron-a11y-keys>
-    <iron-a11y-keys target="{{}}" keys="del" on-keys-pressed="remove"></iron-a11y-keys>
+    <iron-a11y-keys keys="space enter" on-keys-pressed="toggleOpened"></iron-a11y-keys>
+    <iron-a11y-keys keys="del" on-keys-pressed="remove"></iron-a11y-keys>
     <paper-material elevation="{{_elevation}}" animated$="{{animated}}">
       <div id="mainContainer">
         <div id="chipContainer">

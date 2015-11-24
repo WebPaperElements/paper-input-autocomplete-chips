@@ -26,7 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     body {
       background-color: darkgrey;
     }
-    
+        
     paper-material.demo-paper {
       width: 400px;
       background-color: white;
@@ -42,6 +42,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <body unresolved>
 
     <template is="dom-bind" id="app">
+      <paper-material class="demo-paper">
+        <p>POC example of new <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+        
+        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
+          <iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>
+        </paper-input-autocomplete-chips>
+
+        <paper-input-autocomplete-chips id="myAutoCompletePOC02" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
+          <iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>
+        </paper-input-autocomplete-chips>
+      </paper-material>
+
       <paper-material class="demo-paper">
         <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
         
@@ -95,14 +109,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           app.onSetDefaultValue = function () {
             document.getElementById('myAutoComplete').selectedObject = app.states[0];
           };
-          
+                    
           app.states = [
             {
               key: 1,
               text: "Alabama",
               imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
               tag: 'read-only',
-              readOnly: true
+              readOnly: false
             },
             {
               key: 2,
@@ -135,6 +149,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               imgUrl: null
             }
           ];
+
+          var autocompletePOC = document.getElementById('myAutoCompletePOC');
+          
+          autocompletePOC.selectedObjects = [
+            app.states[0],
+            app.states[1],
+            app.states[2],
+            app.states[3],
+            app.states[4],
+          ];
+
           // 
           // app.states = [
           //   "Alabama",
