@@ -24,6 +24,7 @@ Example:
         --autocomplete-line-height: 40px;
 
         display: block;
+        position: relative;
 
         --paper-chip: {
           display: inline-block;
@@ -105,12 +106,17 @@ Example:
       paper-material.autocomplete-suggestion-container {
         left:0;
         right:0;
-        bottom: 45px;
         position: absolute;
         z-index: 10; 
         max-height: 180px;
         overflow-y: scroll;
+        opacity: 1;
       }
+      
+      paper-material.autocomplete-suggestion-container.hidden {
+        display: none;
+      }
+      
       paper-material.autocomplete-suggestion-container paper-item {
         cursor: pointer;
       }
@@ -182,60 +188,60 @@ Example:
             <h1>[[item.text]]</h1>
           </paper-chip>
 				</template>
-        <input is="iron-input" id="input" class="autocomplete-input" 
-          on-keyup="_keyup" on-keydown="_keydown"
-          aria-labelledby$="[[_ariaLabelledBy]]"
-          aria-describedby$="[[_ariaDescribedBy]]"
-          disabled$="[[disabled]]"
-          bind-value="{{inputValue}}"
-          invalid="{{invalid}}"
-          prevent-invalid-input="[[preventInvalidInput]]"
-          allowed-pattern="[[allowedPattern]]"
-          validator="[[validator]]"
-          type$="[[type]]"
-          pattern$="[[pattern]]"
-          required$="[[required]]"
-          autocomplete$="[[autocomplete]]"
-          autofocus$="[[autofocus]]"
-          inputmode$="[[inputmode]]"
-          minlength$="[[minlength]]"
-          maxlength$="[[maxlength]]"
-          min$="[[min]]"
-          max$="[[max]]"
-          step$="[[step]]"
-          name$="[[name]]"
-          placeholder$="[[_placeholderAfterSelected]]"
-          readonly$="[[readonly]]"
-          list$="[[list]]"
-          size$="[[size]]"
-          autocapitalize$="[[autocapitalize]]"
-          autocorrect$="[[autocorrect]]"
-          on-change="_onChange"
-          autosave$="[[autosave]]"
-          results$="[[results]]">
+        <div class="input-container">
+          <input is="iron-input" id="input" class="autocomplete-input" 
+            on-keyup="_keyup" on-keydown="_keydown"
+            aria-labelledby$="[[_ariaLabelledBy]]"
+            aria-describedby$="[[_ariaDescribedBy]]"
+            disabled$="[[disabled]]"
+            bind-value="{{inputValue}}"
+            invalid="{{invalid}}"
+            prevent-invalid-input="[[preventInvalidInput]]"
+            allowed-pattern="[[allowedPattern]]"
+            validator="[[validator]]"
+            type$="[[type]]"
+            pattern$="[[pattern]]"
+            required$="[[required]]"
+            autocomplete$="[[autocomplete]]"
+            autofocus$="[[autofocus]]"
+            inputmode$="[[inputmode]]"
+            minlength$="[[minlength]]"
+            maxlength$="[[maxlength]]"
+            min$="[[min]]"
+            max$="[[max]]"
+            step$="[[step]]"
+            name$="[[name]]"
+            placeholder$="[[_placeholderAfterSelected]]"
+            readonly$="[[readonly]]"
+            list$="[[list]]"
+            size$="[[size]]"
+            autocapitalize$="[[autocapitalize]]"
+            autocorrect$="[[autocorrect]]"
+            on-change="_onChange"
+            autosave$="[[autosave]]"
+            results$="[[results]]">
+        </div>
       </div>
       
       <div class="suffix-container" suffix>
         <content select="[suffix]"></content>
       </div>      
     </paper-input-container>
-    <template is="dom-if" if="{{_suggestions.length}}">
-      <paper-material elevation="1" class="autocomplete-suggestion-container">
-        <paper-menu class="autocomplete-suggestions">
-          <template is="dom-repeat" items="{{_suggestions}}">
-            <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
-              <template is="dom-if" if="{{item.imgUrl}}">
-                <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
-              </template>
-              <template is="dom-if" if="{{!item.imgUrl}}">
-                <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
-              </template>
-              <span>{{item.text}}</span>
-            </paper-item>
-          </template>
-        </paper-menu>
-      </paper-material>
-    </template>
+    <paper-material id="suggestionsPanel" elevation="1" class="autocomplete-suggestion-container">
+      <paper-menu class="autocomplete-suggestions">
+        <template is="dom-repeat" items="{{_suggestions}}">
+          <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
+            <template is="dom-if" if="{{item.imgUrl}}">
+              <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
+            </template>
+            <template is="dom-if" if="{{!item.imgUrl}}">
+              <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
+            </template>
+            <span>{{item.text}}</span>
+          </paper-item>
+        </template>
+      </paper-menu>
+    </paper-material>
   </template>
 
 </dom-module>
@@ -260,7 +266,6 @@ Example:
        */
       selectedObjects: {
         type: Array,
-        notify: true,
         value:[]
       },
       /**
@@ -291,20 +296,18 @@ Example:
       
       _placeholderAfterSelected: {
         type: String,
+      },
+      
+      suggestionsPosition: {
+        type: String,
+        value: 'top',
       }
     },
 
     listeners: {
-      tap: '_onTap',
+      'tap': '_onTap',
     },
 
-    observers: [
-      '_onInputValueChange(inputValue)',
-      '_onSelectedObjectsChange(selectedObjects)',
-      '_onSelectedObjectsChange(selectedObjects.splices)',
-      '_onAutoCompleteSelectedObjectChange(selectedObject)'
-    ],
-    
     _onTap: function (e) {
       
       if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
@@ -312,7 +315,16 @@ Example:
         this._inputElement.focus();
       }
     },
-    
+
+    observers: [
+      '_onInputValueChange(inputValue)',
+      '_onSelectedObjectsChange(selectedObjects)',
+      '_onSelectedObjectsChange(selectedObjects.splices)',
+      '_onAutoCompleteSelectedObjectChange(selectedObject)',
+      '_suggestionsChanged(_suggestions)',
+      '_suggestionsChanged(_suggestions.splices)',
+    ],
+        
     _updatePlaceholderAfterSelected: function () {
       if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
         this._placeholderAfterSelected = this.placeholder;
@@ -386,19 +398,50 @@ Example:
       }
     },
     
+    _suggestionsChanged: function (suggestions) {
+      if ((this._suggestions) && (this._suggestions.length > 0)) {
+        this.showSuggestionsPanel();
+      } else {
+        this.hideSuggestionsPanel();
+      }
+    },
+    
     // Element Lifecycle
 
     ready: function() {
     },
 
     attached: function() {
-      
     },
 
     detached: function() {
     },
 
     // Element Behavior
+
+    hideSuggestionsPanel: function () {
+      this.$.suggestionsPanel.classList.add('hidden');
+    },
+
+    showSuggestionsPanel: function () {
+      this._calculateSugestionPanelPosition();
+      this.$.suggestionsPanel.classList.remove('hidden');
+    },
+    
+    _calculateSugestionPanelPosition: function () {
+      var inputRect = this.$.input.getBoundingClientRect();
+      
+      if (this.suggestionsPosition === 'top') {
+        var diffBottom = 8; // Bottom margin from paper-input-container
+        var deltaBottom = inputRect.height + diffBottom;
+        
+        this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
+      } else if (this.suggestionsPosition === 'bottom') {
+        var deltaTop = inputRect.bottom;
+        
+        this.$.suggestionsPanel.style.top = deltaTop + 'px';
+      }
+    },
 
   });
 

@@ -29,11 +29,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: darkgrey;
     }
         
-    paper-material.demo-paper {
+    body > paper-material {
       width: 400px;
       background-color: white;
       padding: 24px;
       margin: 24px;
+    }
+    
+    paper-material.fixed-paper {
+      z-index: 99;
+      position: fixed;
+      top: 10px;
+      right: 24px;
+      bottom: 0px;
+      margin-bottom: 24px;
+      overflow-y: auto;
     }
     
     paper-chip[data-tag='read-only'] #chip {
