@@ -151,10 +151,11 @@ Example:
       }
       
       .autocomplete-suggestions paper-item {
-        padding-top: 16px;
-        padding-bottom: 16px;
+        padding-top: 8px;
+        padding-bottom: 8px;
         font-family: 'Roboto', 'Noto', sans-serif;
         font-size: 14px;
+        min-height: 40px;
       }
 
     </style>
@@ -212,29 +213,29 @@ Example:
           on-change="_onChange"
           autosave$="[[autosave]]"
           results$="[[results]]">
-        <template is="dom-if" if="{{_suggestions.length}}">
-          <paper-material elevation="4" class="autocomplete-suggestion-container">
-            <paper-menu class="autocomplete-suggestions">
-              <template is="dom-repeat" items="{{_suggestions}}">
-      					<paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
-                  <template is="dom-if" if="{{item.imgUrl}}">
-                    <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
-                  </template>
-                  <template is="dom-if" if="{{!item.imgUrl}}">
-                    <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
-                  </template>
-                  <span>{{item.text}}</span>
-                </paper-item>
-              </template>
-            </paper-menu>
-          </paper-material>
-        </template>
       </div>
       
       <div class="suffix-container" suffix>
         <content select="[suffix]"></content>
       </div>      
     </paper-input-container>
+    <template is="dom-if" if="{{_suggestions.length}}">
+      <paper-material elevation="1" class="autocomplete-suggestion-container">
+        <paper-menu class="autocomplete-suggestions">
+          <template is="dom-repeat" items="{{_suggestions}}">
+            <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
+              <template is="dom-if" if="{{item.imgUrl}}">
+                <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
+              </template>
+              <template is="dom-if" if="{{!item.imgUrl}}">
+                <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
+              </template>
+              <span>{{item.text}}</span>
+            </paper-item>
+          </template>
+        </paper-menu>
+      </paper-material>
+    </template>
   </template>
 
 </dom-module>
