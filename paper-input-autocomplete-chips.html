@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
-<link rel="import" href="paper-chip.html">
+<link rel="import" href="../paper-chip/paper-chip.html">
 <link rel="import" href="paper-input-autocomplete.html">
 
 <!--
@@ -178,14 +178,13 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
 				<template is="dom-repeat" items="[[selectedObjects]]">
-          <paper-chip label="[[item]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]">
+          <paper-chip label="[[item.text]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
             <template is="dom-if" if="{{!item.imgUrl}}">
               <div class="icon avatar-chip-icon">[[getInitialsFrom(item.text)]]</div>
             </template>
-            <h1>[[item.text]]</h1>
           </paper-chip>
 				</template>
         <div class="input-container">
