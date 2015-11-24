@@ -300,18 +300,6 @@ Example:
       '_onAutoCompleteSelectedObjectChange(selectedObject)'
     ],
     
-    _cptInputPlaceholder: function (alwaysFloatLabel, placeholder, placeholderAfterSelected, selectedObjects, selectedObjectsSplices) {
-      console.debug('[_cptInputPlaceholder]');
-      
-      if ((alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
-        return placeholder;
-      } else if ((this.selectedObjects) && (this.selectedObjects.length > 0)) {
-        return placeholderAfterSelected;
-      }
-      
-      return null;
-    },
-    
     _onTap: function (e) {
       
       if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
@@ -344,7 +332,6 @@ Example:
     },
     
     _onSelectedObjectsChange: function (selectedObjects) {
-      console.debug('[_onSelectedObjectsChange]');
       this._updatePlaceholderAfterSelected();
       this._updateHiddenInputTextForFloatLabel();
     },
@@ -360,9 +347,7 @@ Example:
       var itemIndexONSelectedList = this.selectedObjects.indexOf(selectedObject);
       
       if (itemIndexONSelectedList < 0) {
-        console.debug('[_onAutoCompleteSelectedObjectChange]: ', this.selectedObjects.length);                
         this.push('selectedObjects', selectedObject);
-        console.debug('[_onAutoCompleteSelectedObjectChange]: ', this.selectedObjects.length);                
       }
       
       this.inputValue = null;
