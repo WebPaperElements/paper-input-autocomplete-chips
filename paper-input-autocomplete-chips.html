@@ -365,6 +365,18 @@ Example:
     _onSelectedObjectsChange: function (selectedObjects) {
       this._updatePlaceholderAfterSelected();
       this._updateHiddenInputTextForFloatLabel();
+      this.selectedObject = null;
+    },
+    
+    _findObjectAlreadySelected: function (objValue) {
+      if (!objValue) { return -1; }
+      
+      var i = (this.selectedObjects) ? this.selectedObjects.length : 0;
+      while (i--) {
+        var objToCompare = this.selectedObjects[i];
+        if (objToCompare.key === objValue.key) return i;
+      }
+      return -1;
     },
     
     _onAutoCompleteSelectedObjectChange: function (selectedObject) {
@@ -375,9 +387,7 @@ Example:
         this.selectedObjects = [];
       }
       
-      var itemIndexONSelectedList = this.selectedObjects.indexOf(selectedObject);
-      
-      if (itemIndexONSelectedList < 0) {
+      if (this._findObjectAlreadySelected(selectedObject) < 0) {
         this.push('selectedObjects', selectedObject);
       }
       
@@ -392,7 +402,11 @@ Example:
     _onChipRemove: function (e) {
       
       e.preventDefault();
-      this.arrayDelete('selectedObjects', e.target.dataObject);
+      
+      var foundObjectIndex = this._findObjectAlreadySelected(e.target.dataObject);
+      if (foundObjectIndex >= 0) {
+        this.arrayDelete('selectedObjects', this.selectedObjects[foundObjectIndex]);
+      }
       
       this._updateHiddenInputTextForFloatLabel();
 

@@ -177,11 +177,15 @@
           if (selectedItemElement !== null) {
             index = Number(suggestionsMenu.indexOf(selectedItemElement));
             
-            selectedObject = this._suggestions[index];
-            
-            selectedItemText = selectedObject.text;
-            this._suggestions = [];
-            this.inputValue = selectedItemText;
+            if (index >= 0) {
+              selectedObject = this._suggestions[index];
+              
+              selectedItemText = selectedObject.text;
+              this._suggestions = [];
+              this.inputValue = selectedItemText;
+            } else {
+              selectedItemElement = null;
+            }
           }
           
           this.selectedItemText = selectedItemText;
