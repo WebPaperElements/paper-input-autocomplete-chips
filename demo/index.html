@@ -55,7 +55,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template is="dom-bind" id="app">
       <paper-material class="demo-paper">
         <p>POC example of new <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
-        
+    
+        <paper-button on-tap="onToggleDisabled" raised>Toggle Disabled</paper-button>
+        <paper-button on-tap="onSwitchSuggestionPanelPosition" raised>Switch Suggestion Panel (top/bottom)</paper-button>
+            
         <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
           <iron-icon icon="social:share" prefix></iron-icon>
           <paper-icon-button icon="lock-open" suffix></paper-icon-button>
@@ -120,6 +123,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           app.onSetDefaultValue = function () {
             document.getElementById('myAutoComplete').selectedObject = app.states[0];
           };
+          
+          app.onToggleDisabled = function () {
+            var $el = document.getElementById('myAutoCompletePOC');
+            $el.disabled = !$el.disabled;
+          },
+          
+          app.onSwitchSuggestionPanelPosition = function () {
+            var $el = document.getElementById('myAutoCompletePOC');
+            console.debug($el.suggestionsPosition);
+            $el.suggestionsPosition = ($el.suggestionsPosition === 'top') ? 'bottom' : 'top';
+          },
                     
           app.states = [
             {

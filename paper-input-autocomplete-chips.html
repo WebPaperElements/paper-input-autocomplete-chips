@@ -226,7 +226,7 @@ Example:
         <content select="[suffix]"></content>
       </div>      
     </paper-input-container>
-    <paper-material id="suggestionsPanel" elevation="1" class="autocomplete-suggestion-container">
+    <paper-material id="suggestionsPanel" elevation="1" class="autocomplete-suggestion-container" animated="[[animated]]">
       <paper-menu class="autocomplete-suggestions">
         <template is="dom-repeat" items="{{_suggestions}}">
           <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
@@ -299,8 +299,22 @@ Example:
       
       suggestionsPosition: {
         type: String,
-        value: 'top',
-      }
+        value: 'bottom',
+      },
+      
+      /**
+        * Whether or not the chip uses an animated transition between opened and
+        * closed states
+        *
+        * @attribute animated
+        * @type Boolean
+        * @default true
+        */
+      animated: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },      
     },
 
     listeners: {
@@ -322,6 +336,7 @@ Example:
       '_onAutoCompleteSelectedObjectChange(selectedObject)',
       '_suggestionsChanged(_suggestions)',
       '_suggestionsChanged(_suggestions.splices)',
+      '_calculateSugestionPanelPosition(suggestionsPosition)'
     ],
         
     _updatePlaceholderAfterSelected: function () {
@@ -428,17 +443,15 @@ Example:
     },
     
     _calculateSugestionPanelPosition: function () {
-      var inputRect = this.$.input.getBoundingClientRect();
-      
       if (this.suggestionsPosition === 'top') {
+        var inputRect = this.$.input.getBoundingClientRect();
         var diffBottom = 8; // Bottom margin from paper-input-container
         var deltaBottom = inputRect.height + diffBottom;
-        
+        this.$.suggestionsPanel.style.top = '';
         this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
       } else if (this.suggestionsPosition === 'bottom') {
-        var deltaTop = inputRect.bottom;
-        
-        this.$.suggestionsPanel.style.top = deltaTop + 'px';
+        this.$.suggestionsPanel.style.top = '';
+        this.$.suggestionsPanel.style.bottom = '';
       }
     },
 
