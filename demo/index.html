@@ -17,7 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../paper-button/paper-button.html">
     <link rel="import" href="../../paper-material/paper-material.html">
     <link rel="import" href="../../iron-icons/iron-icons.html">
-    <link rel="import" href="../paper-chip.html">
+    <link rel="import" href="../../iron-icons/social-icons.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
     <link rel="import" href="../paper-input-autocomplete.html">
     <link rel="import" href="../paper-input-autocomplete-chips.html">
   </head>
@@ -26,12 +27,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     body {
       background-color: darkgrey;
     }
-    
-    paper-material.demo-paper {
+        
+    body > paper-material {
       width: 400px;
       background-color: white;
       padding: 24px;
       margin: 24px;
+    }
+    
+    paper-material.fixed-paper {
+      z-index: 99;
+      position: fixed;
+      top: 10px;
+      right: 24px;
+      bottom: 0px;
+      margin-bottom: 24px;
+      overflow-y: auto;
     }
     
     paper-chip[data-tag='read-only'] #chip {
@@ -43,52 +54,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template is="dom-bind" id="app">
       <paper-material class="demo-paper">
-      <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
-      
-      <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
-  
-      <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
-        <!--<iron-icon icon="visibility" prefix></iron-icon>
-        <iron-icon icon="visibility" suffix></iron-icon>-->
-      </paper-input-autocomplete-chips>
-  
+        <p>POC example of new <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+    
+        <paper-button on-tap="onToggleDisabled" raised>Toggle Disabled</paper-button>
+        <paper-button on-tap="onSwitchSuggestionPanelPosition" raised>Switch Suggestion Panel (top/bottom)</paper-button>
+            
+        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
+          <iron-icon icon="social:share" prefix></iron-icon>
+          <paper-icon-button icon="lock-open" suffix></paper-icon-button>
+        </paper-input-autocomplete-chips>
+
+        <paper-input-autocomplete-chips id="myAutoCompletePOC02" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
+          <iron-icon icon="social:share" prefix></iron-icon>
+          <paper-icon-button icon="lock" suffix></paper-icon-button>
+        </paper-input-autocomplete-chips>
       </paper-material>
 
       <paper-material class="demo-paper">
-      <p>An example of <code>&lt;paper-input-autocomplete&gt;</code>:</p>
-  
-      <paper-input-autocomplete max-suggestions="3" local-candidates="{{states}}"  placeholder="US states">
-      </paper-input-autocomplete>
-  
-  		<paper-input label="Teste">
-        <iron-icon icon="visibility" prefix></iron-icon>
-      </paper-input>
-  
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+        
+        <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
+    
+        <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
+          <!--<iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>-->
+        </paper-input-autocomplete-chips>
       </paper-material>
 
       <paper-material class="demo-paper">
-      <p>An example of <code>&lt;paper-chip&gt;</code>:</p>
-  
-      <paper-chip label="Jane Doe" style="display: block;" removable openable>
-        <div class="icon">J</div>
-        <h1>jdoe@example.com</h1>
-      </paper-chip>
+        <p>An example of <code>&lt;paper-input-autocomplete&gt;</code>:</p>
+    
+        <paper-input-autocomplete max-suggestions="3" local-candidates="{{states}}"  placeholder="US states">
+        </paper-input-autocomplete>
+    
+        <paper-input label="Teste">
+          <iron-icon icon="visibility" prefix></iron-icon>
+        </paper-input>
+      </paper-material>
 
-      <paper-chip label="Jane Doe" style="display: block;" removable openable animated>
-        <div class="icon">J</div>
-        <h1>jdoe@example.com</h1>
-      </paper-chip>
+      <paper-material class="demo-paper">
+        <p>An example of <code>&lt;paper-chip&gt;</code>:</p>
+    
+        <paper-chip label="Jane Doe" style="display: block;" removable openable>
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
   
+        <paper-chip label="Jane Doe" style="display: block;" removable openable animated>
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
       </paper-material>
 
       <paper-material class="demo-paper" style="height: 300px; overflow: auto;">
-      <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
-  
-      <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
-        <!--<iron-icon icon="visibility" prefix></iron-icon>
-        <iron-icon icon="visibility" suffix></iron-icon>-->
-      </paper-input-autocomplete-chips>
-  
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+    
+        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
+          <!--<iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>-->
+        </paper-input-autocomplete-chips>
       </paper-material>
     
       <script>
@@ -100,13 +124,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             document.getElementById('myAutoComplete').selectedObject = app.states[0];
           };
           
+          app.onToggleDisabled = function () {
+            var $el = document.getElementById('myAutoCompletePOC');
+            $el.disabled = !$el.disabled;
+          },
+          
+          app.onSwitchSuggestionPanelPosition = function () {
+            var $el = document.getElementById('myAutoCompletePOC');
+            console.debug($el.suggestionsPosition);
+            $el.suggestionsPosition = ($el.suggestionsPosition === 'top') ? 'bottom' : 'top';
+          },
+                    
           app.states = [
             {
               key: 1,
               text: "Alabama",
               imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
               tag: 'read-only',
-              readOnly: true
+              readOnly: false
             },
             {
               key: 2,
@@ -139,6 +174,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               imgUrl: null
             }
           ];
+
+          var autocompletePOC = document.getElementById('myAutoCompletePOC');
+          
+          autocompletePOC.selectedObjects = [
+            app.states[0],
+            app.states[1],
+            app.states[2],
+            app.states[3],
+            app.states[4],
+          ];
+
           // 
           // app.states = [
           //   "Alabama",
