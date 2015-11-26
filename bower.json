@@ -27,7 +27,6 @@
     "iron-icons": "Polymerelements/iron-icons#~1.0.4",
     "paper-icon-button": "Polymerelements/paper-icon-button#~1.0.3",
     "iron-a11y-keys": "PolymerElements/iron-a11y-keys#~1.0.2",
-    "paper-avatar-image": "WebPaperElements/paper-avatar-image#~0.10.4",
     "paper-chip": "WebPaperElements/paper-chip#~1.0.4"
   },
   "devDependencies": {
