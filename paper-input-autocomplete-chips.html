@@ -81,9 +81,11 @@ Example:
         line-height: var(--autocomplete-line-height, 40px);
       }
 
-      .input-container
-      ,.input-container input#input {
+      .input-container {
         display: inline-block;
+      }
+      .input-container input#input {
+        display: block;
         resize: none;
       }
 
@@ -92,11 +94,11 @@ Example:
         line-height: var(--autocomplete-line-height, 40px);
       }
       
-      paper-input-container::shadow div.complete-input-container.chip-item-added input#input {
-        width: 60%;
+      paper-input-container::shadow div.complete-input-container.chip-item-added .input-container {
+        width: 50%;
       }
 
-      paper-input-container::shadow div.complete-input-container:not(.chip-item-added) input#input {
+      paper-input-container::shadow div.complete-input-container:not(.chip-item-added) .input-container {
         width: 100%;
       }
      
