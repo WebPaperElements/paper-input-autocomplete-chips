@@ -112,6 +112,7 @@ Example:
         position: absolute;
         z-index: 10; 
         max-height: 180px;
+        padding: 0px;
         overflow-y: auto;
         opacity: 1;
       }
@@ -181,7 +182,7 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
 				<template is="dom-repeat" items="[[selectedObjects]]">
-          <paper-chip label="[[item.text]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]">
+          <paper-chip label="[[item.text]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]" no-image="[[noChipImage]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
@@ -317,7 +318,13 @@ Example:
         type: Boolean,
         value: false,
         reflectToAttribute: true
-      },      
+      },    
+      
+      noChipImage: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      }  
     },
 
     listeners: {
