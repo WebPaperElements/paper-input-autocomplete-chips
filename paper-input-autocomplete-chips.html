@@ -232,6 +232,10 @@ Example:
       <div class="suffix-container" suffix>
         <content select="[suffix]"></content>
       </div>      
+
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error>[[errorMessage]]</paper-input-error>
+      </template>
     </paper-input-container>
     <paper-material id="suggestionsPanel" elevation="1" class="autocomplete-suggestion-container" animated="[[animated]]">
       <paper-menu class="autocomplete-suggestions">
