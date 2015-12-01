@@ -398,15 +398,7 @@ Example:
     
     _onAutoCompleteSelectedObjectChange: function (selectedObject) {
       
-      if (!selectedObject) { return; }
-      
-      if (!this.selectedObjects) {
-        this.selectedObjects = [];
-      }
-      
-      if (this._findObjectAlreadySelected(selectedObject) < 0) {
-        this.push('selectedObjects', selectedObject);
-      }
+      this.appendSelectedObject(selectedObject);
       
       this.inputValue = null;
       this._setSelectedItem(null);
@@ -483,6 +475,18 @@ Example:
       } else if (this.suggestionsPosition === 'bottom') {
         this.$.suggestionsPanel.style.top = '';
         this.$.suggestionsPanel.style.bottom = '';
+      }
+    },
+
+    appendSelectedObject: function (selectedObject) {
+      if (!selectedObject) { return; }
+
+      if (!this.selectedObjects) {
+        this.selectedObjects = [];
+      }
+
+      if (this._findObjectAlreadySelected(selectedObject) < 0) {
+        this.push('selectedObjects', selectedObject);
       }
     },
 
