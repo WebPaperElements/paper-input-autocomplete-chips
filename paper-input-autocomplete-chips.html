@@ -196,7 +196,7 @@ Example:
 				</template>
         <div class="input-container">
           <input is="iron-input" id="input" class="autocomplete-input" 
-            on-keyup="_keyup" on-keydown="_keydown"
+            on-keyup="_local_keyup" on-keydown="_local_keydown"
             aria-labelledby$="[[_ariaLabelledBy]]"
             aria-describedby$="[[_ariaDescribedBy]]"
             disabled$="[[disabled]]"
@@ -339,10 +339,24 @@ Example:
     },
 
     _onTap: function (e) {
-      
       if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
-        
         this._inputElement.focus();
+      }
+    },
+    
+    _local_keyup: function (e) {
+      if (e.which === 8) {
+        e.preventDefault();
+      } else {
+        this._keyup(e);
+      }
+    },
+
+    _local_keydown: function (e) {
+      if (e.which === 8) {
+        this._keydown_backspace_handler(e);        
+      } else {
+        this._keydown(e);
       }
     },
 
@@ -412,10 +426,7 @@ Example:
       
       e.preventDefault();
       
-      var foundObjectIndex = this._findObjectAlreadySelected(e.target.dataObject);
-      if (foundObjectIndex >= 0) {
-        this.arrayDelete('selectedObjects', this.selectedObjects[foundObjectIndex]);
-      }
+      this.removeSelectedObject(e.target.dataObject);
       
       this._updateHiddenInputTextForFloatLabel();
 
@@ -477,6 +488,16 @@ Example:
         this.$.suggestionsPanel.style.bottom = '';
       }
     },
+    
+    removeSelectedObject: function (selectedObject) {
+      this.removeSelectedObjectByIndex(this._findObjectAlreadySelected(selectedObject));
+    },
+
+    removeSelectedObjectByIndex: function (objectIndex) {
+      if (objectIndex >= 0) {
+        this.arrayDelete('selectedObjects', this.selectedObjects[objectIndex]);
+      }
+    },
 
     appendSelectedObject: function (selectedObject) {
       if (!selectedObject) { return; }
@@ -487,6 +508,12 @@ Example:
 
       if (this._findObjectAlreadySelected(selectedObject) < 0) {
         this.push('selectedObjects', selectedObject);
+      }
+    },
+
+    _keydown_backspace_handler: function (e) {
+      if ((!this.inputValue) || (this.inputValue === '')) {
+        this.removeSelectedObjectByIndex(this.selectedObjects.length-1);
       }
     },
 
