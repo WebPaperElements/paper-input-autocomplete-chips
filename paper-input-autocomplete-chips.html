@@ -345,11 +345,7 @@ Example:
     },
     
     _local_keyup: function (e) {
-      if (e.which === 8) {
-        e.preventDefault();
-      } else {
-        this._keyup(e);
-      }
+      this._keyup(e);
     },
 
     _local_keydown: function (e) {
