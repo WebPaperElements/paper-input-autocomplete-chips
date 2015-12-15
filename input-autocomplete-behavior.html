@@ -34,9 +34,36 @@
         type:Number,
         value:5
       },
+      
+      allowSelectUnknownToken: {
+        type: Boolean,
+        value: false
+      },
+
+      tokenAcceptKeyCodes: {
+        type: String,
+        value: '',
+        observer: '_tokenAcceptKeyCodesChanged'
+      },
+
+      /**
+       * The attribute to listen for value changes on.
+       */
+      attrForValue: {
+        type: String,
+        value: 'bind-value'
+      },
 	  },
 
+    _tokenAcceptKeyCodesChanged: function (newValue) {
+      this.tokenAcceptKeyCodesArray = (newValue) ? newValue.split(',') : [];
+      this.tokenAcceptKeyCodesArray.push('13'); /* return key is default. */
+    },
 
+    get _propertyForValue() {
+      return Polymer.CaseMap.dashToCamelCase(this.attrForValue);
+    },
+    
     /**
      * Returns a reference to the input element.
      */
@@ -44,6 +71,10 @@
       return this.querySelector('paper-input.autocomplete-input, input.autocomplete-input');
     },
 
+    get _inputElementValue() {
+      return this._inputElement[this._propertyForValue] || this._inputElement.value;
+    },
+    
     /**
      * Returns a reference to the menu element.
      */
@@ -58,9 +89,12 @@
      * @param {e} event
      */
     _keydown: function(e) {
-      if ((e.which === 27) || /* ESC Key */
-          (e.which === 40) || 
-          (e.which === 38)) {
+      var defaultPreventedKeyCodes = [
+        27, /* ESC */ 
+        40, 
+        38];
+      
+      if ((defaultPreventedKeyCodes.indexOf(e.which) >= 0) || (this._checkTokenAcceptKeyCode(e.which))) {
          e.preventDefault();
       }
     },
@@ -100,6 +134,7 @@
      * @param {e} event
      */
     _keyup: function(e) {
+      //console.debug('[_keyup]:', e);
       if (e.which == 27) {
         // ESC Key
         this.inputValue = '';
@@ -134,7 +169,7 @@
           suggestionsMenu.select(index);
         }
         this._inputElement.focus();
-      } else if (e.which == 13){
+      } else if (this._checkTokenAcceptKeyCode(e.which)){
         // Return Key
         var suggestionsMenu = this._menuElement;
         if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
@@ -150,10 +185,7 @@
         
         var searchTerm = this.inputValue || '';
         
-        // if (this.inputValue.length >= 3){
         this._search(searchTerm.trim());
-        // this._suggestions = this._search(this.inputValue.trim());
-        // }
       }
     },
     _checkIntegrityOfSelectedItem: function () {
@@ -194,6 +226,21 @@
           
           // console.log(this.selectedItem);
         }       
+      } else if (this.allowSelectUnknownToken) {
+
+        if (!this.invalid) {
+          var selectedItemText = (this.inputValue) ? this.inputValue.trim() : null;
+  
+          if (selectedItemText) {
+            var selectedObject = {
+              key: 'dyn_' + this._strHashCode(selectedItemText.toLowerCase()),
+              text: selectedItemText
+            };
+            
+            this.selectedItemText = selectedItemText;
+            this.selectedObject = selectedObject;
+          }
+        }
       }
     },
     _search:function(term){
@@ -247,7 +294,22 @@
       else{
         this._suggestions = matched;
       }
-    }
+    },
+    
+    _strHashCode: function(strValue) {
+      var hash = 0, i, chr, len;
+      if (strValue.length === 0) return hash;
+      for (i = 0, len = strValue.length; i < len; i++) {
+        chr   = strValue.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    },
+    
+    _checkTokenAcceptKeyCode: function (keyCode) {
+      return (this.tokenAcceptKeyCodesArray.indexOf('' + keyCode + '') >= 0)
+    },
   };
   
   WebPaperElem.InputAutoCompleteBehavior = [ 

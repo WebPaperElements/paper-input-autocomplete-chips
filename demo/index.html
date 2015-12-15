@@ -54,12 +54,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template is="dom-bind" id="app">
       <paper-material class="demo-paper">
-        <p>POC example of new <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+        <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for tags accepting non unknown Items</code>:</p>
+            
+        <paper-input-autocomplete-chips 
+          id="myAutoCompletePOCUnknownItems" 
+          local-candidates="{{states}}" 
+          chip-label-prefix="#" 
+          label="State hashtags" 
+          on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged" 
+          placeholder-after-selected="#"
+          auto-validate pattern="([^, #]* *)*" error-message="Bad formatted string for a hashtag !"
+          token-accept-key-codes="32,188"
+          allow-select-unknown-token>
+        </paper-input-autocomplete-chips>
+
+      </paper-material>
+
+      <paper-material class="demo-paper">
+        <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
     
         <paper-button on-tap="onToggleDisabled" raised>Toggle Disabled</paper-button>
         <paper-button on-tap="onSwitchSuggestionPanelPosition" raised>Switch Suggestion Panel (top/bottom)</paper-button>
+        <paper-input label="Chip label prefix" value="{{chipLabelPrefix}}"></paper-input>
+        <paper-input label="Chip label suffix" value="{{chipLabelSuffix}}"></paper-input>
             
-        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
+        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" chip-label-prefix="[[chipLabelPrefix]]" chip-label-suffix="[[chipLabelSuffix]]" label="Chips" placeholder-after-selected="...">
           <iron-icon icon="social:share" prefix></iron-icon>
           <paper-icon-button icon="lock-open" suffix></paper-icon-button>
         </paper-input-autocomplete-chips>
@@ -133,6 +152,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var $el = document.getElementById('myAutoCompletePOC');
             console.debug($el.suggestionsPosition);
             $el.suggestionsPosition = ($el.suggestionsPosition === 'top') ? 'bottom' : 'top';
+          },
+          
+          app._allowUnknown_onSelectedObjectsChanged = function (e) {
+            //console.debug('[_allowUnknown_onSelectedObjectsChanged]', e.target.selectedObjects);
           },
                     
           app.states = [

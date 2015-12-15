@@ -1,5 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
 <link rel="import" href="../paper-chip/paper-chip.html">
 <link rel="import" href="paper-input-autocomplete.html">
 
@@ -173,7 +177,7 @@ Example:
 
     </style>
     
-    <paper-input-container no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
+    <paper-input-container id="paperInputContainer" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
 
       <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}"> 
       
@@ -185,7 +189,7 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
 				<template is="dom-repeat" items="[[selectedObjects]]">
-          <paper-chip label="[[item.text]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]" no-image="[[noChipImage]]">
+          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]" no-image="[[noChipImage]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
@@ -224,8 +228,11 @@ Example:
             autocapitalize$="[[autocapitalize]]"
             autocorrect$="[[autocorrect]]"
             on-change="_onChange"
+            tabindex$="[[tabindex]]"
             autosave$="[[autosave]]"
-            results$="[[results]]">
+            results$="[[results]]"
+            accept$="[[accept]]"
+            multiple$="[[multiple]]">
         </div>
       </div>
       
@@ -263,14 +270,21 @@ Example:
     is: 'paper-input-autocomplete-chips',
 
     behaviors: [
+      Polymer.IronControlState,
       Polymer.IronFormElementBehavior,
       Polymer.PaperInputBehavior,
-      Polymer.IronControlState,
       WebPaperElem.InputAutoCompleteBehavior
     ],
 
     properties: {
-      // paper-input-autocomplete
+      chipLabelPrefix: {
+        type: String,
+        value: ''  
+      },     
+      chipLabelSuffix: {
+        type: String,
+        value: ''  
+      },     
       /**
        * The candidates from local variable.
        */
@@ -331,11 +345,27 @@ Example:
         type: Boolean,
         value: false,
         reflectToAttribute: true
-      }  
+      },
+
+      _boundOnBlur: {
+        type: Function,
+        value: function() {
+          return this._onBlur.bind(this);
+        }
+      },
+    },
+
+    get _paperInputContainerElement() {
+      return this.$.paperInputContainer;
+    },
+    
+    get hasSelectedObjects() {
+      return ((this.selectedObjects) && (this.selectedObjects.length > 0));
     },
 
     listeners: {
       'tap': '_onTap',
+      'iron-input-validate': '_onIronInputValidate'
     },
 
     _onTap: function (e) {
@@ -387,6 +417,8 @@ Example:
       var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
       
       this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
+      
+      this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
     },
     
     _onSelectedObjectsChange: function (selectedObjects) {
@@ -431,11 +463,9 @@ Example:
     
     _updateHiddenInputTextForFloatLabel: function () {
       
-      var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
-
-      this.hiddenValue = (hasSelectedObjects) ? ' ' : null;
+      this.hiddenValue = (this.hasSelectedObjects) ? ' ' : null;
       
-      if (hasSelectedObjects) {
+      if (this.hasSelectedObjects) {
         this.$.inputTagsContainer.classList.add('chip-item-added');
       } else {
         this.$.inputTagsContainer.classList.remove('chip-item-added');
@@ -453,6 +483,9 @@ Example:
     // Element Lifecycle
 
     ready: function() {
+      this._override_paperInputContainer();
+      
+      this.addEventListener('blur', this._boundOnBlur, true);
     },
 
     attached: function() {
@@ -507,12 +540,57 @@ Example:
       }
     },
 
+    _onBlur: function() {
+      this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+    },
+    
     _keydown_backspace_handler: function (e) {
       if ((!this.inputValue) || (this.inputValue === '')) {
         this.removeSelectedObjectByIndex(this.selectedObjects.length-1);
       }
     },
+    
+    _onIronInputValidate: function(event) {
+      this.invalid = this._inputElement.invalid;
+    },    
+    
+    _override_paperInputContainer: function () {
+      this._paperInputContainerElement._handleValue = this._override_paperInputContainer_handleValue;
+      this._paperInputContainerElement._handleValueAndAutoValidate = this._override_paperInputContainer_handleValueAndAutoValidate;
+    },
+    
+    _override_paperInputContainer_handleValue: function(inputElement) {
+      inputElement = this.dataHost._inputElement;
 
+      var value = this.dataHost._inputElementValue;
+      // type="number" hack needed because this.value is empty until it's valid
+      if (value || value === 0 || (inputElement.type === 'number' && !inputElement.checkValidity()) || this.dataHost.hasSelectedObjects) {
+        this._inputHasContent = true;
+      } else {
+        this._inputHasContent = false;
+      }
+      this.updateAddons({
+        inputElement: inputElement,
+        value: value,
+        invalid: this.invalid
+      });
+    },
+    
+    _override_paperInputContainer_handleValueAndAutoValidate: function(inputElement) {
+      inputElement = this.dataHost._inputElement;
+      
+      if (this.autoValidate) {
+        var valid;
+        if (inputElement.validate) {
+          valid = inputElement.validate(this._inputElementValue);
+        } else {
+          valid = inputElement.checkValidity();
+        }
+        this.invalid = !valid;
+      }
+      // Call this last to notify the add-ons.
+      this._handleValue(inputElement);
+    },
   });
 
 </script>
