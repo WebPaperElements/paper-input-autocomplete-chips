@@ -353,6 +353,11 @@ Example:
           return this._onBlur.bind(this);
         }
       },
+      
+      maxSelectedItems: {
+        type: Number,
+        value: 0
+      },
     },
 
     get _paperInputContainerElement() {
@@ -395,6 +400,36 @@ Example:
       '_suggestionsChanged(_suggestions.splices)',
       '_calculateSugestionPanelPosition(suggestionsPosition)'
     ],
+
+    _onInputValueChange: function (inputValue) {
+      var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
+      
+      this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
+      
+      this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+    },
+    
+    _onSelectedObjectsChange: function (selectedObjects) {
+      
+      if (selectedObjects) {
+        if (selectedObjects.indexSplices) {
+          var $this = this;
+          selectedObjects.indexSplices.forEach(function (spliceItem) {
+            if (spliceItem.addedCount > 0) {
+              $this._fixMissingObjextKeys([ spliceItem.object[spliceItem.index] ]);          
+            }
+          });
+  
+          console.info(this.selectedObjects);
+        } else {
+          this._fixMissingObjextKeys(selectedObjects);          
+        }
+      } 
+      
+      this._updatePlaceholderAfterSelected();
+      this._updateHiddenInputTextForFloatLabel();
+      this.selectedObject = null;
+    },
         
     _updatePlaceholderAfterSelected: function () {
       if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
@@ -412,21 +447,17 @@ Example:
         return value.replace(/[^A-Z]/g, '');
       }
     },
-    
-    _onInputValueChange: function (inputValue) {
-      var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
-      
-      this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
-      
-      this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+        
+    _fixMissingObjextKeys: function (objectArray) {
+      if (objectArray) {
+        for (var i=0; i < objectArray.length; i++) {
+          if (!objectArray[i].key) {
+            objectArray[i].key = this._generateObjectKey(objectArray[i].text);
+          }
+        }
+      }
     },
-    
-    _onSelectedObjectsChange: function (selectedObjects) {
-      this._updatePlaceholderAfterSelected();
-      this._updateHiddenInputTextForFloatLabel();
-      this.selectedObject = null;
-    },
-    
+        
     _findObjectAlreadySelected: function (objValue) {
       if (!objValue) { return -1; }
       
@@ -533,6 +564,10 @@ Example:
 
       if (!this.selectedObjects) {
         this.selectedObjects = [];
+      }
+      
+      if ((this.maxSelectedItems > 0) && (this.selectedObjects.length >= this.maxSelectedItems)) {
+        return;
       }
 
       if (this._findObjectAlreadySelected(selectedObject) < 0) {

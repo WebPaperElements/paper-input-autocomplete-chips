@@ -233,7 +233,7 @@
   
           if (selectedItemText) {
             var selectedObject = {
-              key: 'dyn_' + this._strHashCode(selectedItemText.toLowerCase()),
+              key: this._generateObjectKey(selectedItemText),
               text: selectedItemText
             };
             
@@ -243,6 +243,11 @@
         }
       }
     },
+    
+    _generateObjectKey: function (text) {
+      return 'dyn_' + this._strHashCode((text) ? text.toLowerCase() : '');
+    },
+    
     _search:function(term){
       if (term === ''){
         this._suggestions = [];

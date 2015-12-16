@@ -55,6 +55,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template is="dom-bind" id="app">
       <paper-material class="demo-paper">
         <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for tags accepting non unknown Items</code>:</p>
+
+        <paper-button on-tap="onTestAppendSelectedObjects" raised>Try Append Objects</paper-button>
             
         <paper-input-autocomplete-chips 
           id="myAutoCompletePOCUnknownItems" 
@@ -63,6 +65,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           label="State hashtags" 
           on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged" 
           placeholder-after-selected="#"
+          max-selected-items="10"
           auto-validate pattern="([^, #]* *)*" error-message="Bad formatted string for a hashtag !"
           token-accept-key-codes="32,188"
           allow-select-unknown-token>
@@ -138,6 +141,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.addEventListener('WebComponentsReady', function() {
           
           var app = document.querySelector('#app');
+
+          app.onTestAppendSelectedObjects = function () {
+            document.getElementById('myAutoCompletePOCUnknownItems').appendSelectedObject({
+              text: 'NewItem'
+            });
+
+            // document.getElementById('myAutoCompletePOCUnknownItems').selectedObjects = [
+            //   {
+            //     text: 'NewItem01'
+            //   },
+            //   {
+            //     text: 'NewItem02'
+            //   }
+            // ];
+          };
           
           app.onSetDefaultValue = function () {
             document.getElementById('myAutoComplete').selectedObject = app.states[0];
