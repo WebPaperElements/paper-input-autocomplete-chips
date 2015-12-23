@@ -174,6 +174,15 @@ Example:
         font-size: 14px;
         min-height: 40px;
       }
+      
+      :host(.no-display-input-edit-line) paper-input-container {
+          --paper-input-container-underline: {
+              display: none;
+          };
+          --paper-input-container-underline-focus: {
+              display: none;
+          };
+      }
 
     </style>
     
@@ -189,7 +198,7 @@ Example:
 
       <div class="complete-input-container" id="inputTagsContainer">
 				<template is="dom-repeat" items="[[selectedObjects]]">
-          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[!item.readOnly]]" no-image="[[noChipImage]]">
+          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
@@ -198,7 +207,7 @@ Example:
             </template>
           </paper-chip>
 				</template>
-        <div class="input-container">
+        <div id="inputContainer" class="input-container">
           <input is="iron-input" id="input" class="autocomplete-input" 
             on-keyup="_local_keyup" on-keydown="_local_keydown"
             aria-labelledby$="[[_ariaLabelledBy]]"
@@ -358,6 +367,18 @@ Example:
         type: Number,
         value: 0
       },
+
+      readOnly: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },
+      
+      removeOnly: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },
     },
 
     get _paperInputContainerElement() {
@@ -398,7 +419,9 @@ Example:
       '_onAutoCompleteSelectedObjectChange(selectedObject)',
       '_suggestionsChanged(_suggestions)',
       '_suggestionsChanged(_suggestions.splices)',
-      '_calculateSugestionPanelPosition(suggestionsPosition)'
+      '_calculateSugestionPanelPosition(suggestionsPosition)',
+      '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
+      '_cptCanInputText(readOnly, removeOnly)'
     ],
 
     _onInputValueChange: function (inputValue) {
@@ -511,6 +534,49 @@ Example:
       }
     },
     
+    _cptReadOnlyOrRemoveOnly: function (readOnly, removeOnly) {
+        
+        var ableToInputText = false;
+        
+        ableToInputText = (readOnly || removeOnly);
+        
+        if (ableToInputText) {
+            this.$.inputContainer.hidden = true;
+        } else {
+            this.$.inputContainer.hidden = false;
+        }
+    },
+    
+    _canRemoveChip: function (chipItem, readOnly, removeOnly) {
+        var canRemoveChip = false;
+        
+        if ((!chipItem.readOnly) && (!readOnly)) {
+            canRemoveChip = true; 
+        }
+        
+        return canRemoveChip;
+    },
+
+    _canInputText: function (readOnly, removeOnly) {
+        var canInputText = false;
+        
+        if ((!readOnly) && (!removeOnly)) {
+            canInputText = true; 
+        }
+        
+        return canInputText;
+    },
+    
+    _cptCanInputText: function (readOnly, removeOnly) {
+        if (this._canInputText(readOnly, removeOnly)) {
+            this.classList.remove('no-display-input-edit-line');
+        } else {
+            this.classList.add('no-display-input-edit-line');
+        }
+        
+        this.updateStyles();
+    },
+
     // Element Lifecycle
 
     ready: function() {

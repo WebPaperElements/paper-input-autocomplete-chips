@@ -57,6 +57,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for tags accepting non unknown Items</code>:</p>
 
         <paper-button on-tap="onTestAppendSelectedObjects" raised>Try Append Objects</paper-button>
+        <paper-button on-tap="onTestSetReadOnlyObjects" raised>Set Read Only</paper-button>
+        <paper-button on-tap="onTestSetRemoveOnlyObjects" raised>Set Remove Only</paper-button>
             
         <paper-input-autocomplete-chips 
           id="myAutoCompletePOCUnknownItems" 
@@ -144,7 +146,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           app.onTestAppendSelectedObjects = function () {
             document.getElementById('myAutoCompletePOCUnknownItems').appendSelectedObject({
-              text: 'NewItem'
+              text: 'NewItem',
+              readOnly: true
             });
 
             // document.getElementById('myAutoCompletePOCUnknownItems').selectedObjects = [
@@ -155,6 +158,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             //     text: 'NewItem02'
             //   }
             // ];
+          };
+
+          app.onTestSetReadOnlyObjects = function () {
+              var autoComplete = document.getElementById('myAutoCompletePOCUnknownItems');
+              
+              autoComplete.readOnly = !autoComplete.readOnly; 
+          };
+          
+          app.onTestSetRemoveOnlyObjects = function () {
+              var autoComplete = document.getElementById('myAutoCompletePOCUnknownItems');
+              
+              autoComplete.removeOnly = !autoComplete.removeOnly; 
           };
           
           app.onSetDefaultValue = function () {
