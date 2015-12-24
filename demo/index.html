@@ -65,10 +65,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           local-candidates="{{states}}" 
           chip-label-prefix="#" 
           label="State hashtags" 
-          on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged" 
+          on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged"
+          on-selecting-object="_allowUnknown_onSelectingObject" 
           placeholder-after-selected="#"
           max-selected-items="10"
-          auto-validate pattern="([^, #]* *)*" error-message="Bad formatted string for a hashtag !"
+          auto-validate pattern="^(.*[^, #]* *)*$" error-message="Bad formatted string for a hashtag !"
           token-accept-key-codes="32,188"
           allow-select-unknown-token>
         </paper-input-autocomplete-chips>
@@ -189,6 +190,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           
           app._allowUnknown_onSelectedObjectsChanged = function (e) {
             //console.debug('[_allowUnknown_onSelectedObjectsChanged]', e.target.selectedObjects);
+          },
+          
+          app._allowUnknown_onSelectingObject = function (e) {
+
+            if (e.detail.selectedObject.text.indexOf('@') === 0) {
+                e.preventDefault();
+            }
+            
+            if (e.detail.selectedObject.text.indexOf('#') === 0) {
+                e.detail.selectedObject.text = 'patrinhani-' + e.detail.selectedObject.text;  
+            }
           },
                     
           app.states = [

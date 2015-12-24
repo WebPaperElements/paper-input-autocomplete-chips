@@ -635,9 +635,13 @@ Example:
       if ((this.maxSelectedItems > 0) && (this.selectedObjects.length >= this.maxSelectedItems)) {
         return;
       }
-
-      if (this._findObjectAlreadySelected(selectedObject) < 0) {
-        this.push('selectedObjects', selectedObject);
+      
+      var eSelectingObject = this.fire('selecting-object', { selectedObject: selectedObject }, {cancelable: true});
+    
+      if (!eSelectingObject.defaultPrevented) {
+        if (this._findObjectAlreadySelected(selectedObject) < 0) {
+            this.push('selectedObjects', selectedObject);
+        }
       }
     },
 
