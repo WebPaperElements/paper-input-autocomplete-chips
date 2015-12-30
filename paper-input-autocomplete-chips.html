@@ -636,9 +636,20 @@ Example:
         return;
       }
       
+      var previousObjectKeyValues = {
+          key: selectedObject.key,
+          text: selectedObject.text,
+      };
+      
       var eSelectingObject = this.fire('selecting-object', { selectedObject: selectedObject }, {cancelable: true});
     
       if (!eSelectingObject.defaultPrevented) {
+         
+        if ((selectedObject.key === previousObjectKeyValues.key) 
+            && (selectedObject.text !== previousObjectKeyValues.text)) {
+            selectedObject.key = this._generateObjectKey(selectedObject.text);
+        }
+         
         if (this._findObjectAlreadySelected(selectedObject) < 0) {
             this.push('selectedObjects', selectedObject);
         }

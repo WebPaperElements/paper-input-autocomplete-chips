@@ -199,7 +199,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             
             if (e.detail.selectedObject.text.indexOf('#') === 0) {
-                e.detail.selectedObject.text = 'patrinhani-' + e.detail.selectedObject.text;  
+                e.detail.selectedObject.text = e.detail.selectedObject.text.substring(1);  
             }
           },
                     
