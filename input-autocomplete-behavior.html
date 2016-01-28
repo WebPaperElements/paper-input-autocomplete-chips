@@ -303,7 +303,7 @@
     },
     
     scapeString: function(term){
-      var especialChars = ['\\.', '\\*', '\\[', '\\]', '\\{', '\\}'];
+      var especialChars = ['\\.', '\\*', '\\+', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}'];
 
       for (var i=0, l=especialChars.length ; i<l ; i++) {
         term = term.replace(new RegExp(especialChars[i], 'g'), especialChars[i] );
