@@ -253,7 +253,8 @@
         this._suggestions = [];
         return;
       }
-      var patt =  new RegExp(term.toLowerCase());
+
+      var patt =  new RegExp( this.scapeString( term.toLowerCase() ) );
       var matched = [];
       if (typeof(this.localCandidates) !== 'undefined'){
         for (var i = 0; i < this.localCandidates.length; i ++){
@@ -301,6 +302,16 @@
       }
     },
     
+    scapeString: function(term){
+      var especialChars = ['\\.', '\\*', '\\[', '\\]', '\\{', '\\}'];
+
+      for (var i=0, l=especialChars.length ; i<l ; i++) {
+        term = term.replace(new RegExp(especialChars[i], 'g'), especialChars[i] );
+      }
+
+      return term;
+    },
+
     _strHashCode: function(strValue) {
       var hash = 0, i, chr, len;
       if (strValue.length === 0) return hash;
