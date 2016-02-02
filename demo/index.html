@@ -53,6 +53,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <body unresolved>
 
     <template is="dom-bind" id="app">
+
+      <paper-material class="demo-paper">
+        <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for ajax support</code>:</p>
+            
+        <paper-input-autocomplete-chips 
+          id="myAutoCompletePOCUnknownItems" 
+          remote-url="http://www.mocky.io/v2/56afc1e9110000d42ff9bd19"
+          label="Invite people" 
+          on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged"
+          on-selecting-object="_allowUnknown_onSelectingObject" 
+          placeholder-after-selected="E-mail..."
+          auto-validate pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+          error-message="Invalid E-mail"
+          token-accept-key-codes="32,188"
+          allow-select-unknown-token>
+        </paper-input-autocomplete-chips>
+
+      </paper-material>
+
       <paper-material class="demo-paper">
         <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for tags accepting non unknown Items</code>:</p>
 

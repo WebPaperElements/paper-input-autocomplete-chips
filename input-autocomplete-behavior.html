@@ -21,6 +21,13 @@
         value:[]
       },
       /**
+       * Remote URL.
+       */
+      remoteUrl:{
+        type:String,
+        value:''
+      },
+      /**
        * Internal variable holding all matched suggestions.
        */
       _suggestions:{
@@ -239,6 +246,7 @@
             
             this.selectedItemText = selectedItemText;
             this.selectedObject = selectedObject;
+            this._suggestions = [];
           }
         }
       }
@@ -248,62 +256,71 @@
       return 'dyn_' + this._strHashCode((text) ? text.toLowerCase() : '');
     },
     
-    _search:function(term){
-      if (term === ''){
-        this._suggestions = [];
-        return;
-      }
+    _search: function(term){
+      var that = this;
+      this.xmlhttp;
 
-      var patt =  new RegExp( this.scapeString( term.toLowerCase() ) );
-      var matched = [];
-      if (typeof(this.localCandidates) !== 'undefined'){
-        for (var i = 0; i < this.localCandidates.length; i ++){
-          if (matched.length == this.maxSuggestions){
-            break;
-          }
-          if (patt.test(this.localCandidates[i].text.toLowerCase()) == true){
-            matched.push(this.localCandidates[i]);
-          }
+      this.debounce('search', function(){
+        if (term === ''){
+          this._suggestions = [];
+          return;
         }
-      }
-      
-      if (typeof(this._prefetchedCandidates) !== 'undefined'){
-        for (var i = 0; i < this._prefetchedCandidates.length; i ++){
-          if (matched.length == this.maxSuggestions){
-            break;
-          }
-          if (patt.test(this._prefetchedCandidates[i].toLowerCase()) == true){
-            matched.push(this._prefetchedCandidates[i]);
-          }
-        }
-      }
-      // this._suggestions = this._suggestions.concat(matched);
-      if (typeof(this.remoteUrl) !== 'undefined'){
-        var url = this.remoteUrl.replace("%QUERY", term);
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open('GET', url, true);
-        xmlhttp.setRequestHeader("Content-type", "application/json");
-        var ptinput = this;
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-              var resp = xmlhttp.response;
-              var remoteMatched = JSON.parse(resp);
-              var cuttedMatched = remoteMatched.slice(0,ptinput.maxSuggestions);
-              // console.log(cuttedMatched);
-              matched = matched.concat(cuttedMatched);
-              // ptinput._suggestions = ptinput._suggestions.concat(cuttedMatched);
-              ptinput._suggestions = matched;
+
+        var patt =  new RegExp( this.scapeString( term.toLowerCase() ) );
+        var matched = [];
+
+        if ( this.localCandidates && this.localCandidates.length ){
+          for (var i = 0; i < this.localCandidates.length; i ++){
+            if (matched.length == this.maxSuggestions){
+              break;
             }
+            if (patt.test(this.localCandidates[i].text.toLowerCase()) == true){
+              matched.push(this.localCandidates[i]);
+            }
+          }
         }
-        xmlhttp.send();
-      }
-      else{
-        this._suggestions = matched;
-      }
+        
+        if (typeof(this._prefetchedCandidates) !== 'undefined'){
+          for (var i = 0; i < this._prefetchedCandidates.length; i ++){
+            if (matched.length == this.maxSuggestions){
+              break;
+            }
+            if (patt.test(this._prefetchedCandidates[i].toLowerCase()) == true){
+              matched.push(this._prefetchedCandidates[i]);
+            }
+          }
+        }
+
+        if ( this.remoteUrl ){
+          var url = this.remoteUrl.replace("%QUERY", term);
+
+          if(this.xmlhttp){
+            this.xmlhttp.abort();
+          }
+
+          this.xmlhttp = new XMLHttpRequest();
+          this.xmlhttp.open('GET', url, true);
+          this.xmlhttp.setRequestHeader("Content-type", "application/json");
+          this.xmlhttp.onreadystatechange = function() {
+            if (that.xmlhttp.readyState === 4 && that.xmlhttp.status === 200) {
+              var resp = that.xmlhttp.response;
+              var remoteMatched = JSON.parse(resp);
+              var cuttedMatched = remoteMatched.slice(0,that.maxSuggestions);
+
+              matched = matched.concat(cuttedMatched);
+              that._suggestions = matched;
+            }
+          }
+          this.xmlhttp.send();
+        }
+        else{
+          this._suggestions = matched;
+        }
+      },250);
     },
     
     scapeString: function(term){
-      var especialChars = ['\\.', '\\*', '\\+', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}'];
+      var especialChars = ['\\.', '\\*', '\\+', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\\\'];
 
       for (var i=0, l=especialChars.length ; i<l ; i++) {
         term = term.replace(new RegExp(especialChars[i], 'g'), especialChars[i] );
