@@ -308,11 +308,18 @@
           this.xmlhttp.onreadystatechange = function() {
             if (that.xmlhttp.readyState === 4 && that.xmlhttp.status === 200) {
               var resp = that.xmlhttp.response;
-              var remoteMatched = JSON.parse(resp);
-              var cuttedMatched = remoteMatched.slice(0,that.maxSuggestions);
+              var DATA = JSON.parse(resp);
+              var responseTreatment = that.fire('response-treatment', { response : DATA }, {cancelable: true});
+              var cuttedMatched = responseTreatment.detail.response.slice(0, that.maxSuggestions);
 
-              matched = matched.concat(cuttedMatched);
-              that._suggestions = matched;
+              if (!responseTreatment.defaultPrevented) {
+
+                for(var i = 0; i < cuttedMatched.length; i++){
+                  cuttedMatched[i].key = that._generateObjectKey(cuttedMatched[i].text);
+                }
+
+                that._suggestions = matched.concat(cuttedMatched);
+              }
             }
           }
           this.xmlhttp.send();

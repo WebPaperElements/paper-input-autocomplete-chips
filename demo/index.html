@@ -59,10 +59,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             
         <paper-input-autocomplete-chips 
           id="myAutoCompletePOCUnknownItems" 
-          remote-url="http://www.mocky.io/v2/56afc1e9110000d42ff9bd19"
+          remote-url="http://www.mocky.io/v2/56b0dda4120000ec18670762"
           label="Invite people" 
           on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged"
-          on-selecting-object="_allowUnknown_onSelectingObject" 
+          on-response-treatment="XHRResponseTreatment"
           placeholder-after-selected="E-mail..."
           auto-validate pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
           error-message="Invalid E-mail"
@@ -221,6 +221,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 e.detail.selectedObject.text = e.detail.selectedObject.text.substring(1);  
             }
           },
+
+          app.XHRResponseTreatment = function(e){
+            var length = e.detail.response.length;
+            
+            for(var i = 0; i < length; i++){
+              e.detail.response[i].text = e.detail.response[i].t;
+              e.detail.response[i].imgUrl = e.detail.response[i].i;
+            }
+          }
                     
           app.states = [
             {
