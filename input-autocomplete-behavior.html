@@ -247,6 +247,10 @@
             this.selectedItemText = selectedItemText;
             this.selectedObject = selectedObject;
             this._suggestions = [];
+
+            if(this.xmlhttp){
+              this.xmlhttp.abort();
+            }
           }
         }
       }
