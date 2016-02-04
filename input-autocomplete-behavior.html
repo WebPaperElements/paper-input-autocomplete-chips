@@ -80,7 +80,7 @@
      * Returns a reference to the input element.
      */
     get _inputElement() {
-      return this.querySelector('paper-input.autocomplete-input, input.autocomplete-input');
+      return this.$$('paper-input.autocomplete-input, input.autocomplete-input');
     },
 
     get _inputElementValue() {
@@ -91,7 +91,7 @@
      * Returns a reference to the menu element.
      */
     get _menuElement() {
-      return this.querySelector('paper-menu.autocomplete-suggestions');
+      return this.$$('paper-menu.autocomplete-suggestions');
     },
 
     // Element Behavior
@@ -167,6 +167,9 @@
         // Down Key
         // console.log("down");
         var suggestionsMenu = this._menuElement;
+        
+        if (!suggestionsMenu) { return; }
+        
         var selectedItem = suggestionsMenu.focusedItem;
         var index = 0;
         if (typeof(selectedItem) !== 'undefined'){
@@ -180,6 +183,9 @@
       } else if (e.which == 38){
         // Up Key
         var suggestionsMenu = this._menuElement;
+
+        if (!suggestionsMenu) { return; }
+
         var selectedItem = suggestionsMenu.focusedItem;
         if (typeof(selectedItem) !== 'undefined'){
           index = Number(suggestionsMenu.indexOf(selectedItem));

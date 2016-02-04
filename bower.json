@@ -1,6 +1,6 @@
 {
   "name": "paper-input-autocomplete-chips",
-  "version": "0.22.2",
+  "version": "0.22.6",
   "authors": [
     "Vinicius Patrinhani <patrinhani@ciandt.com>"
   ],
@@ -27,7 +27,11 @@
     "iron-icons": "Polymerelements/iron-icons#~1.0.4",
     "paper-icon-button": "Polymerelements/paper-icon-button#~1.0.6",
     "iron-a11y-keys": "PolymerElements/iron-a11y-keys#~1.0.2",
-    "paper-chip": "WebPaperElements/paper-chip#^1.0.7"
+    "paper-chip": "WebPaperElements/paper-chip#^1.0.7",
+    "paper-material": "PolymerElements/paper-material#^1.0.6",
+    "iron-behaviors": "PolymerElements/iron-behaviors#^1.0.12",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^1.0.6",
+    "iron-input": "PolymerElements/iron-input#^1.0.8"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
