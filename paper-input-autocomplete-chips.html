@@ -4,8 +4,12 @@
 <link rel="import" href="../paper-input/paper-input-behavior.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-input/paper-input-error.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-chip/paper-chip.html">
-<link rel="import" href="paper-input-autocomplete.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="./input-autocomplete-behavior.html">
 
 <!--
 An element providing a solution to no problem in particular.
@@ -269,444 +273,439 @@ Example:
       </paper-menu>
     </paper-material>
   </template>
+  <script>
+    Polymer({
 
-</dom-module>
+      is: 'paper-input-autocomplete-chips',
 
-<script>
+      behaviors: [
+        Polymer.IronControlState,
+        Polymer.IronFormElementBehavior,
+        Polymer.PaperInputBehavior,
+        WebPaperElem.InputAutoCompleteBehavior
+      ],
 
-  Polymer({
+      properties: {
+        chipLabelPrefix: {
+          type: String,
+          value: ''  
+        },     
+        chipLabelSuffix: {
+          type: String,
+          value: ''  
+        },     
+        /**
+         * The candidates from local variable.
+         */
+        selectedObjects: {
+          type: Array,
+          value:[]
+        },
+        /**
+         * The candidates from local variable.
+         */
+        localCandidates:{
+          type:Array,
+          value:[]
+        },
+        /**
+         * Hidden Input value.
+         */
+        hiddenValue: {
+          type: String,
+          notify: true,
+        },
+        /**
+         * Input value.
+         */
+        inputValue: {
+          type: String,
+          notify: true,
+        },
+        
+        placeholderAfterSelected: {
+          type: String,
+        },
+        
+        _placeholderAfterSelected: {
+          type: String,
+        },
+        
+        suggestionsPosition: {
+          type: String,
+          value: 'bottom',
+        },
+        
+        /**
+          * Whether or not the chip uses an animated transition between opened and
+          * closed states
+          *
+          * @attribute animated
+          * @type Boolean
+          * @default true
+          */
+        animated: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },    
+        
+        noChipImage: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
 
-    is: 'paper-input-autocomplete-chips',
+        _boundOnBlur: {
+          type: Function,
+          value: function() {
+            return this._onBlur.bind(this);
+          }
+        },
+        
+        maxSelectedItems: {
+          type: Number,
+          value: 0
+        },
 
-    behaviors: [
-      Polymer.IronControlState,
-      Polymer.IronFormElementBehavior,
-      Polymer.PaperInputBehavior,
-      WebPaperElem.InputAutoCompleteBehavior
-    ],
-
-    properties: {
-      chipLabelPrefix: {
-        type: String,
-        value: ''  
-      },     
-      chipLabelSuffix: {
-        type: String,
-        value: ''  
-      },     
-      /**
-       * The candidates from local variable.
-       */
-      selectedObjects: {
-        type: Array,
-        value:[]
+        readOnly: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+        
+        removeOnly: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
       },
-      /**
-       * The candidates from local variable.
-       */
-      localCandidates:{
-        type:Array,
-        value:[]
-      },
-      /**
-       * Hidden Input value.
-       */
-      hiddenValue: {
-        type: String,
-        notify: true,
-      },
-      /**
-       * Input value.
-       */
-      inputValue: {
-        type: String,
-        notify: true,
+
+      get _paperInputContainerElement() {
+        return this.$.paperInputContainer;
       },
       
-      placeholderAfterSelected: {
-        type: String,
-      },
-      
-      _placeholderAfterSelected: {
-        type: String,
-      },
-      
-      suggestionsPosition: {
-        type: String,
-        value: 'bottom',
-      },
-      
-      /**
-        * Whether or not the chip uses an animated transition between opened and
-        * closed states
-        *
-        * @attribute animated
-        * @type Boolean
-        * @default true
-        */
-      animated: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
-      },    
-      
-      noChipImage: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
+      get hasSelectedObjects() {
+        return ((this.selectedObjects) && (this.selectedObjects.length > 0));
       },
 
-      _boundOnBlur: {
-        type: Function,
-        value: function() {
-          return this._onBlur.bind(this);
+      listeners: {
+        'tap': '_onTap',
+        'iron-input-validate': '_onIronInputValidate'
+      },
+
+      _onTap: function (e) {
+        if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
+          this._inputElement.focus();
         }
       },
       
-      maxSelectedItems: {
-        type: Number,
-        value: 0
+      _local_keyup: function (e) {
+        this._keyup(e);
       },
 
-      readOnly: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
-      },
-      
-      removeOnly: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
-      },
-    },
-
-    get _paperInputContainerElement() {
-      return this.$.paperInputContainer;
-    },
-    
-    get hasSelectedObjects() {
-      return ((this.selectedObjects) && (this.selectedObjects.length > 0));
-    },
-
-    listeners: {
-      'tap': '_onTap',
-      'iron-input-validate': '_onIronInputValidate'
-    },
-
-    _onTap: function (e) {
-      if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
-        this._inputElement.focus();
-      }
-    },
-    
-    _local_keyup: function (e) {
-      this._keyup(e);
-    },
-
-    _local_keydown: function (e) {
-      if (e.which === 8) {
-        this._keydown_backspace_handler(e);        
-      } else {
-        this._keydown(e);
-      }
-    },
-
-    observers: [
-      '_onInputValueChange(inputValue)',
-      '_onSelectedObjectsChange(selectedObjects)',
-      '_onSelectedObjectsChange(selectedObjects.splices)',
-      '_onAutoCompleteSelectedObjectChange(selectedObject)',
-      '_suggestionsChanged(_suggestions)',
-      '_suggestionsChanged(_suggestions.splices)',
-      '_calculateSugestionPanelPosition(suggestionsPosition)',
-      '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
-      '_cptCanInputText(readOnly, removeOnly)'
-    ],
-
-    _onInputValueChange: function (inputValue) {
-      var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
-      
-      this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
-      
-      this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
-    },
-    
-    _onSelectedObjectsChange: function (selectedObjects) {
-      
-      if (selectedObjects) {
-        if (selectedObjects.indexSplices) {
-          var $this = this;
-          selectedObjects.indexSplices.forEach(function (spliceItem) {
-            if (spliceItem.addedCount > 0) {
-              $this._fixMissingObjextKeys([ spliceItem.object[spliceItem.index] ]);          
-            }
-          });
-  
-          console.info(this.selectedObjects);
+      _local_keydown: function (e) {
+        if (e.which === 8) {
+          this._keydown_backspace_handler(e);        
         } else {
-          this._fixMissingObjextKeys(selectedObjects);          
+          this._keydown(e);
         }
-      } 
+      },
+
+      observers: [
+        '_onInputValueChange(inputValue)',
+        '_onSelectedObjectsChange(selectedObjects)',
+        '_onSelectedObjectsChange(selectedObjects.splices)',
+        '_onAutoCompleteSelectedObjectChange(selectedObject)',
+        '_suggestionsChanged(_suggestions)',
+        '_suggestionsChanged(_suggestions.splices)',
+        '_calculateSugestionPanelPosition(suggestionsPosition)',
+        '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
+        '_cptCanInputText(readOnly, removeOnly)'
+      ],
+
+      _onInputValueChange: function (inputValue) {
+        var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
+        
+        this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
+        
+        this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+      },
       
-      this._updatePlaceholderAfterSelected();
-      this._updateHiddenInputTextForFloatLabel();
-      this.selectedObject = null;
-    },
+      _onSelectedObjectsChange: function (selectedObjects) {
         
-    _updatePlaceholderAfterSelected: function () {
-      if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
-        this._placeholderAfterSelected = this.placeholder;
-      } else if ((this.selectedObjects) && (this.selectedObjects.length > 0)) {
-        this._placeholderAfterSelected = this.placeholderAfterSelected;
-      }
-      else {
-        this._placeholderAfterSelected = null;
-      }
-    },
-    
-    getInitialsFrom: function(value) {
-      if (value) {
-        return value.replace(/[^A-Z]/g, '');
-      }
-    },
+        if (selectedObjects) {
+          if (selectedObjects.indexSplices) {
+            var $this = this;
+            selectedObjects.indexSplices.forEach(function (spliceItem) {
+              if (spliceItem.addedCount > 0) {
+                $this._fixMissingObjextKeys([ spliceItem.object[spliceItem.index] ]);          
+              }
+            });
+            //console.info(this.selectedObjects);
+          } else {
+            this._fixMissingObjextKeys(selectedObjects);          
+          }
+        } 
         
-    _fixMissingObjextKeys: function (objectArray) {
-      if (objectArray) {
-        for (var i=0; i < objectArray.length; i++) {
-          if (!objectArray[i].key) {
-            objectArray[i].key = this._generateObjectKey(objectArray[i].text);
+        this._updatePlaceholderAfterSelected();
+        this._updateHiddenInputTextForFloatLabel();
+        this.selectedObject = null;
+      },
+          
+      _updatePlaceholderAfterSelected: function () {
+        if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
+          this._placeholderAfterSelected = this.placeholder;
+        } else if ((this.selectedObjects) && (this.selectedObjects.length > 0)) {
+          this._placeholderAfterSelected = this.placeholderAfterSelected;
+        }
+        else {
+          this._placeholderAfterSelected = null;
+        }
+      },
+      
+      getInitialsFrom: function(value) {
+        if (value) {
+          return value.replace(/[^A-Z]/g, '');
+        }
+      },
+          
+      _fixMissingObjextKeys: function (objectArray) {
+        if (objectArray) {
+          for (var i=0; i < objectArray.length; i++) {
+            if (!objectArray[i].key) {
+              objectArray[i].key = this._generateObjectKey(objectArray[i].text);
+            }
           }
         }
-      }
-    },
+      },
+          
+      _findObjectAlreadySelected: function (objValue) {
+        if (!objValue) { return -1; }
         
-    _findObjectAlreadySelected: function (objValue) {
-      if (!objValue) { return -1; }
+        var i = (this.selectedObjects) ? this.selectedObjects.length : 0;
+        while (i--) {
+          var objToCompare = this.selectedObjects[i];
+          if (objToCompare.key === objValue.key) return i;
+        }
+        return -1;
+      },
       
-      var i = (this.selectedObjects) ? this.selectedObjects.length : 0;
-      while (i--) {
-        var objToCompare = this.selectedObjects[i];
-        if (objToCompare.key === objValue.key) return i;
-      }
-      return -1;
-    },
-    
-    _onAutoCompleteSelectedObjectChange: function (selectedObject) {
-      
-      this.appendSelectedObject(selectedObject);
-      
-      this.inputValue = null;
-      this._setSelectedItem(null);
+      _onAutoCompleteSelectedObjectChange: function (selectedObject) {
+        
+        this.appendSelectedObject(selectedObject);
+        
+        this.inputValue = null;
+        this._setSelectedItem(null);
 
-      this._updateHiddenInputTextForFloatLabel();
+        this._updateHiddenInputTextForFloatLabel();
 
-      this._inputElement.focus();
-    },
-    
-    _onChipRemove: function (e) {
+        this._inputElement.focus();
+      },
       
-      e.preventDefault();
-      
-      this.removeSelectedObject(e.target.dataObject);
-      
-      this._updateHiddenInputTextForFloatLabel();
+      _onChipRemove: function (e) {
+        
+        e.preventDefault();
+        
+        this.removeSelectedObject(e.target.dataObject);
+        
+        this._updateHiddenInputTextForFloatLabel();
 
-      this._inputElement.focus();
-    },
-    
-    _updateHiddenInputTextForFloatLabel: function () {
+        this._inputElement.focus();
+      },
       
-      this.hiddenValue = (this.hasSelectedObjects) ? ' ' : null;
-      
-      if (this.hasSelectedObjects) {
-        this.$.inputTagsContainer.classList.add('chip-item-added');
-      } else {
-        this.$.inputTagsContainer.classList.remove('chip-item-added');
-      }
-    },
-    
-    _suggestionsChanged: function (suggestions) {
-      if ((this._suggestions) && (this._suggestions.length > 0)) {
-        this.showSuggestionsPanel();
-      } else {
-        this.hideSuggestionsPanel();
-      }
-    },
-    
-    _cptReadOnlyOrRemoveOnly: function (readOnly, removeOnly) {
+      _updateHiddenInputTextForFloatLabel: function () {
         
-        var ableToInputText = false;
+        this.hiddenValue = (this.hasSelectedObjects) ? ' ' : null;
         
-        ableToInputText = (readOnly || removeOnly);
-        
-        if (ableToInputText) {
-            this.$.inputContainer.hidden = true;
+        if (this.hasSelectedObjects) {
+          this.$.inputTagsContainer.classList.add('chip-item-added');
         } else {
-            this.$.inputContainer.hidden = false;
+          this.$.inputTagsContainer.classList.remove('chip-item-added');
         }
-    },
-    
-    _canRemoveChip: function (chipItem, readOnly, removeOnly) {
-        var canRemoveChip = false;
-        
-        if ((!chipItem.readOnly) && (!readOnly)) {
-            canRemoveChip = true; 
-        }
-        
-        return canRemoveChip;
-    },
-
-    _canInputText: function (readOnly, removeOnly) {
-        var canInputText = false;
-        
-        if ((!readOnly) && (!removeOnly)) {
-            canInputText = true; 
-        }
-        
-        return canInputText;
-    },
-    
-    _cptCanInputText: function (readOnly, removeOnly) {
-        if (this._canInputText(readOnly, removeOnly)) {
-            this.classList.remove('no-display-input-edit-line');
+      },
+      
+      _suggestionsChanged: function (suggestions) {
+        if ((this._suggestions) && (this._suggestions.length > 0)) {
+          this.showSuggestionsPanel();
         } else {
-            this.classList.add('no-display-input-edit-line');
+          this.hideSuggestionsPanel();
+        }
+      },
+      
+      _cptReadOnlyOrRemoveOnly: function (readOnly, removeOnly) {
+          
+          var ableToInputText = false;
+          
+          ableToInputText = (readOnly || removeOnly);
+          
+          if (ableToInputText) {
+              this.$.inputContainer.hidden = true;
+          } else {
+              this.$.inputContainer.hidden = false;
+          }
+      },
+      
+      _canRemoveChip: function (chipItem, readOnly, removeOnly) {
+          var canRemoveChip = false;
+          
+          if ((!chipItem.readOnly) && (!readOnly)) {
+              canRemoveChip = true; 
+          }
+          
+          return canRemoveChip;
+      },
+
+      _canInputText: function (readOnly, removeOnly) {
+          var canInputText = false;
+          
+          if ((!readOnly) && (!removeOnly)) {
+              canInputText = true; 
+          }
+          
+          return canInputText;
+      },
+      
+      _cptCanInputText: function (readOnly, removeOnly) {
+          if (this._canInputText(readOnly, removeOnly)) {
+              this.classList.remove('no-display-input-edit-line');
+          } else {
+              this.classList.add('no-display-input-edit-line');
+          }
+          
+          this.updateStyles();
+      },
+
+      // Element Lifecycle
+
+      ready: function() {
+        this._override_paperInputContainer();
+        
+        this.addEventListener('blur', this._boundOnBlur, true);
+      },
+
+      attached: function() {
+      },
+
+      detached: function() {
+      },
+
+      // Element Behavior
+
+      hideSuggestionsPanel: function () {
+        this.$.suggestionsPanel.classList.add('hidden');
+      },
+
+      showSuggestionsPanel: function () {
+        this._calculateSugestionPanelPosition();
+        this.$.suggestionsPanel.classList.remove('hidden');
+      },
+      
+      _calculateSugestionPanelPosition: function () {
+        if (this.suggestionsPosition === 'top') {
+          var inputRect = this.$.input.getBoundingClientRect();
+          var diffBottom = 8; // Bottom margin from paper-input-container
+          var deltaBottom = inputRect.height + diffBottom;
+          this.$.suggestionsPanel.style.top = '';
+          this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
+        } else if (this.suggestionsPosition === 'bottom') {
+          this.$.suggestionsPanel.style.top = '';
+          this.$.suggestionsPanel.style.bottom = '';
+        }
+      },
+      
+      removeSelectedObject: function (selectedObject) {
+        this.removeSelectedObjectByIndex(this._findObjectAlreadySelected(selectedObject));
+      },
+
+      removeSelectedObjectByIndex: function (objectIndex) {
+        if (objectIndex >= 0) {
+          this.arrayDelete('selectedObjects', this.selectedObjects[objectIndex]);
+        }
+      },
+
+      appendSelectedObject: function (selectedObject) {
+        if (!selectedObject) { return; }
+
+        if (!this.selectedObjects) {
+          this.selectedObjects = [];
         }
         
-        this.updateStyles();
-    },
-
-    // Element Lifecycle
-
-    ready: function() {
-      this._override_paperInputContainer();
-      
-      this.addEventListener('blur', this._boundOnBlur, true);
-    },
-
-    attached: function() {
-    },
-
-    detached: function() {
-    },
-
-    // Element Behavior
-
-    hideSuggestionsPanel: function () {
-      this.$.suggestionsPanel.classList.add('hidden');
-    },
-
-    showSuggestionsPanel: function () {
-      this._calculateSugestionPanelPosition();
-      this.$.suggestionsPanel.classList.remove('hidden');
-    },
-    
-    _calculateSugestionPanelPosition: function () {
-      if (this.suggestionsPosition === 'top') {
-        var inputRect = this.$.input.getBoundingClientRect();
-        var diffBottom = 8; // Bottom margin from paper-input-container
-        var deltaBottom = inputRect.height + diffBottom;
-        this.$.suggestionsPanel.style.top = '';
-        this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
-      } else if (this.suggestionsPosition === 'bottom') {
-        this.$.suggestionsPanel.style.top = '';
-        this.$.suggestionsPanel.style.bottom = '';
-      }
-    },
-    
-    removeSelectedObject: function (selectedObject) {
-      this.removeSelectedObjectByIndex(this._findObjectAlreadySelected(selectedObject));
-    },
-
-    removeSelectedObjectByIndex: function (objectIndex) {
-      if (objectIndex >= 0) {
-        this.arrayDelete('selectedObjects', this.selectedObjects[objectIndex]);
-      }
-    },
-
-    appendSelectedObject: function (selectedObject) {
-      if (!selectedObject) { return; }
-
-      if (!this.selectedObjects) {
-        this.selectedObjects = [];
-      }
-      
-      if ((this.maxSelectedItems > 0) && (this.selectedObjects.length >= this.maxSelectedItems)) {
-        return;
-      }
-      
-      var previousObjectKeyValues = {
-          key: selectedObject.key,
-          text: selectedObject.text,
-      };
-      
-      var eSelectingObject = this.fire('selecting-object', { selectedObject: selectedObject }, {cancelable: true});
-    
-      if (!eSelectingObject.defaultPrevented) {
-         
-        if ((selectedObject.key === previousObjectKeyValues.key) 
-            && (selectedObject.text !== previousObjectKeyValues.text)) {
-            selectedObject.key = this._generateObjectKey(selectedObject.text);
+        if ((this.maxSelectedItems > 0) && (this.selectedObjects.length >= this.maxSelectedItems)) {
+          return;
         }
-         
-        if (this._findObjectAlreadySelected(selectedObject) < 0) {
-            this.push('selectedObjects', selectedObject);
-        }
-      }
-    },
-
-    _onBlur: function() {
-      this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
-    },
-    
-    _keydown_backspace_handler: function (e) {
-      if ((!this.inputValue) || (this.inputValue === '')) {
-        this.removeSelectedObjectByIndex(this.selectedObjects.length-1);
-      }
-    },
-    
-    _onIronInputValidate: function(event) {
-      this.invalid = this._inputElement.invalid;
-    },    
-    
-    _override_paperInputContainer: function () {
-      this._paperInputContainerElement._handleValue = this._override_paperInputContainer_handleValue;
-      this._paperInputContainerElement._handleValueAndAutoValidate = this._override_paperInputContainer_handleValueAndAutoValidate;
-    },
-    
-    _override_paperInputContainer_handleValue: function(inputElement) {
-      inputElement = this.dataHost._inputElement;
-
-      var value = this.dataHost._inputElementValue;
-      // type="number" hack needed because this.value is empty until it's valid
-      if (value || value === 0 || (inputElement.type === 'number' && !inputElement.checkValidity()) || this.dataHost.hasSelectedObjects) {
-        this._inputHasContent = true;
-      } else {
-        this._inputHasContent = false;
-      }
-      this.updateAddons({
-        inputElement: inputElement,
-        value: value,
-        invalid: this.invalid
-      });
-    },
-    
-    _override_paperInputContainer_handleValueAndAutoValidate: function(inputElement) {
-      inputElement = this.dataHost._inputElement;
+        
+        var previousObjectKeyValues = {
+            key: selectedObject.key,
+            text: selectedObject.text,
+        };
+        
+        var eSelectingObject = this.fire('selecting-object', { selectedObject: selectedObject }, {cancelable: true});
       
-      if (this.autoValidate) {
-        var valid;
-        if (inputElement.validate) {
-          valid = inputElement.validate(this._inputElementValue);
+        if (!eSelectingObject.defaultPrevented) {
+          
+          if ((selectedObject.key === previousObjectKeyValues.key) 
+              && (selectedObject.text !== previousObjectKeyValues.text)) {
+              selectedObject.key = this._generateObjectKey(selectedObject.text);
+          }
+          
+          if (this._findObjectAlreadySelected(selectedObject) < 0) {
+              this.push('selectedObjects', selectedObject);
+          }
+        }
+      },
+
+      _onBlur: function() {
+        this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+      },
+      
+      _keydown_backspace_handler: function (e) {
+        if ((!this.inputValue) || (this.inputValue === '')) {
+          this.removeSelectedObjectByIndex(this.selectedObjects.length-1);
+        }
+      },
+      
+      _onIronInputValidate: function(event) {
+        this.invalid = this._inputElement.invalid;
+      },    
+      
+      _override_paperInputContainer: function () {
+        this._paperInputContainerElement._handleValue = this._override_paperInputContainer_handleValue;
+        this._paperInputContainerElement._handleValueAndAutoValidate = this._override_paperInputContainer_handleValueAndAutoValidate;
+      },
+      
+      _override_paperInputContainer_handleValue: function(inputElement) {
+        inputElement = this.dataHost._inputElement;
+
+        var value = this.dataHost._inputElementValue;
+        // type="number" hack needed because this.value is empty until it's valid
+        if (value || value === 0 || (inputElement.type === 'number' && !inputElement.checkValidity()) || this.dataHost.hasSelectedObjects) {
+          this._inputHasContent = true;
         } else {
-          valid = inputElement.checkValidity();
+          this._inputHasContent = false;
         }
-        this.invalid = !valid;
-      }
-      // Call this last to notify the add-ons.
-      this._handleValue(inputElement);
-    },
-  });
-
-</script>
+        this.updateAddons({
+          inputElement: inputElement,
+          value: value,
+          invalid: this.invalid
+        });
+      },
+      
+      _override_paperInputContainer_handleValueAndAutoValidate: function(inputElement) {
+        inputElement = this.dataHost._inputElement;
+        
+        if (this.autoValidate) {
+          var valid;
+          if (inputElement.validate) {
+            valid = inputElement.validate(this._inputElementValue);
+          } else {
+            valid = inputElement.checkValidity();
+          }
+          this.invalid = !valid;
+        }
+        // Call this last to notify the add-ons.
+        this._handleValue(inputElement);
+      },
+    });
+  </script>
+</dom-module>
