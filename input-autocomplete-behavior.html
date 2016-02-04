@@ -172,13 +172,10 @@
         
         var searchTerm = this.inputValue || '';
 
-        this._checkIntegrityOfSelectedItem();        
-        
-        // if (this.inputValue.length >= 3){
+        this._checkIntegrityOfSelectedItem();
         this._search(searchTerm.trim());
       } else if (e.which == 40){
         // Down Key
-        // console.log("down");
         var suggestionsMenu = this._menuElement;
         
         if (!suggestionsMenu) { return; }
@@ -189,8 +186,6 @@
           index = Number(suggestionsMenu.indexOf(selectedItem));
           index = Math.min(index + 1, this._suggestions.length - 1);
         }
-        // console.log("index");
-        // console.log(index);
         suggestionsMenu.select(index);
         this._inputElement.focus();
       } else if (e.which == 38){
@@ -279,8 +274,7 @@
           this.selectedItemText = selectedItemText;
           this.selectedItem = selectedItemElement;
           this.selectedObject = selectedObject;
-          
-          // console.log(this.selectedItem);
+
         }       
       } else if (this.allowSelectUnknownToken) {
 
