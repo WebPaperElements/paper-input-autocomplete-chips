@@ -70,6 +70,7 @@
     _tokenAcceptKeyCodesChanged: function (newValue) {
       this.tokenAcceptKeyCodesArray = (newValue) ? newValue.split(',') : [];
       this.tokenAcceptKeyCodesArray.push('13'); /* return key is default. */
+      this.tokenAcceptKeyCodesArray.push('9'); /* tab key is default. */
     },
 
     get _propertyForValue() {
@@ -104,11 +105,21 @@
       var defaultPreventedKeyCodes = [
         27, /* ESC */ 
         40, 
-        38];
-      
-      if ((defaultPreventedKeyCodes.indexOf(e.which) >= 0) || (this._checkTokenAcceptKeyCode(e.which))) {
-         e.preventDefault();
+        38
+      ];
+
+      // TAB
+      if( e.which === 9 && this._inputElementValue && this._suggestions.length === 0){
+        e.preventDefault();
+      }else if(e.which === 9){
+        return false;
       }
+
+      if ((defaultPreventedKeyCodes.indexOf(e.which) >= 0) || (this._checkTokenAcceptKeyCode(e.which))) {
+        e.preventDefault();
+      }
+
+
     },
     /**
      * Callback on mouse over event on paper-item
@@ -202,7 +213,7 @@
           }else{
             // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
             this._inputElement.invalid = false;
-            this._inputElement.invalid = true;          
+            this._inputElement.invalid = true;
           }
         }else{
           // Return Key
