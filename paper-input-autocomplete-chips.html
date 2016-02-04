@@ -258,19 +258,28 @@ Example:
       </template>
     </paper-input-container>
     <paper-material id="suggestionsPanel" elevation="1" class="autocomplete-suggestion-container" animated="[[animated]]">
-      <paper-menu class="autocomplete-suggestions">
-        <template is="dom-repeat" items="{{_suggestions}}">
-          <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
-            <template is="dom-if" if="{{item.imgUrl}}">
-              <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
-            </template>
-            <template is="dom-if" if="{{!item.imgUrl}}">
-              <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
-            </template>
-            <span>{{item.text}}</span>
-          </paper-item>
-        </template>
-      </paper-menu>
+      <template is="dom-if" if="{{_loading}}">
+        <div id="loading">
+          <content select="[loading]"></content>
+        </div>
+      </template>
+
+      <template is="dom-if" if="{{!_loading}}">
+        <paper-menu class="autocomplete-suggestions">
+          <template is="dom-repeat" items="{{_suggestions}}">
+            <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
+              <template is="dom-if" if="{{item.imgUrl}}">
+                <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
+              </template>
+              <template is="dom-if" if="{{!item.imgUrl}}">
+                <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
+              </template>
+              <span>{{item.text}}</span>
+            </paper-item>
+          </template>
+        </paper-menu>
+      </template>
+
     </paper-material>
   </template>
   <script>
@@ -419,6 +428,7 @@ Example:
         '_onAutoCompleteSelectedObjectChange(selectedObject)',
         '_suggestionsChanged(_suggestions)',
         '_suggestionsChanged(_suggestions.splices)',
+        '_loadingChanged(_loading)',
         '_calculateSugestionPanelPosition(suggestionsPosition)',
         '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
         '_cptCanInputText(readOnly, removeOnly)'
@@ -430,6 +440,14 @@ Example:
         this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
         
         this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+      },
+
+      _loadingChanged: function(_loading){
+        if ( this._loading ) {
+          this.showSuggestionsPanel();
+        } else {
+          this.hideSuggestionsPanel();
+        }
       },
       
       _onSelectedObjectsChange: function (selectedObjects) {

@@ -41,7 +41,12 @@
         type:Number,
         value:5
       },
-      
+
+      _loading:{
+        type: Boolean,
+        value: false
+      },
+
       allowSelectUnknownToken: {
         type: Boolean,
         value: false
@@ -342,6 +347,8 @@
         if ( this.remoteUrl ){
           var url = this.remoteUrl.replace("%QUERY", term);
 
+          this._loading = true;
+
           if(this.xmlhttp){
             this.xmlhttp.abort();
           }
@@ -361,7 +368,7 @@
                 for(var i = 0; i < cuttedMatched.length; i++){
                   cuttedMatched[i].key = that._generateObjectKey(cuttedMatched[i].text);
                 }
-
+                that._loading = false;
                 that._suggestions = matched.concat(cuttedMatched);
               }
             }
