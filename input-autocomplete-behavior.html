@@ -133,9 +133,6 @@
     _onTapSelectable: function(e) {
       var suggestionsMenu = this._menuElement;
       if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
-        if(this.validateOnAccept){
-          this._inputElement.invalid = false;
-        }
         this._setSelectedItem(e.currentTarget);
         e.stopPropagation();
       }
@@ -285,6 +282,10 @@
             }
           }
         }
+      }
+
+      if(this.validateOnAccept){
+        this._inputElement.invalid = false;
       }
     },
     
