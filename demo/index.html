@@ -64,10 +64,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged"
           on-response-treatment="XHRResponseTreatment"
           placeholder-after-selected="E-mail..."
-          auto-validate pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+          pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
           error-message="Invalid E-mail"
           token-accept-key-codes="32,188"
-          allow-select-unknown-token>
+          allow-select-unknown-token
+          validate-on-accept>
         </paper-input-autocomplete-chips>
 
       </paper-material>

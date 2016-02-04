@@ -53,6 +53,11 @@
         observer: '_tokenAcceptKeyCodesChanged'
       },
 
+      validateOnAccept: {
+        type: Boolean,
+        value: false
+      },
+
       /**
        * The attribute to listen for value changes on.
        */
@@ -128,6 +133,9 @@
     _onTapSelectable: function(e) {
       var suggestionsMenu = this._menuElement;
       if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
+        if(this.validateOnAccept){
+          this._inputElement.invalid = false;
+        }
         this._setSelectedItem(e.currentTarget);
         e.stopPropagation();
       }
@@ -141,7 +149,10 @@
      * @param {e} event
      */
     _keyup: function(e) {
-      //console.debug('[_keyup]:', e);
+      if(this.validateOnAccept){
+        this._inputElement.invalid = false;
+      }
+
       if (e.which == 27) {
         // ESC Key
         this.inputValue = '';
@@ -177,11 +188,26 @@
         }
         this._inputElement.focus();
       } else if (this._checkTokenAcceptKeyCode(e.which)){
-        // Return Key
         var suggestionsMenu = this._menuElement;
-        if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
-          this._setSelectedItem(suggestionsMenu.focusedItem);
+
+        if(this.validateOnAccept){
+          if( this._inputElement.validate() ){
+            // Return Key
+            if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
+              this._setSelectedItem(suggestionsMenu.focusedItem);
+            }
+          }else{
+            // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
+            this._inputElement.invalid = false;
+            this._inputElement.invalid = true;          
+          }
+        }else{
+          // Return Key
+          if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
+            this._setSelectedItem(suggestionsMenu.focusedItem);
+          }
         }
+
       } else{
         var suggestionsMenu = this._menuElement;
         if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
