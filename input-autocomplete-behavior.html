@@ -366,8 +366,13 @@
                 for(var i = 0; i < cuttedMatched.length; i++){
                   cuttedMatched[i].key = that._generateObjectKey(cuttedMatched[i].text);
                 }
+                
                 that._loading = false;
-                that._suggestions = matched.concat(cuttedMatched);
+
+                if(!that._inputElement.invalid){
+                  that._suggestions = matched.concat(cuttedMatched);  
+                }
+                
               }
             }
           }
