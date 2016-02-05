@@ -223,7 +223,7 @@
     },
 
     _blur: function(e){
-      if(!e.relatedTarget){
+      if(!e.relatedTarget || e.relatedTarget && e.relatedTarget.tagName !== 'PAPER-ITEM'){
         this._createChip();
       }
     },
