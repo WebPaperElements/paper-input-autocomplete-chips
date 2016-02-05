@@ -202,17 +202,7 @@
       } else if (this._checkTokenAcceptKeyCode(e.which)){
         // Return Key
 
-        if(this.validateOnAccept && !this._inputElement.validate() ){
-          // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
-          this._inputElement.invalid = false;
-          this._inputElement.invalid = true;
-        }
-
-        if (suggestionsMenu && suggestionsMenu.focusedItem || !this._inputElement.invalid ){
-          this._setSelectedItem(suggestionsMenu.focusedItem);
-        }else{
-          this._suggestions = [];
-        }
+        this._createChip();
 
       }else if(e.which === 37) { //left
 
@@ -229,6 +219,28 @@
         var searchTerm = this.inputValue || '';
         
         this._search(searchTerm.trim());
+      }
+    },
+
+    _blur: function(e){
+      if(!e.relatedTarget){
+        this._createChip();
+      }
+    },
+
+    _createChip: function(){
+      var suggestionsMenu = this._menuElement;
+
+      if(this.validateOnAccept && !this._inputElement.validate() ){
+        // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
+        this._inputElement.invalid = false;
+        this._inputElement.invalid = true;
+      }
+
+      if (suggestionsMenu && suggestionsMenu.focusedItem || !this._inputElement.invalid ){
+        this._setSelectedItem(suggestionsMenu.focusedItem);
+      }else{
+        this._suggestions = [];
       }
     },
 

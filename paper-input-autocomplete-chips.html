@@ -214,6 +214,7 @@ Example:
         <div id="inputContainer" class="input-container">
           <input is="iron-input" id="input" class="autocomplete-input" 
             on-keyup="_local_keyup" on-keydown="_local_keydown"
+            on-blur="_local_blur"
             aria-labelledby$="[[_ariaLabelledBy]]"
             aria-describedby$="[[_ariaDescribedBy]]"
             disabled$="[[disabled]]"
@@ -419,6 +420,10 @@ Example:
         } else {
           this._keydown(e);
         }
+      },
+
+      _local_blur: function (e) {
+        this._blur(e);
       },
 
       observers: [
