@@ -162,6 +162,8 @@
      * @param {e} event
      */
     _keyup: function(e) {
+      var suggestionsMenu = this._menuElement;
+
       if(this.validateOnAccept){
         this._inputElement.invalid = false;
       }
@@ -176,8 +178,6 @@
         this._search(searchTerm.trim());
       } else if (e.which == 40){
         // Down Key
-        var suggestionsMenu = this._menuElement;
-        
         if (!suggestionsMenu) { return; }
         
         var selectedItem = suggestionsMenu.focusedItem;
@@ -190,8 +190,6 @@
         this._inputElement.focus();
       } else if (e.which == 38){
         // Up Key
-        var suggestionsMenu = this._menuElement;
-
         if (!suggestionsMenu) { return; }
 
         var selectedItem = suggestionsMenu.focusedItem;
@@ -202,24 +200,18 @@
         }
         this._inputElement.focus();
       } else if (this._checkTokenAcceptKeyCode(e.which)){
-        var suggestionsMenu = this._menuElement;
+        // Return Key
 
-        if(this.validateOnAccept){
-          if( this._inputElement.validate() ){
-            // Return Key
-            if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
-              this._setSelectedItem(suggestionsMenu.focusedItem);
-            }
-          }else{
-            // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
-            this._inputElement.invalid = false;
-            this._inputElement.invalid = true;
-          }
+        if(this.validateOnAccept && !this._inputElement.validate() ){
+          // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
+          this._inputElement.invalid = false;
+          this._inputElement.invalid = true;
+        }
+
+        if (suggestionsMenu && suggestionsMenu.focusedItem || !this._inputElement.invalid ){
+          this._setSelectedItem(suggestionsMenu.focusedItem);
         }else{
-          // Return Key
-          if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
-            this._setSelectedItem(suggestionsMenu.focusedItem);
-          }
+          this._suggestions = [];
         }
 
       }else if(e.which === 37) { //left
@@ -227,7 +219,7 @@
       }else if(e.which === 39) { // right
 
       } else{
-        var suggestionsMenu = this._menuElement;
+
         if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
           suggestionsMenu.select(-1);
         }
@@ -239,6 +231,7 @@
         this._search(searchTerm.trim());
       }
     },
+
     _checkIntegrityOfSelectedItem: function () {
       
         if ((this.selectedItem) &&
@@ -248,6 +241,7 @@
           this._setSelectedItem(null);
         }
     },
+
     _setSelectedItem: function (selectedItemElement) {
       var suggestionsMenu = this._menuElement;
 
@@ -370,7 +364,7 @@
                 that._loading = false;
 
                 if(!that._inputElement.invalid){
-                  that._suggestions = matched.concat(cuttedMatched);  
+                  that._suggestions = matched.concat(cuttedMatched);
                 }
                 
               }
