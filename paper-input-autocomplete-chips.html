@@ -434,7 +434,7 @@ Example:
         '_suggestionsChanged(_suggestions)',
         '_suggestionsChanged(_suggestions.splices)',
         '_loadingChanged(_loading)',
-        '_calculateSugestionPanelPosition(suggestionsPosition)',
+        '_calculateSuggestionPanelPosition(suggestionsPosition)',
         '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
         '_cptCanInputText(readOnly, removeOnly)'
       ],
@@ -620,12 +620,12 @@ Example:
       },
 
       showSuggestionsPanel: function () {
-        this.fire('before-show-sugestion-panel');
-        this._calculateSugestionPanelPosition();
+        this.fire('before-show-suggestion-panel');
+        this._calculateSuggestionPanelPosition();
         this.$.suggestionsPanel.classList.remove('hidden');
       },
       
-      _calculateSugestionPanelPosition: function () {
+      _calculateSuggestionPanelPosition: function () {
         if (this.suggestionsPosition === 'top') {
           var inputRect = this.$.input.getBoundingClientRect();
           var diffBottom = 8; // Bottom margin from paper-input-container
