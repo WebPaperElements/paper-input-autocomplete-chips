@@ -620,6 +620,7 @@ Example:
       },
 
       showSuggestionsPanel: function () {
+        this.fire('before-show-sugestion-panel');
         this._calculateSugestionPanelPosition();
         this.$.suggestionsPanel.classList.remove('hidden');
       },
