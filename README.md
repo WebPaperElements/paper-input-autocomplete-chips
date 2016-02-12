@@ -2,6 +2,9 @@
 
 An element providing a starting point for your own reusable Polymer elements.
 
+[DOCS](http://webpaperelements.github.io/paper-input-autocomplete-chips/components/paper-input-autocomplete-chips/)
+
+[DEMO](http://webpaperelements.github.io/paper-input-autocomplete-chips/components/paper-input-autocomplete-chips/demo/index.html)
 
 ## Dependencies
 
