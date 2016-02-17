@@ -64,49 +64,46 @@ Example:
         direction: ltr;
       }
 
-      paper-input-container::shadow .input-content.paper-input-container {
-        align-items: center;
-      }
-
-      paper-input-container::shadow .input-content.paper-input-container paper-chip {
+      paper-input-container .complete-input-container paper-chip {
         margin: var(--autocomplete-chip-margin, 4px 0px);
       }
-
-      paper-input-container::shadow .input-content.paper-input-container.label-is-floating label {
-        top: 0; 
-        bottom: auto; 
-        line-height: 24px;
-      }
-
-      paper-input-container::shadow .input-content.paper-input-container label {
-        top: auto; 
-        bottom: 0; 
-        height: 38px;        
-        line-height: var(--autocomplete-line-height, 40px);
-      }
                   
-      paper-input-container::shadow div.complete-input-container.chip-item-added label {
-        line-height: var(--autocomplete-line-height, 40px);
-      }
-
       .input-container {
         display: inline-block;
       }
+
       .input-container input#input {
         display: block;
         resize: none;
       }
 
-      paper-input-container::shadow div.complete-input-container input#input {
-        height: 38px;        
+      paper-input-container {
+        --paper-input-container-label: {
+          top: auto; 
+          height: 38px;        
+          line-height: var(--autocomplete-line-height, 40px);
+        };
+        
+        --paper-input-container-label-floating: {
+          top: 0; 
+          bottom: auto; 
+        };
+        
+        --paper-input-container-input: {
+          height: 38px;        
+          line-height: var(--autocomplete-line-height, 40px);
+        };
+      }
+
+      paper-input-container::shadow div.complete-input-container.chip-item-added label {
         line-height: var(--autocomplete-line-height, 40px);
       }
       
-      paper-input-container::shadow div.complete-input-container.chip-item-added .input-container {
+      paper-input-container div.complete-input-container.chip-item-added .input-container {
         width: 50%;
       }
 
-      paper-input-container::shadow div.complete-input-container:not(.chip-item-added) .input-container {
+      paper-input-container div.complete-input-container:not(.chip-item-added) .input-container {
         width: 100%;
       }
      

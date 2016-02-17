@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>paper-input-autocomplete-chips Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../paper-button/paper-button.html">
+    <link rel="import" href="../../paper-material/paper-material.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../iron-icons/social-icons.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../paper-input-autocomplete.html">
+    <link rel="import" href="../paper-input-autocomplete-chips.html">
+  </head>
+  <style is="custom-style">
+    
+    body {
+      background-color: darkgrey;
+    }
+        
+    body > paper-material {
+      width: 400px;
+      background-color: white;
+      padding: 24px;
+      margin: 24px;
+    }
+    
+    paper-material.fixed-paper {
+      z-index: 99;
+      position: fixed;
+      top: 10px;
+      right: 24px;
+      bottom: 0px;
+      margin-bottom: 24px;
+      overflow-y: auto;
+    }
+    
+  </style>
+  <body unresolved>
+
+    <template is="dom-bind" id="app">
+      <style is="custom-style">
+        #myAutoCompletePOCUnknownItems::shadow paper-chip[data-tag="custom01"] .main-container {
+          background-color: #FFB74D;
+        }
+
+        #myAutoCompletePOCUnknownItems::shadow paper-chip[data-tag="custom02"] .main-container {
+          background-color: #00B74D;
+        }
+      </style>
+
+      <paper-material class="demo-paper">
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt; using tags on items to turn the chips findable or layout customizable.</code>:</p>
+            
+        <paper-input-autocomplete-chips 
+          id="myAutoCompletePOCUnknownItems" 
+          local-candidates="{{states}}" 
+          label="States" >
+        </paper-input-autocomplete-chips>
+
+      </paper-material>
+    
+      <script>
+        window.addEventListener('WebComponentsReady', function() {
+          
+          var app = document.querySelector('#app');
+                    
+          app.states = [
+            {
+              key: 1,
+              text: "Alabama",
+              imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
+              tag: 'custom01',
+              readOnly: false
+            },
+            {
+              key: 2,
+              text: "Alaska",
+              imgUrl: 'http://lorempixel.com/256/256/',
+              tag: 'custom02',
+            },
+            {
+              key: 3,
+              text: "American Samoa",
+              imgUrl: 'http://lorempixel.com/200/200/sports/1/'
+            },
+            {
+              key: 4,
+              text: "Arizona",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 5,
+              text: "Arkansas",
+              imgUrl: null
+            },
+            {
+              key: 6,
+              text: "California",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 7,
+              text: "Colorado",
+              imgUrl: null
+            }
+          ];
+        });        
+      </script>
+    </template>
+  </body>
+</html>
