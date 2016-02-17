@@ -219,6 +219,7 @@
         var searchTerm = this.inputValue || '';
         
         this._search(searchTerm.trim());
+
       }
     },
 
@@ -226,6 +227,32 @@
       if(!e.relatedTarget || e.relatedTarget && e.relatedTarget.tagName !== 'PAPER-ITEM'){
         this._createChip();
       }
+    },
+
+    _paste: function(e){
+      var text = '';
+      var data = [];
+
+      if(!this.pasteHandler){
+        return;
+      }
+
+      if (/text\/plain/.test(e.clipboardData.types)) {
+        text = e.clipboardData.getData('text/plain');
+      }
+
+      data = this.pasteHandler(text);
+
+      if(data && data.length){
+        for(var i = 0; i < data.length; i++){
+          this.selectedObject = {
+            key: this._generateObjectKey(data[i]),
+            text: data[i]
+          };
+        }
+      }
+
+      e.preventDefault();
     },
 
     _createChip: function(){

@@ -213,7 +213,9 @@ Example:
 				</template>
         <div id="inputContainer" class="input-container">
           <input is="iron-input" id="input" class="autocomplete-input" 
-            on-keyup="_local_keyup" on-keydown="_local_keydown"
+            on-keyup="_local_keyup"
+            on-keydown="_local_keydown"
+            on-paste="_local_paste"
             on-blur="_local_blur"
             aria-labelledby$="[[_ariaLabelledBy]]"
             aria-describedby$="[[_ariaDescribedBy]]"
@@ -389,6 +391,11 @@ Example:
           value: false,
           reflectToAttribute: true
         },
+
+        pasteHandler: {
+          type: Function,
+          notify: true
+        }
       },
 
       get _paperInputContainerElement() {
@@ -424,6 +431,10 @@ Example:
 
       _local_blur: function (e) {
         this._blur(e);
+      },
+
+      _local_paste: function(e){
+        this._paste(e);
       },
 
       observers: [

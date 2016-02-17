@@ -69,7 +69,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           token-accept-key-codes="32,188"
           allow-select-unknown-token
           validate-on-accept
-          no-chip-image>
+          no-chip-image
+          paste-handler="{{_pasteHandler}}">
 
             <div loading>LOADING</div>
 
@@ -204,17 +205,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           app.onToggleDisabled = function () {
             var $el = document.getElementById('myAutoCompletePOC');
             $el.disabled = !$el.disabled;
-          },
+          };
           
           app.onSwitchSuggestionPanelPosition = function () {
             var $el = document.getElementById('myAutoCompletePOC');
             console.debug($el.suggestionsPosition);
             $el.suggestionsPosition = ($el.suggestionsPosition === 'top') ? 'bottom' : 'top';
-          },
+          };
           
           app._allowUnknown_onSelectedObjectsChanged = function (e) {
             //console.debug('[_allowUnknown_onSelectedObjectsChanged]', e.target.selectedObjects);
-          },
+          };
           
           app._allowUnknown_onSelectingObject = function (e) {
 
@@ -225,7 +226,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             if (e.detail.selectedObject.text.indexOf('#') === 0) {
                 e.detail.selectedObject.text = e.detail.selectedObject.text.substring(1);  
             }
-          },
+          };
 
           app.XHRResponseTreatment = function(e){
             var length = e.detail.response.length;
@@ -234,7 +235,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               e.detail.response[i].text = e.detail.response[i].t;
               e.detail.response[i].imgUrl = e.detail.response[i].i;
             }
-          }
+          };
+
+          app._pasteHandler = function( text ){
+            return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+          };
                     
           app.states = [
             {
