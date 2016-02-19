@@ -1,0 +1,113 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
+
+<dom-module id="paper-autocomplete-results">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host paper-menu {
+        padding: 0px;
+      }
+    </style>
+    <paper-menu id="paperMenu">
+      <content></content>
+    </paper-menu>
+  </template>
+  <script>
+
+    Polymer({
+
+      is: 'paper-autocomplete-results',
+
+      behaviors: [
+      ],
+
+      properties: {
+      },
+
+      // Element Lifecycle
+
+      ready: function() {
+      },
+
+      attached: function() {
+      },
+
+      detached: function() {
+      },
+
+      get items() {
+        return this.$.paperMenu.items;
+      },      
+      
+      get focusedItem() {
+        return this.$.paperMenu.querySelector('.iron-selected');
+      },
+      
+      indexOf: function (selectableElement) {
+        return this.$.paperMenu.indexOf(selectableElement);
+      },
+      
+      select: function (index) {
+        if ((index >= 0) && (this.items.length > index)) {
+          var focusedItem = this.focusedItem; 
+          if (focusedItem) {
+            focusedItem.classList.remove('iron-selected')
+            focusedItem.active = false;
+          }
+          
+          var nextElement = this.items[index];
+          
+          nextElement.classList.add('iron-selected')
+          nextElement.active = true;
+          
+          var offset = nextElement.offsetTop + nextElement.offsetHeight;
+          var scrollTopValue = (Math.max(0, offset - this.offsetParent.clientHeight))
+          this.offsetParent.scrollTop = scrollTopValue;
+        }
+      },
+
+      selectFirst: function () {
+        this.select(0);
+      },
+      
+      selectPrevious: function () {
+        var selectedItem = this.focusedItem;
+        if (typeof(selectedItem) !== 'undefined'){
+          index = Number(this.indexOf(selectedItem));
+          index = Math.max(index - 1, -1);
+          if (index < 0) {
+            this.selectLast()
+          } else {
+            this.select(index);
+          }
+        }
+      },
+
+      selectNext: function () {
+        var index = 0;
+        var selectedItem = this.focusedItem;
+        if (typeof(selectedItem) !== 'undefined'){
+          index = Number(this.indexOf(selectedItem));
+          index = Math.min(index + 1, this.items.length);
+          if (index >= this.items.length) {
+            this.selectFirst();
+          } else {
+            this.select(index);
+          }
+        }
+      },
+
+      selectLast: function () {
+        this.select(this.items.length - 1);
+      },
+
+    });
+
+  </script>
+</dom-module>

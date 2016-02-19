@@ -97,7 +97,7 @@
      * Returns a reference to the menu element.
      */
     get _menuElement() {
-      return this.$$('paper-menu.autocomplete-suggestions');
+      return this.$$('paper-autocomplete-results.autocomplete-suggestions');
     },
 
     // Element Behavior
@@ -136,10 +136,6 @@
         var selectedItem = e.currentTarget;
         index = Number(suggestionsMenu.indexOf(selectedItem));
         suggestionsMenu.select(index);
-        this._inputElement.focus();
-      }
-      else{
-        // console.log("suggestionsMenu not defined");
       }
     },
     /**
@@ -151,9 +147,6 @@
       if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
         this._setSelectedItem(e.currentTarget);
         e.stopPropagation();
-      }
-      else{
-        // console.log("suggestionsMenu not defined");
       }
     },
     /**
@@ -180,25 +173,12 @@
         // Down Key
         if (!suggestionsMenu) { return; }
         
-        var selectedItem = suggestionsMenu.focusedItem;
-        var index = 0;
-        if (typeof(selectedItem) !== 'undefined'){
-          index = Number(suggestionsMenu.indexOf(selectedItem));
-          index = Math.min(index + 1, this._suggestions.length - 1);
-        }
-        suggestionsMenu.select(index);
-        this._inputElement.focus();
+        suggestionsMenu.selectNext();
       } else if (e.which == 38){
         // Up Key
         if (!suggestionsMenu) { return; }
 
-        var selectedItem = suggestionsMenu.focusedItem;
-        if (typeof(selectedItem) !== 'undefined'){
-          index = Number(suggestionsMenu.indexOf(selectedItem));
-          index = Math.max(index - 1, -1);
-          suggestionsMenu.select(index);
-        }
-        this._inputElement.focus();
+        suggestionsMenu.selectPrevious();
       } else if (this._checkTokenAcceptKeyCode(e.which)){
         // Return Key
 
@@ -209,17 +189,11 @@
       }else if(e.which === 39) { // right
 
       } else{
-
-        if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
-          suggestionsMenu.select(-1);
-        }
-        
         this._checkIntegrityOfSelectedItem();
         
         var searchTerm = this.inputValue || '';
         
         this._search(searchTerm.trim());
-
       }
     },
 
@@ -350,7 +324,7 @@
           return;
         }
 
-        var patt =  new RegExp( this.scapeString( term.toLowerCase() ) );
+        var patt =  new RegExp( this._scapeString( term.toLowerCase() ) );
         var matched = [];
 
         if ( this.localCandidates && this.localCandidates.length ){
@@ -417,7 +391,7 @@
       },250);
     },
     
-    scapeString: function(term){
+    _scapeString: function(term){
       var especialChars = ['\\.', '\\*', '\\+', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\\\'];
 
       for (var i=0, l=especialChars.length ; i<l ; i++) {

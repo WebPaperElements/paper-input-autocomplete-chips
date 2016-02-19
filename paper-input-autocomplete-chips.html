@@ -11,6 +11,8 @@
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="./input-autocomplete-behavior.html">
 
+<link rel="import" href="./paper-autocomplete-results.html">
+
 <!--
 An element providing a solution to no problem in particular.
 
@@ -116,7 +118,7 @@ Example:
         right:0;
         position: absolute;
         z-index: 10; 
-        max-height: 111px;
+        max-height: 112px;
         overflow-y: auto;
         opacity: 1;
       }
@@ -214,6 +216,7 @@ Example:
             on-keydown="_local_keydown"
             on-paste="_local_paste"
             on-blur="_local_blur"
+            on-focus="_onInputFocus"
             aria-labelledby$="[[_ariaLabelledBy]]"
             aria-describedby$="[[_ariaDescribedBy]]"
             disabled$="[[disabled]]"
@@ -264,21 +267,19 @@ Example:
         </div>
       </template>
 
-      <template is="dom-if" if="{{!_loading}}">
-        <paper-menu class="autocomplete-suggestions">
-          <template is="dom-repeat" items="{{_suggestions}}">
-            <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
-              <template is="dom-if" if="{{item.imgUrl}}">
-                <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
-              </template>
-              <template is="dom-if" if="{{!item.imgUrl}}">
-                <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
-              </template>
-              <span>{{item.text}}</span>
-            </paper-item>
-          </template>
-        </paper-menu>
-      </template>
+      <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]">
+        <template is="dom-repeat" items="{{_suggestions}}">
+          <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
+            <template is="dom-if" if="{{item.imgUrl}}">
+              <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
+            </template>
+            <template is="dom-if" if="{{!item.imgUrl}}">
+              <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
+            </template>
+            <span>{{item.text}}</span>
+          </paper-item>
+        </template>
+      </paper-autocomplete-results>
 
     </paper-material>
   </template>
@@ -611,7 +612,7 @@ Example:
 
       ready: function() {
         this._override_paperInputContainer();
-        
+                
         this.addEventListener('blur', this._boundOnBlur, true);
       },
 
@@ -631,6 +632,9 @@ Example:
         this.fire('before-show-suggestion-panel');
         this._calculateSuggestionPanelPosition();
         this.$.suggestionsPanel.classList.remove('hidden');
+        this.async(function () {
+          this.$.autocompleteResults.selectFirst();
+        }, 1);
       },
       
       _calculateSuggestionPanelPosition: function () {
@@ -737,6 +741,10 @@ Example:
         }
         // Call this last to notify the add-ons.
         this._handleValue(inputElement);
+      },
+      
+      _onInputFocus: function (e) {
+        this.fire('input-focused');
       },
     });
   </script>
