@@ -278,7 +278,11 @@
       var suggestionFocusedItem = this._suggestionsFocusedItem;
 
       if ((suggestionFocusedItem) || (!this._inputElement.invalid )) {
-        this._setSelectedItem(suggestionFocusedItem);
+        if (suggestionFocusedItem) {
+          this._setSelectedItem(suggestionFocusedItem);
+        } else {
+          this._setSelectedItem();
+        }
       }else{
         this.setSuggestions([]);
       }
@@ -295,10 +299,9 @@
     },
 
     _setSelectedItem: function (selectedItemElement) {
-      console.log('[_setSelectedItem]');
       var suggestionsMenu = this._menuElement;
 
-      if (selectedItemElement) {
+      if (selectedItemElement !== undefined) {
         if (this.selectedItem !== selectedItemElement) {
           
           var selectedObject = null;
