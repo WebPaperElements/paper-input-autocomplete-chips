@@ -114,7 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-input label="Chip label prefix" value="{{chipLabelPrefix}}"></paper-input>
         <paper-input label="Chip label suffix" value="{{chipLabelSuffix}}"></paper-input>
             
-        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" chip-label-prefix="[[chipLabelPrefix]]" chip-label-suffix="[[chipLabelSuffix]]" label="Chips" placeholder-after-selected="...">
+        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" chip-label-prefix="[[chipLabelPrefix]]" chip-label-suffix="[[chipLabelSuffix]]" label="Chips" placeholder-after-selected="..." on-input-focused="_onInputFocused">
           <iron-icon icon="social:share" prefix></iron-icon>
           <paper-icon-button icon="lock-open" suffix></paper-icon-button>
         </paper-input-autocomplete-chips>
@@ -134,17 +134,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!--<iron-icon icon="visibility" prefix></iron-icon>
           <iron-icon icon="visibility" suffix></iron-icon>-->
         </paper-input-autocomplete-chips>
-      </paper-material>
-
-      <paper-material class="demo-paper">
-        <p>An example of <code>&lt;paper-input-autocomplete&gt;</code>:</p>
-    
-        <paper-input-autocomplete max-suggestions="3" local-candidates="{{states}}"  placeholder="US states">
-        </paper-input-autocomplete>
-    
-        <paper-input label="Teste">
-          <iron-icon icon="visibility" prefix></iron-icon>
-        </paper-input>
       </paper-material>
 
       <paper-material class="demo-paper">
@@ -245,6 +234,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           app._pasteHandler = function( text ){
             return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
           };
+          
+          app._onInputFocused = function (e) {
+            e.target.setSuggestions(app.defaultSuggestions);
+          },
+                  
+          app.defaultSuggestions = [
+            {
+              key: 1,
+              text: "Alabama",
+              imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
+              tag: 'read-only',
+              readOnly: false
+            },
+            {
+              key: 2,
+              text: "Alaska",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+          ];
                     
           app.states = [
             {
@@ -287,7 +295,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           ];
 
           var autocompletePOC = document.getElementById('myAutoCompletePOC');
-          
+          /*
           autocompletePOC.selectedObjects = [
             app.states[0],
             app.states[1],
@@ -295,6 +303,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             app.states[3],
             app.states[4],
           ];
+          */
 
           // 
           // app.states = [

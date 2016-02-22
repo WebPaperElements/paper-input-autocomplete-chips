@@ -42,6 +42,14 @@
         value:5
       },
 
+      /**
+       * Input value.
+       */
+      inputValue: {
+        type: String,
+        notify: true,
+      },
+
       _loading:{
         type: Boolean,
         value: false
@@ -70,6 +78,11 @@
         type: String,
         value: 'bind-value'
       },
+
+      suggestionsPosition: {
+        type: String,
+        value: 'bottom',
+      },
 	  },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
@@ -88,16 +101,37 @@
     get _inputElement() {
       return this.$$('paper-input.autocomplete-input, input.autocomplete-input');
     },
-
-    get _inputElementValue() {
-      return this._inputElement[this._propertyForValue] || this._inputElement.value;
-    },
     
     /**
      * Returns a reference to the menu element.
      */
     get _menuElement() {
       return this.$$('paper-autocomplete-results.autocomplete-suggestions');
+    },
+    
+    get isSuggestionsOnBottom() {
+      return (this.suggestionsPosition === 'bottom');
+    },
+    
+    get _safeInputValue() {
+      return (this.inputValue) ? this.inputValue.trim() : '';
+    },
+    
+    get _suggestionsFocusedItem() {
+      var suggestionsMenu = this._menuElement;
+      return (suggestionsMenu) ? suggestionsMenu.focusedItem : null;
+    },
+    
+    setSuggestions: function (suggestions) {
+      if (suggestions) {
+        if (this.isSuggestionsOnBottom) {
+          this._suggestions = suggestions;
+        } else {
+          this._suggestions = suggestions.reverse();
+        }
+      } else {
+        this._suggestions = [];
+      }
     },
 
     // Element Behavior
@@ -114,17 +148,20 @@
       ];
 
       // TAB
-      if( e.which === 9 && this._inputElementValue && this._suggestions.length === 0){
-        e.preventDefault();
-      }else if(e.which === 9){
-        return false;
+      if ( e.which === 9) {
+        if (this._safeInputValue.length > 0 && this._suggestions.length === 0) { 
+          //console.warn('[_keydown]: IF01');
+          e.preventDefault();
+        } else if ((this._safeInputValue.length <= 0) || (!this._suggestionsFocusedItem)) {
+          //console.warn('[_keydown]: IF02');
+          return false;
+        }  
       }
 
       if ((defaultPreventedKeyCodes.indexOf(e.which) >= 0) || (this._checkTokenAcceptKeyCode(e.which))) {
+        //console.warn('[_keydown]: IF03');
         e.preventDefault();
       }
-
-
     },
     /**
      * Callback on mouse over event on paper-item
@@ -161,14 +198,14 @@
         this._inputElement.invalid = false;
       }
 
+      var searchTerm = this._safeInputValue;
+
       if (e.which == 27) {
         // ESC Key
         this.inputValue = '';
         
-        var searchTerm = this.inputValue || '';
-
         this._checkIntegrityOfSelectedItem();
-        this._search(searchTerm.trim());
+        this._search(searchTerm);
       } else if (e.which == 40){
         // Down Key
         if (!suggestionsMenu) { return; }
@@ -180,26 +217,28 @@
 
         suggestionsMenu.selectPrevious();
       } else if (this._checkTokenAcceptKeyCode(e.which)){
+        //console.warn('[_keyup]: IF01');
         // Return Key
+        if (searchTerm.length > 0) {
+          this._createChip();
+        }
+      }else if (e.which === 37) { //left
 
-        this._createChip();
+      }else if (e.which === 39) { // right
 
-      }else if(e.which === 37) { //left
-
-      }else if(e.which === 39) { // right
-
-      } else{
+      } else if (e.which !== 16) {
+        //console.warn('[_keyup]: ELSE: ', e.which);
         this._checkIntegrityOfSelectedItem();
-        
-        var searchTerm = this.inputValue || '';
-        
-        this._search(searchTerm.trim());
+                
+        this._search(searchTerm);
       }
     },
 
     _blur: function(e){
       if(!e.relatedTarget || e.relatedTarget && e.relatedTarget.tagName !== 'PAPER-ITEM'){
-        this._createChip();
+        //this._createChip();
+        this._suggestions = [];
+        this.inputValue = '';
       }
     },
 
@@ -230,29 +269,29 @@
     },
 
     _createChip: function(){
-      var suggestionsMenu = this._menuElement;
-
       if(this.validateOnAccept && !this._inputElement.validate() ){
         // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
         this._inputElement.invalid = false;
         this._inputElement.invalid = true;
       }
+      
+      var suggestionFocusedItem = this._suggestionsFocusedItem;
 
-      if (suggestionsMenu && suggestionsMenu.focusedItem || !this._inputElement.invalid ){
-        this._setSelectedItem(suggestionsMenu.focusedItem);
+      if ((suggestionFocusedItem) || (!this._inputElement.invalid )) {
+        this._setSelectedItem(suggestionFocusedItem);
       }else{
-        this._suggestions = [];
+        this.setSuggestions([]);
       }
     },
 
     _checkIntegrityOfSelectedItem: function () {
-      
-        if ((this.selectedItem) &&
-            ((!this.inputValue) ||
-             (this.inputValue.trim() === '')||
-             (this.inputValue !== this.selectedItemText))) {
-          this._setSelectedItem(null);
-        }
+      var _inputValue = this._safeInputValue;
+
+      if ((this.selectedItem) &&
+          ((_inputValue === '')||
+           (this.inputValue !== this.selectedItemText))) {
+        this._setSelectedItem(null);
+      }
     },
 
     _setSelectedItem: function (selectedItemElement) {
@@ -271,7 +310,7 @@
               selectedObject = this._suggestions[index];
               
               selectedItemText = selectedObject.text;
-              this._suggestions = [];
+              this.setSuggestions([]);
               this.inputValue = selectedItemText;
             } else {
               selectedItemElement = null;
@@ -286,9 +325,9 @@
       } else if (this.allowSelectUnknownToken) {
 
         if (!this.invalid) {
-          var selectedItemText = (this.inputValue) ? this.inputValue.trim() : null;
+          var selectedItemText = this._safeInputValue;
   
-          if (selectedItemText) {
+          if (selectedItemText.length > 0) {
             var selectedObject = {
               key: this._generateObjectKey(selectedItemText),
               text: selectedItemText
@@ -296,7 +335,7 @@
             
             this.selectedItemText = selectedItemText;
             this.selectedObject = selectedObject;
-            this._suggestions = [];
+            this.setSuggestions([]);
 
             if(this.xmlhttp){
               this.xmlhttp.abort();
@@ -320,7 +359,7 @@
 
       this.debounce('search', function(){
         if (term === ''){
-          this._suggestions = [];
+          this.setSuggestions([]);
           return;
         }
 
@@ -377,7 +416,7 @@
                 that._loading = false;
 
                 if(!that._inputElement.invalid){
-                  that._suggestions = matched.concat(cuttedMatched);
+                  that.setSuggestions(matched.concat(cuttedMatched));
                 }
                 
               }
@@ -386,7 +425,7 @@
           this.xmlhttp.send();
         }
         else{
-          this._suggestions = matched;
+          this.setSuggestions(matched);
         }
       },250);
     },
