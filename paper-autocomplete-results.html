@@ -67,8 +67,11 @@
           nextElement.active = true;
           
           var offset = nextElement.offsetTop + nextElement.offsetHeight;
-          var scrollTopValue = (Math.max(0, offset - this.offsetParent.clientHeight))
-          this.offsetParent.scrollTop = scrollTopValue;
+          var clientHeightOffsetParent = (this.offsetParent) ? this.offsetParent.clientHeight : 0;
+          var scrollTopValue = Math.max(0, offset - clientHeightOffsetParent);
+          if (this.offsetParent) {
+            this.offsetParent.scrollTop = scrollTopValue;
+          }
         }
       },
 

@@ -295,9 +295,10 @@
     },
 
     _setSelectedItem: function (selectedItemElement) {
+      console.log('[_setSelectedItem]');
       var suggestionsMenu = this._menuElement;
 
-      if (typeof(selectedItemElement) !== 'undefined') {
+      if (selectedItemElement) {
         if (this.selectedItem !== selectedItemElement) {
           
           var selectedObject = null;
