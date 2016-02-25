@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>paper-avatar-image Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../paper-styles/paper-styles.html">
+    <link rel="import" href="../../paper-material/paper-material.html">
+    <link rel="import" href="../../paper-styles/classes/global.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../paper-chip.html">
+  </head>
+  <body unresolved>
+    <template is="dom-bind" id="app">
+      <style is="custom-style">
+        body {
+          background-color: var(--light-primary-color);
+        }
+
+        paper-material {
+          background-color: var(--primary-background-color);
+          margin: 24px;
+          padding: 16px;
+        }
+        
+        .horizontal-section {
+          min-height: 100px;
+        }
+
+        .horizontal-section > paper-avatar-image {
+          margin: 24px;
+        }
+        
+        paper-material paper-chip {
+          margin-right: 16px;
+        }
+      </style>
+  
+      <h1>An example of <code>&lt;paper-chip&gt;</code>:</h1>
+
+      <paper-material class="scroll fixed bottom">
+        <h3>Settings:</h3>
+        <div class="vertical layout">
+        </div>
+      </paper-material>
+
+      <paper-material>
+        <h3>An basic example of <code>&lt;paper-chip&gt;</code>:</h3>
+        <div class="horizontal-section horizontal layout">
+          <paper-chip label="John Doe" no-image></paper-chip>
+          <paper-chip label="John Doe" no-image removable></paper-chip>
+          <paper-chip label="John Doe">
+            <div class="icon">J</div>
+          </paper-chip>
+          <paper-chip label="John Doe" removable>
+            <iron-icon class="icon" icon="android"></iron-icon>
+          </paper-chip>
+          <paper-chip label="John Doe" removable>
+            <iron-icon class="icon" src="http://lorempixel.com/32/32/"></iron-icon>
+          </paper-chip>
+        </div>
+      </paper-material>
+      
+      <script>
+        
+        window.addEventListener('WebComponentsReady', function() {
+          
+          var app = document.querySelector('#app');
+          
+        });
+      </script>
+    </template>
+  </body>
+</html>

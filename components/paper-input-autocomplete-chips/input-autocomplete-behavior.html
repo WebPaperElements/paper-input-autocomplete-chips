@@ -1,0 +1,512 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+
+<script>
+
+  var WebPaperElem = WebPaperElem || {};
+
+  WebPaperElem.InputAutoCompleteBehaviorImpl = {
+	  properties: {
+      selectedItem: {
+        type: Object,
+      },
+      selectedItemText: {
+        type: String,
+      },
+      /**
+       * The candidates from local variable.
+       */
+      localCandidates:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Remote URL.
+       */
+      remoteUrl:{
+        type:String,
+        value:''
+      },
+      /**
+       * Internal variable holding all matched suggestions.
+       */
+      _suggestions:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Maximum number of suggestions to show up in typeahead.
+       */
+      maxSuggestions:{
+        type:Number,
+        value:5
+      },
+
+      /**
+       * Input value.
+       */
+      inputValue: {
+        type: String,
+        notify: true,
+      },
+
+      _loading:{
+        type: Boolean,
+        value: false
+      },
+
+      allowSelectUnknownToken: {
+        type: Boolean,
+        value: false
+      },
+
+      tokenAcceptKeyCodes: {
+        type: String,
+        value: '',
+        observer: '_tokenAcceptKeyCodesChanged'
+      },
+
+      validateOnAccept: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * The attribute to listen for value changes on.
+       */
+      attrForValue: {
+        type: String,
+        value: 'bind-value'
+      },
+
+      suggestionsPosition: {
+        type: String,
+        value: 'bottom',
+      },
+
+      groupedSuggestions: {
+        type: Boolean,
+        value: false
+      },
+	  },
+
+    _tokenAcceptKeyCodesChanged: function (newValue) {
+      this.tokenAcceptKeyCodesArray = (newValue) ? newValue.split(',') : [];
+      this.tokenAcceptKeyCodesArray.push('13'); /* return key is default. */
+      this.tokenAcceptKeyCodesArray.push('9'); /* tab key is default. */
+    },
+
+    get _propertyForValue() {
+      return Polymer.CaseMap.dashToCamelCase(this.attrForValue);
+    },
+    
+    /**
+     * Returns a reference to the input element.
+     */
+    get _inputElement() {
+      return this.$$('paper-input.autocomplete-input, input.autocomplete-input');
+    },
+    
+    /**
+     * Returns a reference to the menu element.
+     */
+    get _menuElement() {
+      return this.$$('paper-autocomplete-results.autocomplete-suggestions');
+    },
+    
+    get isSuggestionsOnBottom() {
+      return (this.suggestionsPosition === 'bottom');
+    },
+    
+    get _safeInputValue() {
+      return (this.inputValue) ? this.inputValue.trim() : '';
+    },
+    
+    get _suggestionsFocusedItem() {
+      var suggestionsMenu = this._menuElement;
+      return (suggestionsMenu) ? suggestionsMenu.focusedItem : null;
+    },
+    
+    setSuggestions: function (suggestions) {
+      this._suggestions = this._normalizeSuggestionsList(suggestions);
+    },
+    
+    _normalizeSuggestionsList: function (suggestions) {
+      if (suggestions) {
+        var tmpSuggestions = suggestions;
+        if (!this.isSuggestionsOnBottom) {
+          tmpSuggestions = suggestions.reverse();
+        }
+        
+        if (this.groupedSuggestions) {
+          return this._groupSuggestions(tmpSuggestions);
+        } else {
+          return tmpSuggestions;
+        }
+      } else {
+        return [];
+      }
+    },
+    
+    _groupSuggestions: function (suggestions) {
+      var groupedSuggestions = [];
+      var groupStructure = {};
+      
+      suggestions.forEach(function (item) {
+        var groupName = '{none}';
+        if (item.group) {
+          groupName = item.group;
+        }
+        if (!groupStructure[groupName]) {
+          groupStructure[groupName] = {
+            groupIcon: item.groupIcon,  
+            items: []
+          };
+        }
+        groupStructure[groupName].items.push(item); 
+      }); 
+      
+      for (var key in groupStructure) {
+        if (groupStructure.hasOwnProperty(key)) {
+          groupedSuggestions.push({
+            groupName: key,
+            groupIcon: groupStructure[key].groupIcon,  
+            items: groupStructure[key].items
+          });
+        }
+      }
+      
+      return groupedSuggestions;
+    },
+
+    // Element Behavior
+    /**
+     * Callback for keydown event
+     *
+     * @param {e} event
+     */
+    _keydown: function(e) {
+      var defaultPreventedKeyCodes = [
+        27, /* ESC */ 
+        40, 
+        38
+      ];
+
+      // TAB
+      if ( e.which === 9) {
+        if (this._safeInputValue.length > 0 && this._suggestions.length === 0) { 
+          //console.warn('[_keydown]: IF01');
+          e.preventDefault();
+        } else if ((this._safeInputValue.length <= 0) || (!this._suggestionsFocusedItem)) {
+          //console.warn('[_keydown]: IF02');
+          return false;
+        }  
+      }
+
+      if ((defaultPreventedKeyCodes.indexOf(e.which) >= 0) || (this._checkTokenAcceptKeyCode(e.which))) {
+        //console.warn('[_keydown]: IF03');
+        e.preventDefault();
+      }
+    },
+    /**
+     * Callback on mouse over event on paper-item
+     *
+     */
+    _onMouseOverSelectable: function(e) {
+      var suggestionsMenu = this._menuElement;
+      if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
+        var selectedItem = e.currentTarget;
+        index = Number(suggestionsMenu.indexOfSelectable(selectedItem));
+        suggestionsMenu.select(index);
+      }
+    },
+    /**
+     * Callback on tap event on paper-item
+     *
+     */
+    _onTapSelectable: function(e) {
+      var suggestionsMenu = this._menuElement;
+      if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
+        this._setSelectedItem(e.currentTarget);
+        e.stopPropagation();
+      }
+    },
+    /**
+     * Callback for keyup event
+     *
+     * @param {e} event
+     */
+    _keyup: function(e) {
+      var suggestionsMenu = this._menuElement;
+
+      if(this.validateOnAccept){
+        this._inputElement.invalid = false;
+      }
+
+      var searchTerm = this._safeInputValue;
+
+      if (e.which == 27) {
+        // ESC Key
+        this.inputValue = '';
+        
+        this._checkIntegrityOfSelectedItem();
+        this._search(searchTerm);
+      } else if (e.which == 40){
+        // Down Key
+        if (!suggestionsMenu) { return; }
+        
+        suggestionsMenu.selectNext();
+      } else if (e.which == 38){
+        // Up Key
+        if (!suggestionsMenu) { return; }
+
+        suggestionsMenu.selectPrevious();
+      } else if (this._checkTokenAcceptKeyCode(e.which)){
+        //console.warn('[_keyup]: IF01');
+        // Return Key
+        if (searchTerm.length > 0) {
+          this._createChip();
+        }
+      }else if (e.which === 37) { //left
+
+      }else if (e.which === 39) { // right
+
+      } else if (e.which !== 16) {
+        //console.warn('[_keyup]: ELSE: ', e.which);
+        this._checkIntegrityOfSelectedItem();
+                
+        this._search(searchTerm);
+      }
+    },
+
+    _blur: function(e){
+      if(!e.relatedTarget || e.relatedTarget && e.relatedTarget.tagName !== 'PAPER-ITEM'){
+        //this._createChip();
+        this.setSuggestions([]);
+        this.inputValue = '';
+      }
+    },
+
+    _paste: function(e){
+      var text = '';
+      var data = [];
+
+      if(!this.pasteHandler){
+        return;
+      }
+
+      if (/text\/plain/.test(e.clipboardData.types)) {
+        text = e.clipboardData.getData('text/plain');
+      }
+
+      data = this.pasteHandler(text);
+
+      if(data && data.length){
+        for(var i = 0; i < data.length; i++){
+          this.selectedObject = {
+            key: this._generateObjectKey(data[i]),
+            text: data[i]
+          };
+        }
+        e.preventDefault();
+      }
+      
+    },
+
+    _createChip: function(){
+      if(this.validateOnAccept && !this._inputElement.validate() ){
+        // IRON-INPUT BUG - VALIDATE METHOD SET INVALID TO TRUE BUT STYLES ARE NOT UPDATED
+        this._inputElement.invalid = false;
+        this._inputElement.invalid = true;
+      }
+      
+      var suggestionFocusedItem = this._suggestionsFocusedItem;
+
+      if ((suggestionFocusedItem) || (!this._inputElement.invalid )) {
+        if (suggestionFocusedItem) {
+          this._setSelectedItem(suggestionFocusedItem);
+        } else {
+          this._setSelectedItem();
+        }
+      }else{
+        this.setSuggestions([]);
+      }
+    },
+
+    _checkIntegrityOfSelectedItem: function () {
+      var _inputValue = this._safeInputValue;
+
+      if ((this.selectedItem) &&
+          ((_inputValue === '')||
+           (this.inputValue !== this.selectedItemText))) {
+        this._setSelectedItem(null);
+      }
+    },
+
+    _setSelectedItem: function (selectedItemElement) {
+      var suggestionsMenu = this._menuElement;
+
+      if (selectedItemElement !== undefined) {
+        if (this.selectedItem !== selectedItemElement) {
+          
+          var selectedObject = null;
+          var selectedItemText = null;
+          
+          if (selectedItemElement !== null) {
+            index = Number(suggestionsMenu.indexOfSelectable(selectedItemElement));
+            if (index >= 0) {
+              selectedObject = selectedItemElement.dataObject;
+              
+              selectedItemText = selectedObject.text;
+              this.setSuggestions([]);
+              this.inputValue = selectedItemText;
+            } else {
+              selectedItemElement = null;
+            }
+          }
+          
+          this.selectedItemText = selectedItemText;
+          this.selectedItem = selectedItemElement;
+          this.selectedObject = selectedObject;
+
+        }       
+      } else if (this.allowSelectUnknownToken) {
+
+        if (!this.invalid) {
+          var selectedItemText = this._safeInputValue;
+  
+          if (selectedItemText.length > 0) {
+            var selectedObject = {
+              key: this._generateObjectKey(selectedItemText),
+              text: selectedItemText
+            };
+            
+            this.selectedItemText = selectedItemText;
+            this.selectedObject = selectedObject;
+            this.setSuggestions([]);
+
+            if(this.xmlhttp){
+              this.xmlhttp.abort();
+            }
+          }
+        }
+      }
+
+      if(this.validateOnAccept){
+        this._inputElement.invalid = false;
+      }
+    },
+    
+    _generateObjectKey: function (text) {
+      return 'dyn_' + this._strHashCode((text) ? text.toLowerCase() : '');
+    },
+    
+    _search: function(term){
+      var that = this;
+      this.xmlhttp;
+
+      this.debounce('search', function(){
+        if (term === ''){
+          this.setSuggestions([]);
+          return;
+        }
+
+        var patt =  new RegExp( this._scapeString( term.toLowerCase() ) );
+        var matched = [];
+
+        if ( this.localCandidates && this.localCandidates.length ){
+          for (var i = 0; i < this.localCandidates.length; i ++){
+            if (matched.length == this.maxSuggestions){
+              break;
+            }
+            if (patt.test(this.localCandidates[i].text.toLowerCase()) == true){
+              matched.push(this.localCandidates[i]);
+            }
+          }
+        }
+        
+        if (typeof(this._prefetchedCandidates) !== 'undefined'){
+          for (var i = 0; i < this._prefetchedCandidates.length; i ++){
+            if (matched.length == this.maxSuggestions){
+              break;
+            }
+            if (patt.test(this._prefetchedCandidates[i].toLowerCase()) == true){
+              matched.push(this._prefetchedCandidates[i]);
+            }
+          }
+        }
+
+        if ( this.remoteUrl ){
+          var url = this.remoteUrl.replace("%QUERY", term);
+
+          this._loading = true;
+
+          if(this.xmlhttp){
+            this.xmlhttp.abort();
+          }
+
+          this.xmlhttp = new XMLHttpRequest();
+          this.xmlhttp.open('GET', url, true);
+          this.xmlhttp.setRequestHeader("Content-type", "application/json");
+          this.xmlhttp.onreadystatechange = function() {
+            if (that.xmlhttp.readyState === 4 && that.xmlhttp.status === 200) {
+              var resp = that.xmlhttp.response;
+              var DATA = JSON.parse(resp);
+              var responseTreatment = that.fire('response-treatment', { response : DATA }, {cancelable: true});
+              var cuttedMatched = responseTreatment.detail.response.slice(0, that.maxSuggestions);
+
+              if (!responseTreatment.defaultPrevented) {
+
+                for(var i = 0; i < cuttedMatched.length; i++){
+                  cuttedMatched[i].key = that._generateObjectKey(cuttedMatched[i].text);
+                }
+                
+                that._loading = false;
+
+                if(!that._inputElement.invalid){
+                  that.setSuggestions(matched.concat(cuttedMatched));
+                }
+                
+              }
+            }
+          }
+          this.xmlhttp.send();
+        }
+        else{
+          this.setSuggestions(matched);
+        }
+      },250);
+    },
+    
+    _scapeString: function(term){
+      var especialChars = ['\\.', '\\*', '\\+', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\\\'];
+
+      for (var i=0, l=especialChars.length ; i<l ; i++) {
+        term = term.replace(new RegExp(especialChars[i], 'g'), especialChars[i] );
+      }
+
+      return term;
+    },
+
+    _strHashCode: function(strValue) {
+      var hash = 0, i, chr, len;
+      if (strValue.length === 0) return hash;
+      for (i = 0, len = strValue.length; i < len; i++) {
+        chr   = strValue.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    },
+    
+    _checkTokenAcceptKeyCode: function (keyCode) {
+      return (this.tokenAcceptKeyCodesArray.indexOf('' + keyCode + '') >= 0)
+    },
+  };
+  
+  WebPaperElem.InputAutoCompleteBehavior = [ 
+    Polymer.IronControlState,
+    WebPaperElem.InputAutoCompleteBehaviorImpl 
+  ];
+
+</script>

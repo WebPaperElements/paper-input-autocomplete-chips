@@ -1,0 +1,132 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-material/paper-material.html">
+
+<link rel="import" href="input-autocomplete-behavior.html">
+
+<dom-module id="paper-input-autocomplete">
+  <style>
+    :host {
+      display: block;
+    }
+    
+    paper-material{
+      left:0;
+      right:0;
+      position: absolute;
+      z-index: 10; 
+    }
+    
+    paper-item{
+      cursor: pointer;
+    }
+    
+    .iron-selected{
+      background: #E0E0E0;
+    }
+  </style>
+  <template>
+    <template is="dom-if" if="{{label}}">
+     <h3>{{label}}</h3> 
+    </template>
+    <template is="dom-if" if="{{prefetchUrl}}">
+    	<iron-ajax auto url="{{prefetchUrl}}" handle-as="json" last-response="{{_prefetchedCandidates}}"></iron-ajax>
+    </template>
+
+	<div style="position:relative;">
+		<paper-input value="{{inputValue}}" class="autocomplete-input" on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"></paper-input>
+		<template is="dom-if" if="{{_suggestions.length}}">
+      <paper-material class="autocomplete-suggestion-container">
+        <paper-menu class="autocomplete-suggestions">
+				<template is="dom-repeat" items="{{_suggestions}}">
+					<paper-item on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable">
+					<span>{{item}}</span>
+					</paper-item>
+				</template>
+				</paper-menu>
+			</paper-material>
+		</template>
+	</div>
+  </template>
+</dom-module>
+<script>
+
+  Polymer({
+
+    is: 'paper-input-autocomplete',
+
+    behaviors: [
+      WebPaperElem.InputAutoCompleteBehavior
+    ],
+
+    properties: {
+
+      /**
+       * The label that will show up as the label for tags input. It not specified, no label will show up.
+       */
+      label:{
+        type:String,
+        value:''
+      },
+      /**
+       * The placeholder for the paper-input element.
+       */
+      placeholder:{
+        type:String,
+        value:'Please enter values here'
+      },
+      /**
+       * Url for a prefectched list in json format for the list of suggestion candidates. The response should be something like: ["a","b"] 
+       */
+      prefetchUrl:String,
+      /**
+      * The prefetched candidates get by prefetchUrl
+      */
+      _prefetchedCandidates:{
+        type:Array,
+        value:[]
+      },
+      /**
+       * Remote url to perform a search using the value in the input. The input value will be passed in as url parameter. The placeholder should be %QUERY.
+       */
+      remoteUrl:String,
+      /**
+       * Input value.
+       */
+      inputValue: {
+        type: String,
+        notify: true,
+      },
+    },
+
+    // Element Lifecycle
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+      document.addEventListener("click", function(){
+        var ptinputs = document.querySelectorAll('paper-input-autocomplete')
+        for (var i = 0; i < ptinputs.length; i ++){
+          var ptinput = ptinputs[i];
+          ptinput._suggestions = [];
+        }
+      });
+      this._inputElement.autocomplete = 'address-level4';
+    },
+
+    attached: function() {
+    },
+
+    detached: function() {
+    },
+
+  });
+
+</script>

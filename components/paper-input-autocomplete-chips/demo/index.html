@@ -1,0 +1,375 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>paper-input-autocomplete-chips Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../paper-button/paper-button.html">
+    <link rel="import" href="../../paper-material/paper-material.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../iron-icons/social-icons.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../paper-input-autocomplete.html">
+    <link rel="import" href="../paper-input-autocomplete-chips.html">
+  </head>
+  <style>
+    
+    body {
+      background-color: darkgrey;
+    }
+        
+    body > paper-material {
+      width: 400px;
+      background-color: white;
+      padding: 24px;
+      margin: 24px;
+    }
+    
+    paper-material.fixed-paper {
+      z-index: 99;
+      position: fixed;
+      top: 10px;
+      right: 24px;
+      bottom: 0px;
+      margin-bottom: 24px;
+      overflow-y: auto;
+    }
+    
+    paper-chip[data-tag='read-only'] #chip {
+      background-color: #FFB74D;
+    }
+    
+  </style>
+  <body unresolved>
+
+    <template is="dom-bind" id="app">
+
+      <paper-material class="demo-paper">
+        <p>Some other DEMOS here:</p>
+        <a href="index-custom-chips-styles.html" target="_blank">Custom Chip Styles</a>
+        <a href="index-grouped-suggestions.html" target="_blank">Grouped Suggestions</a>
+      </paper-material>
+
+      <paper-material class="demo-paper">
+        <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for ajax support</code>:</p>
+            
+        <paper-input-autocomplete-chips 
+          id="myAutoCompletePOCUnknownItems" 
+          remote-url="http://www.mocky.io/v2/56b0dda4120000ec18670762"
+          label="Invite people" 
+          on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged"
+          on-response-treatment="XHRResponseTreatment"
+          placeholder-after-selected="E-mail..."
+          pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+          error-message="Invalid E-mail"
+          token-accept-key-codes="32,188"
+          allow-select-unknown-token
+          validate-on-accept
+          no-chip-image
+          paste-handler="{{_pasteHandler}}">
+
+            <div loading>LOADING</div>
+
+        </paper-input-autocomplete-chips>
+
+      </paper-material>
+
+      <paper-material class="demo-paper">
+        <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt; for tags accepting non unknown Items</code>:</p>
+
+        <paper-button on-tap="onTestAppendSelectedObjects" raised>Try Append Objects</paper-button>
+        <paper-button on-tap="onTestSetReadOnlyObjects" raised>Set Read Only</paper-button>
+        <paper-button on-tap="onTestSetRemoveOnlyObjects" raised>Set Remove Only</paper-button>
+            
+        <paper-input-autocomplete-chips 
+          id="myAutoCompletePOCUnknownItems" 
+          local-candidates="{{states}}" 
+          chip-label-prefix="#" 
+          label="State hashtags" 
+          on-selected-objects-changed="_allowUnknown_onSelectedObjectsChanged"
+          on-selecting-object="_allowUnknown_onSelectingObject" 
+          placeholder-after-selected="#"
+          max-selected-items="10"
+          auto-validate pattern="^(.*[^, #]* *)*$" error-message="Bad formatted string for a hashtag !"
+          token-accept-key-codes="32,188"
+          allow-select-unknown-token>
+        </paper-input-autocomplete-chips>
+
+      </paper-material>
+
+      <paper-material class="demo-paper">
+        <p>An example of new <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+    
+        <paper-button on-tap="onToggleDisabled" raised>Toggle Disabled</paper-button>
+        <paper-button on-tap="onSwitchSuggestionPanelPosition" raised>Switch Suggestion Panel (top/bottom)</paper-button>
+        <paper-input label="Chip label prefix" value="{{chipLabelPrefix}}"></paper-input>
+        <paper-input label="Chip label suffix" value="{{chipLabelSuffix}}"></paper-input>
+            
+        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" chip-label-prefix="[[chipLabelPrefix]]" chip-label-suffix="[[chipLabelSuffix]]" label="Chips" placeholder-after-selected="..." on-input-focused="_onInputFocused">
+          <iron-icon icon="social:share" prefix></iron-icon>
+          <paper-icon-button icon="lock-open" suffix></paper-icon-button>
+        </paper-input-autocomplete-chips>
+
+        <paper-input-autocomplete-chips id="myAutoCompletePOC02" local-candidates="{{states}}" label="Chips" placeholder-after-selected="...">
+          <iron-icon icon="social:share" prefix></iron-icon>
+          <paper-icon-button icon="lock" suffix></paper-icon-button>
+        </paper-input-autocomplete-chips>
+      </paper-material>
+
+      <paper-material class="demo-paper">
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+        
+        <paper-button on-tap="onSetDefaultValue" raised>Set default value</paper-button>
+    
+        <paper-input-autocomplete-chips id="myAutoComplete" local-candidates="{{states}}" label="Chips">
+          <!--<iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>-->
+        </paper-input-autocomplete-chips>
+      </paper-material>
+
+      <paper-material class="demo-paper">
+        <p>An example of <code>&lt;paper-chip&gt;</code>:</p>
+    
+        <paper-chip label="Jane Doe" style="display: block;" removable openable>
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
+  
+        <paper-chip label="Jane Doe" style="display: block;" removable openable animated>
+          <div class="icon">J</div>
+          <h1>jdoe@example.com</h1>
+        </paper-chip>
+      </paper-material>
+
+      <paper-material class="demo-paper" style="height: 300px; overflow: auto;">
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code>:</p>
+    
+        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips">
+          <!--<iron-icon icon="visibility" prefix></iron-icon>
+          <iron-icon icon="visibility" suffix></iron-icon>-->
+        </paper-input-autocomplete-chips>
+      </paper-material>
+    
+      <script>
+        window.addEventListener('WebComponentsReady', function() {
+          
+          var app = document.querySelector('#app');
+
+          app.onTestAppendSelectedObjects = function () {
+            document.getElementById('myAutoCompletePOCUnknownItems').appendSelectedObject({
+              text: 'NewItem',
+              readOnly: true
+            });
+
+            // document.getElementById('myAutoCompletePOCUnknownItems').selectedObjects = [
+            //   {
+            //     text: 'NewItem01'
+            //   },
+            //   {
+            //     text: 'NewItem02'
+            //   }
+            // ];
+          };
+
+          app.onTestSetReadOnlyObjects = function () {
+              var autoComplete = document.getElementById('myAutoCompletePOCUnknownItems');
+              
+              autoComplete.readOnly = !autoComplete.readOnly; 
+          };
+          
+          app.onTestSetRemoveOnlyObjects = function () {
+              var autoComplete = document.getElementById('myAutoCompletePOCUnknownItems');
+              
+              autoComplete.removeOnly = !autoComplete.removeOnly; 
+          };
+          
+          app.onSetDefaultValue = function () {
+            document.getElementById('myAutoComplete').selectedObject = app.states[0];
+          };
+          
+          app.onToggleDisabled = function () {
+            var $el = document.getElementById('myAutoCompletePOC');
+            $el.disabled = !$el.disabled;
+          };
+          
+          app.onSwitchSuggestionPanelPosition = function () {
+            var $el = document.getElementById('myAutoCompletePOC');
+            //console.debug($el.suggestionsPosition);
+            $el.suggestionsPosition = ($el.suggestionsPosition === 'top') ? 'bottom' : 'top';
+          };
+          
+          app._allowUnknown_onSelectedObjectsChanged = function (e) {
+            //console.debug('[_allowUnknown_onSelectedObjectsChanged]', e.target.selectedObjects);
+          };
+          
+          app._allowUnknown_onSelectingObject = function (e) {
+
+            if (e.detail.selectedObject.text.indexOf('@') === 0) {
+                e.preventDefault();
+            }
+            
+            if (e.detail.selectedObject.text.indexOf('#') === 0) {
+                e.detail.selectedObject.text = e.detail.selectedObject.text.substring(1);  
+            }
+          };
+
+          app.XHRResponseTreatment = function(e){
+            var length = e.detail.response.length;
+            
+            for(var i = 0; i < length; i++){
+              e.detail.response[i].text = e.detail.response[i].t;
+              e.detail.response[i].imgUrl = e.detail.response[i].i;
+            }
+          };
+
+          app._pasteHandler = function( text ){
+            return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+          };
+          
+          app._onInputFocused = function (e) {
+            e.target.setSuggestions(app.defaultSuggestions);
+          },
+                  
+          app.defaultSuggestions = [
+            {
+              key: 1,
+              text: "Alabama",
+              imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
+              tag: 'read-only',
+              readOnly: false
+            },
+            {
+              key: 2,
+              text: "Alaska",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+          ];
+                    
+          app.states = [
+            {
+              key: 1,
+              text: "Alabama",
+              imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
+              tag: 'read-only',
+              readOnly: false
+            },
+            {
+              key: 2,
+              text: "Alaska",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 3,
+              text: "American Samoa",
+              imgUrl: 'http://lorempixel.com/200/200/sports/1/'
+            },
+            {
+              key: 4,
+              text: "Arizona",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 5,
+              text: "Arkansas",
+              imgUrl: null
+            },
+            {
+              key: 6,
+              text: "California",
+              imgUrl: 'http://lorempixel.com/256/256/'
+            },
+            {
+              key: 7,
+              text: "Colorado",
+              imgUrl: null
+            }
+          ];
+
+          var autocompletePOC = document.getElementById('myAutoCompletePOC');
+          /*
+          autocompletePOC.selectedObjects = [
+            app.states[0],
+            app.states[1],
+            app.states[2],
+            app.states[3],
+            app.states[4],
+          ];
+          */
+
+          // 
+          // app.states = [
+          //   "Alabama",
+          //   "Alaska",
+          //   "American Samoa",
+          //   "Arizona",
+          //   "Arkansas",
+          //   "California",
+          //   "Colorado",
+          //   "Connecticut",
+          //   "Delaware",
+          //   "District Of Columbia",
+          //   "Federated States Of Micronesia",
+          //   "Florida",
+          //   "Georgia",
+          //   "Guam",
+          //   "Hawaii",
+          //   "Idaho",
+          //   "Illinois",
+          //   "Indiana",
+          //   "Iowa",
+          //   "Kansas",
+          //   "Kentucky",
+          //   "Louisiana",
+          //   "Maine",
+          //   "Marshall Islands",
+          //   "Maryland",
+          //   "Massachusetts",
+          //   "Michigan",
+          //   "Minnesota",
+          //   "Mississippi",
+          //   "Missouri",
+          //   "Montana",
+          //   "Nebraska",
+          //   "Nevada",
+          //   "New Hampshire",
+          //   "New Jersey",
+          //   "New Mexico",
+          //   "New York",
+          //   "North Carolina",
+          //   "North Dakota",
+          //   "Northern Mariana Islands",
+          //   "Ohio",
+          //   "Oklahoma",
+          //   "Oregon",
+          //   "Palau",
+          //   "Pennsylvania",
+          //   "Puerto Rico",
+          //   "Rhode Island",
+          //   "South Carolina",
+          //   "South Dakota",
+          //   "Tennessee",
+          //   "Texas",
+          //   "Utah",
+          //   "Vermont",
+          //   "Virgin Islands",
+          //   "Virginia",
+          //   "Washington",
+          //   "West Virginia",
+          //   "Wisconsin",
+          //   "Wyoming"
+          // ];
+        });        
+      </script>
+    </template>
+  </body>
+</html>

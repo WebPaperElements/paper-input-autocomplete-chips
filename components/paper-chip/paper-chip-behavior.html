@@ -1,0 +1,106 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-behaviors/iron-button-state.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+
+<script>
+
+  var WebPaperElem = WebPaperElem || {};
+
+  /**
+   * `WebPaperElem.PaperChipBehavior` implements paper-chip behavior.
+   *
+   * @demo demo/index.html
+   * @polymerBehavior WebPaperElem.PaperChipBehavior
+   */
+  WebPaperElem.PaperChipBehaviorImpl = {
+
+    hostAttributes: {
+      tabindex: '0'
+    },
+
+    properties: {
+      /**
+        * Toggle to display the image.
+        * 
+        * @attribute no-image
+        * @type Boolean
+        */
+      noImage: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+        * Chip Label.
+        * 
+        * @attribute label
+        * @type String
+        */
+      label: {
+        type: String,
+        reflectToAttribute: true
+      },
+
+      /**
+        * Whether or not the chip is removable. If `true`, a delete button should
+        * be shown.
+        * 
+        * @attribute removable
+        * @type boolean
+        * @default false
+        */
+      removable: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },
+
+      /**
+       * The z-depth of this element, from 0-5. Setting to 0 will remove the
+       * shadow, and each increasing number greater than 0 will be "deeper"
+       * than the last.
+       *
+       * @attribute elevation
+       * @type number
+       * @default 1
+       */
+      elevation: {
+        type: Number,
+        value: 0,
+        reflectToAttribute: true,
+      },
+    },
+
+    observers: [
+      '_computeElevation(focused, pressed, disabled, active)'
+    ],
+
+    _computeElevation: function(focused, pressed) {
+      if (focused || pressed) {
+        this.elevation = 1;
+      } else {
+        this.elevation = 0;
+      }
+    },
+
+    /**
+      * Fired before the element is removed. This event is cancelable.
+      * 
+      * @event remove
+      */
+    remove: function() {
+      var e = this.fire('remove', {}, {cancelable: true});
+      if (!e.defaultPrevented) {
+        this.parentNode.removeChild(this);
+      }
+    },
+  };
+  
+  WebPaperElem.PaperChipBehavior = [ 
+    Polymer.IronButtonState,
+    Polymer.IronControlState,
+    WebPaperElem.PaperChipBehaviorImpl 
+  ];
+
+</script>

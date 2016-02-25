@@ -1,0 +1,794 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-icon-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
+<link rel="import" href="../paper-chip/paper-chip.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="./input-autocomplete-behavior.html">
+
+<link rel="import" href="./paper-autocomplete-results.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <paper-input-autocomplete-chips></paper-input-autocomplete-chips>
+
+@group Seed Elements
+@element paper-input-autocomplete-chips
+@demo demo/index.html
+@hero hero.svg
+-->
+<dom-module id="paper-input-autocomplete-chips">
+  <template>
+    <style>
+
+      :host {
+        --autocomplete-chip-margin: 4px 4px 4px 0px;
+        --autocomplete-line-height: 40px;
+
+        display: block;
+        position: relative;
+
+        --paper-chip: {
+          display: inline-block;
+        }
+      }
+      
+      .prefix-container
+      ,.suffix-container {
+        line-height: var(--autocomplete-line-height, 40px);
+      }
+
+     .prefix-container {
+        align-self: flex-start;
+        
+        @apply(--prefix-container);
+      }
+
+      .suffix-container {
+        align-self: flex-end;
+        
+        @apply(--suffix-container);
+      }
+     
+      .complete-input-container {
+        display: block;
+        overflow-x: hidden;
+        -webkit-flex: 1;
+        flex: 1;
+        direction: ltr;
+      }
+
+      paper-input-container .complete-input-container paper-chip {
+        margin: var(--autocomplete-chip-margin, 4px 0px);
+      }
+                  
+      .input-container {
+        display: inline-block;
+      }
+
+      .input-container input#input {
+        display: block;
+        resize: none;
+      }
+
+      paper-input-container {
+        --paper-input-container-label: {
+          top: auto; 
+          height: 38px;        
+          line-height: var(--autocomplete-line-height, 40px);
+        };
+        
+        --paper-input-container-label-floating: {
+          top: 0; 
+          bottom: auto; 
+        };
+        
+        --paper-input-container-input: {
+          height: 38px;        
+          line-height: var(--autocomplete-line-height, 40px);
+        };
+      }
+
+      paper-input-container::shadow div.complete-input-container.chip-item-added label {
+        line-height: var(--autocomplete-line-height, 40px);
+      }
+      
+      paper-input-container div.complete-input-container.chip-item-added .input-container {
+        width: 50%;
+      }
+
+      paper-input-container div.complete-input-container:not(.chip-item-added) .input-container {
+        width: 100%;
+      }
+     
+      div.prefix-content {
+        height: 100%;
+      }
+
+      paper-material.autocomplete-suggestion-container {
+        left:0;
+        right:0;
+        position: absolute;
+        z-index: 10; 
+        max-height: 112px;
+        overflow-y: auto;
+        opacity: 1;
+        
+        @apply(--paper-input-autocomplete-chips-suggestion-container);
+      }
+      
+      paper-material.autocomplete-suggestion-container.hidden {
+        display: none;
+      }
+      
+      paper-material.autocomplete-suggestion-container .suggestion-item {
+        cursor: pointer;
+      }
+      
+      paper-material.autocomplete-suggestion-container .iron-selected {
+        background: #E0E0E0;
+      }
+
+      .suggestion-item .avatar-chip-icon {
+        @apply(--layout-vertical);
+        @apply(--layout-center);
+        @apply(--layout-center-justified);
+      }
+      .suggestion-item .avatar-chip-icon svg, .avatar-chip-icon img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .suggestion-item .avatar-result-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 8px;
+        border-radius: 100%;
+        overflow: hidden;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: var(--paper-chip-icon-background-color, --paper-grey-500);
+        color: var(--paper-chip-icon-text-color, --text-primary-color);
+        @apply(--layout-vertical);
+        @apply(--layout-center);
+        @apply(--layout-center-justified);
+        @apply(--paper-input-autocomplete-chips-suggestion-item-image);
+      }
+      .suggestion-item .avatar-result-icon svg, .avatar-result-icon img {
+        width: 100%;
+        height: 100%;
+      }
+      
+      .autocomplete-suggestions {
+        padding: 0px;
+      }
+      
+      .autocomplete-suggestions .suggestion-item {
+        --paper-item-icon-width: auto;
+        --paper-item-selected-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold); 
+        padding-left: 24px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        font-size: 14px;
+        min-height: 48px;
+        @apply(--paper-input-autocomplete-chips-suggestion-item);
+      }
+      
+      .autocomplete-suggestions .suggestion-item.iron-selected {
+        font-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold); 
+      }
+      
+      .autocomplete-suggestions .suggestion-item.suggestion-group {
+        @apply(--paper-input-autocomplete-chips-suggestion-group);
+      }
+
+      .autocomplete-suggestions .suggestion-item.suggestion-group .icon {
+        margin-right: 8px;
+      }
+      
+      .autocomplete-suggestions .suggestion-item.suggestion-group-item {
+        padding-left: 56px;
+      }
+      
+      :host(.no-display-input-edit-line) paper-input-container {
+          --paper-input-container-underline: {
+              display: none;
+          };
+          --paper-input-container-underline-focus: {
+              display: none;
+          };
+      }
+
+    </style>
+    
+    <paper-input-container id="paperInputContainer" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
+
+      <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}"> 
+      
+      <div class="prefix-container" prefix>
+        <content select="[prefix]"></content>
+      </div>
+
+      <label hidden$="[[!label]]">[[label]]</label>
+
+      <div class="complete-input-container" id="inputTagsContainer">
+				<template is="dom-repeat" items="[[selectedObjects]]">
+          <paper-chip label="[[chipLabelPrefix]][[item.text]][[chipLabelSuffix]]" data-key="[[item.key]]" data-tag$="[[item.tag]]" data-text="[[item.text]]" data-object="[[item]]" on-remove="_onChipRemove" removable="[[_canRemoveChip(item, readOnly, removeOnly)]]" no-image="[[noChipImage]]">
+            <template is="dom-if" if="{{item.imgUrl}}">
+              <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
+            </template>
+            <template is="dom-if" if="{{!item.imgUrl}}">
+              <div class="icon avatar-chip-icon">[[getInitialsFrom(item.text)]]</div>
+            </template>
+          </paper-chip>
+				</template>
+        <div id="inputContainer" class="input-container">
+          <input is="iron-input" id="input" class="autocomplete-input" 
+            on-keyup="_local_keyup"
+            on-keydown="_local_keydown"
+            on-paste="_local_paste"
+            on-blur="_local_blur"
+            on-focus="_onInputFocus"
+            aria-labelledby$="[[_ariaLabelledBy]]"
+            aria-describedby$="[[_ariaDescribedBy]]"
+            disabled$="[[disabled]]"
+            bind-value="{{inputValue}}"
+            invalid="{{invalid}}"
+            prevent-invalid-input="[[preventInvalidInput]]"
+            allowed-pattern="[[allowedPattern]]"
+            validator="[[validator]]"
+            type$="[[type]]"
+            pattern$="[[pattern]]"
+            required$="[[required]]"
+            autocomplete$="[[autocomplete]]"
+            autofocus$="[[autofocus]]"
+            inputmode$="[[inputmode]]"
+            minlength$="[[minlength]]"
+            maxlength$="[[maxlength]]"
+            min$="[[min]]"
+            max$="[[max]]"
+            step$="[[step]]"
+            name$="[[name]]"
+            placeholder$="[[_placeholderAfterSelected]]"
+            readonly$="[[readonly]]"
+            list$="[[list]]"
+            size$="[[size]]"
+            autocapitalize$="[[autocapitalize]]"
+            autocorrect$="[[autocorrect]]"
+            on-change="_onChange"
+            tabindex$="[[tabindex]]"
+            autosave$="[[autosave]]"
+            results$="[[results]]"
+            accept$="[[accept]]"
+            multiple$="[[multiple]]">
+        </div>
+      </div>
+      
+      <div class="suffix-container" suffix>
+        <content select="[suffix]"></content>
+      </div>      
+
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error>[[errorMessage]]</paper-input-error>
+      </template>
+    </paper-input-container>
+    <paper-material id="suggestionsPanel" elevation="3" class="autocomplete-suggestion-container" animated="[[animated]]">
+      <template is="dom-if" if="{{_loading}}">
+        <div id="loading">
+          <content select="[loading]"></content>
+        </div>
+      </template>
+
+      <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]">
+        <template is="dom-if" if="[[!groupedSuggestions]]">
+          <template is="dom-repeat" items="{{_suggestions}}">
+            <paper-icon-item class="suggestion-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
+              <template is="dom-if" if="{{item.imgUrl}}">
+                <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+              </template>
+              <template is="dom-if" if="{{!item.imgUrl}}">
+                <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+              </template>
+              <paper-item-body>
+                <div>[[item.text]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+          </template>
+        </template>
+        <template is="dom-if" if="[[groupedSuggestions]]">
+          <template is="dom-repeat" items="{{_suggestions}}">
+            <paper-icon-item class="suggestion-item suggestion-group" tabindex="-1" disabled>
+              <template is="dom-if" if="[[item.groupIcon]]">
+                <iron-icon class="icon" icon="[[item.groupIcon]]" item-icon></iron-icon>
+              </template>
+              <paper-item-body>
+                <div>[[item.groupName]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+            <template is="dom-repeat" items="{{item.items}}">
+              <paper-icon-item class="suggestion-item suggestion-group-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
+                <template is="dom-if" if="{{item.imgUrl}}">
+                  <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+                </template>
+                <template is="dom-if" if="{{!item.imgUrl}}">
+                  <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+                </template>
+                <paper-item-body>
+                  <div>[[item.text]]</div>
+                </paper-item-body>
+              </paper-icon-item>
+            </template>
+          </template>
+        </template>
+      </paper-autocomplete-results>
+
+    </paper-material>
+  </template>
+  <script>
+    Polymer({
+
+      is: 'paper-input-autocomplete-chips',
+
+      behaviors: [
+        Polymer.IronControlState,
+        Polymer.IronFormElementBehavior,
+        Polymer.PaperInputBehavior,
+        WebPaperElem.InputAutoCompleteBehavior
+      ],
+
+      properties: {
+        chipLabelPrefix: {
+          type: String,
+          value: ''  
+        },     
+        chipLabelSuffix: {
+          type: String,
+          value: ''  
+        },     
+        /**
+         * The candidates from local variable.
+         */
+        selectedObjects: {
+          type: Array,
+          value:[]
+        },
+        /**
+         * The candidates from local variable.
+         */
+        localCandidates:{
+          type:Array,
+          value:[]
+        },
+        /**
+         * Hidden Input value.
+         */
+        hiddenValue: {
+          type: String,
+          notify: true,
+        },
+        
+        placeholderAfterSelected: {
+          type: String,
+        },
+        
+        _placeholderAfterSelected: {
+          type: String,
+        },
+                
+        /**
+          * Whether or not the chip uses an animated transition between opened and
+          * closed states
+          *
+          * @attribute animated
+          * @type Boolean
+          * @default true
+          */
+        animated: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },    
+        
+        noChipImage: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        _boundOnBlur: {
+          type: Function,
+          value: function() {
+            return this._onBlur.bind(this);
+          }
+        },
+        
+        maxSelectedItems: {
+          type: Number,
+          value: 0
+        },
+
+        readOnly: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+        
+        removeOnly: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+
+        pasteHandler: {
+          type: Function,
+          notify: true
+        },
+      },
+
+      get _paperInputContainerElement() {
+        return this.$.paperInputContainer;
+      },
+      
+      get hasSelectedObjects() {
+        return ((this.selectedObjects) && (this.selectedObjects.length > 0));
+      },
+
+      listeners: {
+        'tap': '_onTap',
+        'iron-input-validate': '_onIronInputValidate'
+      },
+
+      _onTap: function (e) {
+        if ((e.target === this.$.inputTagsContainer) && (!this._inputElement.focused)) {
+          this._inputElement.focus();
+        }
+      },
+      
+      _local_keyup: function (e) {
+        this._keyup(e);
+      },
+
+      _local_keydown: function (e) {
+        if (e.which === 8) {
+          this._keydown_backspace_handler(e);        
+        } else {
+          this._keydown(e);
+        }
+      },
+
+      _local_blur: function (e) {
+        this._blur(e);
+      },
+
+      _local_paste: function(e){
+        this._paste(e);
+      },
+
+      observers: [
+        '_onInputValueChange(inputValue)',
+        '_onSelectedObjectsChange(selectedObjects)',
+        '_onSelectedObjectsChange(selectedObjects.splices)',
+        '_onAutoCompleteSelectedObjectChange(selectedObject)',
+        '_suggestionsChanged(_suggestions)',
+        '_suggestionsChanged(_suggestions.splices)',
+        '_loadingChanged(_loading)',
+        '_calculateSuggestionPanelPosition(suggestionsPosition)',
+        '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
+        '_cptCanInputText(readOnly, removeOnly)'
+      ],
+
+      _onInputValueChange: function (inputValue) {
+        var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
+        
+        this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
+        
+        this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+      },
+
+      _loadingChanged: function(_loading){
+        if ( this._loading ) {
+          this.showSuggestionsPanel();
+        } else {
+          this.hideSuggestionsPanel();
+        }
+      },
+      
+      _onSelectedObjectsChange: function (selectedObjects) {
+        
+        if (selectedObjects) {
+          if (selectedObjects.indexSplices) {
+            var $this = this;
+            selectedObjects.indexSplices.forEach(function (spliceItem) {
+              if (spliceItem.addedCount > 0) {
+                $this._fixMissingObjextKeys([ spliceItem.object[spliceItem.index] ]);          
+              }
+            });
+            //console.info(this.selectedObjects);
+          } else {
+            this._fixMissingObjextKeys(selectedObjects);          
+          }
+        } 
+        
+        this._updatePlaceholderAfterSelected();
+        this._updateHiddenInputTextForFloatLabel();
+        this.selectedObject = null;
+      },
+          
+      _updatePlaceholderAfterSelected: function () {
+        if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
+          this._placeholderAfterSelected = this.placeholder;
+        } else if ((this.selectedObjects) && (this.selectedObjects.length > 0)) {
+          this._placeholderAfterSelected = this.placeholderAfterSelected;
+        }
+        else {
+          this._placeholderAfterSelected = null;
+        }
+      },
+      
+      getInitialsFrom: function(value) {
+        if (value) {
+          return value.replace(/[^A-Z]/g, '');
+        }
+      },
+          
+      _fixMissingObjextKeys: function (objectArray) {
+        if (objectArray) {
+          for (var i=0; i < objectArray.length; i++) {
+            if (!objectArray[i].key) {
+              objectArray[i].key = this._generateObjectKey(objectArray[i].text);
+            }
+          }
+        }
+      },
+          
+      _findObjectAlreadySelected: function (objValue) {
+        if (!objValue) { return -1; }
+        
+        var i = (this.selectedObjects) ? this.selectedObjects.length : 0;
+        while (i--) {
+          var objToCompare = this.selectedObjects[i];
+          if (objToCompare.key === objValue.key) return i;
+        }
+        return -1;
+      },
+      
+      _onAutoCompleteSelectedObjectChange: function (selectedObject) {
+        
+        this.appendSelectedObject(selectedObject);
+        
+        this.inputValue = null;
+        this._setSelectedItem(null);
+
+        this._updateHiddenInputTextForFloatLabel();
+      },
+      
+      _onChipRemove: function (e) {
+        
+        e.preventDefault();
+        
+        this.removeSelectedObject(e.target.dataObject);
+        
+        this._updateHiddenInputTextForFloatLabel();
+      },
+      
+      _updateHiddenInputTextForFloatLabel: function () {
+        
+        this.hiddenValue = (this.hasSelectedObjects) ? ' ' : null;
+        
+        if (this.hasSelectedObjects) {
+          this.$.inputTagsContainer.classList.add('chip-item-added');
+        } else {
+          this.$.inputTagsContainer.classList.remove('chip-item-added');
+        }
+      },
+      
+      _suggestionsChanged: function (suggestions) {
+        if ((this._suggestions) && (this._suggestions.length > 0)) {
+          this.showSuggestionsPanel();
+        } else {
+          this.hideSuggestionsPanel();
+        }
+      },
+      
+      _cptReadOnlyOrRemoveOnly: function (readOnly, removeOnly) {
+          
+          var ableToInputText = false;
+          
+          ableToInputText = (readOnly || removeOnly);
+          
+          if (ableToInputText) {
+              this.$.inputContainer.hidden = true;
+          } else {
+              this.$.inputContainer.hidden = false;
+          }
+      },
+      
+      _canRemoveChip: function (chipItem, readOnly, removeOnly) {
+          var canRemoveChip = false;
+          
+          if ((!chipItem.readOnly) && (!readOnly)) {
+              canRemoveChip = true; 
+          }
+          
+          return canRemoveChip;
+      },
+
+      _canInputText: function (readOnly, removeOnly) {
+          var canInputText = false;
+          
+          if ((!readOnly) && (!removeOnly)) {
+              canInputText = true; 
+          }
+          
+          return canInputText;
+      },
+      
+      _cptCanInputText: function (readOnly, removeOnly) {
+          if (this._canInputText(readOnly, removeOnly)) {
+              this.classList.remove('no-display-input-edit-line');
+          } else {
+              this.classList.add('no-display-input-edit-line');
+          }
+          
+          this.updateStyles();
+      },
+
+      // Element Lifecycle
+
+      ready: function() {
+        this._override_paperInputContainer();
+                
+        this.addEventListener('blur', this._boundOnBlur, true);
+      },
+
+      attached: function() {
+      },
+
+      detached: function() {
+      },
+
+      // Element Behavior
+
+      hideSuggestionsPanel: function () {
+        this.$.suggestionsPanel.classList.add('hidden');
+      },
+
+      showSuggestionsPanel: function () {
+        this.fire('before-show-suggestion-panel');
+        this._calculateSuggestionPanelPosition();
+        this.$.suggestionsPanel.classList.remove('hidden');
+        this.async(function () {
+          if (this.isSuggestionsOnBottom) {
+            this.$.autocompleteResults.selectFirst();
+          } else {
+            this.$.autocompleteResults.selectLast();
+          }
+        }, 1);
+      },
+      
+      _calculateSuggestionPanelPosition: function () {
+        if (this.suggestionsPosition === 'top') {
+          var inputRect = this.$.input.getBoundingClientRect();
+          var diffBottom = 8; // Bottom margin from paper-input-container
+          var deltaBottom = inputRect.height + diffBottom;
+          this.$.suggestionsPanel.style.top = '';
+          this.$.suggestionsPanel.style.bottom = deltaBottom + 'px';
+        } else if (this.suggestionsPosition === 'bottom') {
+          this.$.suggestionsPanel.style.top = '';
+          this.$.suggestionsPanel.style.bottom = '';
+        }
+      },
+      
+      removeSelectedObject: function (selectedObject) {
+        this.removeSelectedObjectByIndex(this._findObjectAlreadySelected(selectedObject));
+      },
+
+      removeSelectedObjectByIndex: function (objectIndex) {
+        if (objectIndex >= 0) {
+          this.arrayDelete('selectedObjects', this.selectedObjects[objectIndex]);
+        }
+      },
+
+      appendSelectedObject: function (selectedObject) {
+        if (!selectedObject) { return; }
+
+        if (!this.selectedObjects) {
+          this.selectedObjects = [];
+        }
+        
+        if ((this.maxSelectedItems > 0) && (this.selectedObjects.length >= this.maxSelectedItems)) {
+          return;
+        }
+        
+        var previousObjectKeyValues = {
+            key: selectedObject.key,
+            text: selectedObject.text,
+        };
+        
+        var eSelectingObject = this.fire('selecting-object', { selectedObject: selectedObject }, {cancelable: true});
+      
+        if (!eSelectingObject.defaultPrevented) {
+          
+          if ((selectedObject.key === previousObjectKeyValues.key) 
+              && (selectedObject.text !== previousObjectKeyValues.text)) {
+              selectedObject.key = this._generateObjectKey(selectedObject.text);
+          }
+          
+          if (this._findObjectAlreadySelected(selectedObject) < 0) {
+              this.push('selectedObjects', selectedObject);
+          }
+        }
+      },
+
+      _onBlur: function() {
+        this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
+      },
+      
+      _keydown_backspace_handler: function (e) {
+        if ((!this.inputValue) || (this.inputValue === '')) {
+          this.removeSelectedObjectByIndex(this.selectedObjects.length-1);
+        }
+      },
+      
+      _onIronInputValidate: function(event) {
+        this.invalid = this._inputElement.invalid;
+      },    
+      
+      _override_paperInputContainer: function () {
+        this._paperInputContainerElement._handleValue = this._override_paperInputContainer_handleValue;
+        this._paperInputContainerElement._handleValueAndAutoValidate = this._override_paperInputContainer_handleValueAndAutoValidate;
+      },
+      
+      _override_paperInputContainer_handleValue: function(inputElement) {
+        inputElement = this.dataHost._inputElement;
+
+        var value = this.dataHost.inputValue;
+        // type="number" hack needed because this.value is empty until it's valid
+        if (value || value === 0 || (inputElement.type === 'number' && !inputElement.checkValidity()) || this.dataHost.hasSelectedObjects) {
+          this._inputHasContent = true;
+        } else {
+          this._inputHasContent = false;
+        }
+        this.updateAddons({
+          inputElement: inputElement,
+          value: value,
+          invalid: this.invalid
+        });
+      },
+      
+      _override_paperInputContainer_handleValueAndAutoValidate: function(inputElement) {
+        inputElement = this.dataHost._inputElement;
+        
+        if (this.autoValidate) {
+          var valid;
+          if (inputElement.validate) {
+            valid = inputElement.validate(this.inputValue);
+          } else {
+            valid = inputElement.checkValidity();
+          }
+          this.invalid = !valid;
+        }
+        // Call this last to notify the add-ons.
+        this._handleValue(inputElement);
+      },
+      
+      _onInputFocus: function (e) {
+        this.fire('input-focused');
+      },
+    });
+  </script>
+</dom-module>

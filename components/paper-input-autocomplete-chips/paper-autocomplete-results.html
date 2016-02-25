@@ -1,0 +1,143 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
+
+<dom-module id="paper-autocomplete-results">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host paper-menu {
+        padding: 0px;
+      }
+    </style>
+    <paper-menu id="paperMenu" tabindex="-1" on-iron-items-changed="_onIronItemsChanged">
+      <content></content>
+    </paper-menu>
+  </template>
+  <script>
+
+    Polymer({
+
+      is: 'paper-autocomplete-results',
+
+      behaviors: [
+      ],
+
+      properties: {
+        selectableItems: {
+          type: Array,
+          value: []
+        }
+      },
+
+      // Element Lifecycle
+
+      ready: function() {
+      },
+
+      attached: function() {
+      },
+
+      detached: function() {
+      },
+
+      get items() {
+        return this.$.paperMenu.items;
+      },      
+      
+      get focusedItem() {
+        return this.$.paperMenu.querySelector('.iron-selected');
+      },
+      
+      indexOf: function (selectableElement) {
+        return this.$.paperMenu.indexOf(selectableElement);
+      },
+      
+      indexOfSelectable: function (selectableElement) {
+        return this.selectableItems.indexOf(selectableElement);
+      },
+      
+      select: function (index) {
+        if ((index >= 0) && (this.selectableItems.length > index)) {
+          var focusedItem = this.focusedItem; 
+          if (focusedItem) {
+            focusedItem.classList.remove('iron-selected')
+            focusedItem.active = false;
+          }
+          
+          var nextElement = this.selectableItems[index];
+          
+          nextElement.classList.add('iron-selected')
+          nextElement.active = true;
+          
+          var offset = nextElement.offsetTop + nextElement.offsetHeight;
+          var clientHeightOffsetParent = (this.offsetParent) ? this.offsetParent.clientHeight : 0;
+          var scrollTopValue = Math.max(0, offset - clientHeightOffsetParent);
+          if (this.offsetParent) {
+            this.offsetParent.scrollTop = scrollTopValue;
+          }
+        }
+      },
+
+      selectFirst: function () {
+        this.select(0);
+      },
+      
+      selectPrevious: function () {
+        var selectedItem = this.focusedItem;
+        if (typeof(selectedItem) !== 'undefined'){
+          index = Number(this.indexOfSelectable(selectedItem));
+          index = Math.max(index - 1, -1);
+          if (index < 0) {
+            this.selectLast()
+          } else {
+            this.select(index);
+          }
+        }
+      },
+
+      selectNext: function () {
+        var index = 0;
+        var selectedItem = this.focusedItem;
+        if (typeof(selectedItem) !== 'undefined'){
+          index = Number(this.indexOfSelectable(selectedItem));
+          index = Math.min(index + 1, this.selectableItems.length);
+          if (index >= this.selectableItems.length) {
+            this.selectFirst();
+          } else {
+            this.select(index);
+          }
+        }
+      },
+
+      selectLast: function () {
+        this.select(this.selectableItems.length - 1);
+      },
+      
+      _onIronItemsChanged: function (e) {
+          if (e.detail) {
+            var that = this;
+            if (e.detail.removedNodes) {
+              e.detail.removedNodes.forEach(function (item) {
+                  that.arrayDelete('selectableItems', item);
+              });
+            }
+            
+            if (e.detail.addedNodes) {
+              e.detail.addedNodes.forEach(function (item) {
+                if ((item.hasAttribute) && (item.hasAttribute('selectable-item'))) {
+                  that.push('selectableItems', item);
+                }
+              });
+            }
+          }
+      },
+
+    });
+
+  </script>
+</dom-module>
