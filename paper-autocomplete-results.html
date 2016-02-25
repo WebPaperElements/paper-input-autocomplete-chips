@@ -14,7 +14,7 @@
         padding: 0px;
       }
     </style>
-    <paper-menu id="paperMenu" tabindex="-1">
+    <paper-menu id="paperMenu" tabindex="-1" on-iron-items-changed="_onIronItemsChanged">
       <content></content>
     </paper-menu>
   </template>
@@ -28,6 +28,10 @@
       ],
 
       properties: {
+        selectableItems: {
+          type: Array,
+          value: []
+        }
       },
 
       // Element Lifecycle
@@ -53,15 +57,19 @@
         return this.$.paperMenu.indexOf(selectableElement);
       },
       
+      indexOfSelectable: function (selectableElement) {
+        return this.selectableItems.indexOf(selectableElement);
+      },
+      
       select: function (index) {
-        if ((index >= 0) && (this.items.length > index)) {
+        if ((index >= 0) && (this.selectableItems.length > index)) {
           var focusedItem = this.focusedItem; 
           if (focusedItem) {
             focusedItem.classList.remove('iron-selected')
             focusedItem.active = false;
           }
           
-          var nextElement = this.items[index];
+          var nextElement = this.selectableItems[index];
           
           nextElement.classList.add('iron-selected')
           nextElement.active = true;
@@ -82,7 +90,7 @@
       selectPrevious: function () {
         var selectedItem = this.focusedItem;
         if (typeof(selectedItem) !== 'undefined'){
-          index = Number(this.indexOf(selectedItem));
+          index = Number(this.indexOfSelectable(selectedItem));
           index = Math.max(index - 1, -1);
           if (index < 0) {
             this.selectLast()
@@ -96,9 +104,9 @@
         var index = 0;
         var selectedItem = this.focusedItem;
         if (typeof(selectedItem) !== 'undefined'){
-          index = Number(this.indexOf(selectedItem));
-          index = Math.min(index + 1, this.items.length);
-          if (index >= this.items.length) {
+          index = Number(this.indexOfSelectable(selectedItem));
+          index = Math.min(index + 1, this.selectableItems.length);
+          if (index >= this.selectableItems.length) {
             this.selectFirst();
           } else {
             this.select(index);
@@ -107,7 +115,26 @@
       },
 
       selectLast: function () {
-        this.select(this.items.length - 1);
+        this.select(this.selectableItems.length - 1);
+      },
+      
+      _onIronItemsChanged: function (e) {
+          if (e.detail) {
+            var that = this;
+            if (e.detail.removedNodes) {
+              e.detail.removedNodes.forEach(function (item) {
+                  that.arrayDelete('selectableItems', item);
+              });
+            }
+            
+            if (e.detail.addedNodes) {
+              e.detail.addedNodes.forEach(function (item) {
+                if ((item.hasAttribute) && (item.hasAttribute('selectable-item'))) {
+                  that.push('selectableItems', item);
+                }
+              });
+            }
+          }
       },
 
     });

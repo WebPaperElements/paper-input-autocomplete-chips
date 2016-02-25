@@ -83,6 +83,11 @@
         type: String,
         value: 'bottom',
       },
+
+      groupedSuggestions: {
+        type: Boolean,
+        value: false
+      },
 	  },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
@@ -123,15 +128,55 @@
     },
     
     setSuggestions: function (suggestions) {
+      this._suggestions = this._normalizeSuggestionsList(suggestions);
+    },
+    
+    _normalizeSuggestionsList: function (suggestions) {
       if (suggestions) {
-        if (this.isSuggestionsOnBottom) {
-          this._suggestions = suggestions;
+        var tmpSuggestions = suggestions;
+        if (!this.isSuggestionsOnBottom) {
+          tmpSuggestions = suggestions.reverse();
+        }
+        
+        if (this.groupedSuggestions) {
+          return this._groupSuggestions(tmpSuggestions);
         } else {
-          this._suggestions = suggestions.reverse();
+          return tmpSuggestions;
         }
       } else {
-        this._suggestions = [];
+        return [];
       }
+    },
+    
+    _groupSuggestions: function (suggestions) {
+      var groupedSuggestions = [];
+      var groupStructure = {};
+      
+      suggestions.forEach(function (item) {
+        var groupName = '{none}';
+        if (item.group) {
+          groupName = item.group;
+        }
+        if (!groupStructure[groupName]) {
+          groupStructure[groupName] = {
+            groupIcon: item.groupIcon,  
+            items: []
+          };
+        }
+        groupStructure[groupName].items.push(item); 
+      }); 
+      
+      for (var key in groupStructure) {
+        if (groupStructure.hasOwnProperty(key)) {
+          groupedSuggestions.push({
+            groupName: key,
+            groupIcon: groupStructure[key].groupIcon,  
+            items: groupStructure[key].items
+          });
+        }
+      }
+      
+      return groupedSuggestions;
     },
 
     // Element Behavior
@@ -171,7 +216,7 @@
       var suggestionsMenu = this._menuElement;
       if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
         var selectedItem = e.currentTarget;
-        index = Number(suggestionsMenu.indexOf(selectedItem));
+        index = Number(suggestionsMenu.indexOfSelectable(selectedItem));
         suggestionsMenu.select(index);
       }
     },
@@ -237,7 +282,7 @@
     _blur: function(e){
       if(!e.relatedTarget || e.relatedTarget && e.relatedTarget.tagName !== 'PAPER-ITEM'){
         //this._createChip();
-        this._suggestions = [];
+        this.setSuggestions([]);
         this.inputValue = '';
       }
     },
@@ -308,10 +353,9 @@
           var selectedItemText = null;
           
           if (selectedItemElement !== null) {
-            index = Number(suggestionsMenu.indexOf(selectedItemElement));
-            
+            index = Number(suggestionsMenu.indexOfSelectable(selectedItemElement));
             if (index >= 0) {
-              selectedObject = this._suggestions[index];
+              selectedObject = selectedItemElement.dataObject;
               
               selectedItemText = selectedObject.text;
               this.setSuggestions([]);

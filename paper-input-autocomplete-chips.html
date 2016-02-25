@@ -7,7 +7,10 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-icon-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
 <link rel="import" href="../paper-chip/paper-chip.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="./input-autocomplete-behavior.html">
 
@@ -121,13 +124,15 @@ Example:
         max-height: 112px;
         overflow-y: auto;
         opacity: 1;
+        
+        @apply(--paper-input-autocomplete-chips-suggestion-container);
       }
       
       paper-material.autocomplete-suggestion-container.hidden {
         display: none;
       }
       
-      paper-material.autocomplete-suggestion-container paper-item {
+      paper-material.autocomplete-suggestion-container .suggestion-item {
         cursor: pointer;
       }
       
@@ -135,17 +140,17 @@ Example:
         background: #E0E0E0;
       }
 
-      paper-item .avatar-chip-icon {
+      .suggestion-item .avatar-chip-icon {
         @apply(--layout-vertical);
         @apply(--layout-center);
         @apply(--layout-center-justified);
       }
-      paper-item .avatar-chip-icon svg, .avatar-chip-icon img {
+      .suggestion-item .avatar-chip-icon svg, .avatar-chip-icon img {
         width: 100%;
         height: 100%;
       }
 
-      paper-item .avatar-result-icon {
+      .suggestion-item .avatar-result-icon {
         width: 40px;
         height: 40px;
         margin-right: 8px;
@@ -160,8 +165,9 @@ Example:
         @apply(--layout-vertical);
         @apply(--layout-center);
         @apply(--layout-center-justified);
+        @apply(--paper-input-autocomplete-chips-suggestion-item-image);
       }
-      paper-item .avatar-result-icon svg, .avatar-result-icon img {
+      .suggestion-item .avatar-result-icon svg, .avatar-result-icon img {
         width: 100%;
         height: 100%;
       }
@@ -170,12 +176,32 @@ Example:
         padding: 0px;
       }
       
-      .autocomplete-suggestions paper-item {
+      .autocomplete-suggestions .suggestion-item {
+        --paper-item-icon-width: auto;
+        --paper-item-selected-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold); 
+        padding-left: 24px;
         padding-top: 8px;
         padding-bottom: 8px;
         font-family: 'Roboto', 'Noto', sans-serif;
         font-size: 14px;
-        min-height: 40px;
+        min-height: 48px;
+        @apply(--paper-input-autocomplete-chips-suggestion-item);
+      }
+      
+      .autocomplete-suggestions .suggestion-item.iron-selected {
+        font-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold); 
+      }
+      
+      .autocomplete-suggestions .suggestion-item.suggestion-group {
+        @apply(--paper-input-autocomplete-chips-suggestion-group);
+      }
+
+      .autocomplete-suggestions .suggestion-item.suggestion-group .icon {
+        margin-right: 8px;
+      }
+      
+      .autocomplete-suggestions .suggestion-item.suggestion-group-item {
+        padding-left: 56px;
       }
       
       :host(.no-display-input-edit-line) paper-input-container {
@@ -260,7 +286,7 @@ Example:
         <paper-input-error>[[errorMessage]]</paper-input-error>
       </template>
     </paper-input-container>
-    <paper-material id="suggestionsPanel" elevation="1" class="autocomplete-suggestion-container" animated="[[animated]]">
+    <paper-material id="suggestionsPanel" elevation="3" class="autocomplete-suggestion-container" animated="[[animated]]">
       <template is="dom-if" if="{{_loading}}">
         <div id="loading">
           <content select="[loading]"></content>
@@ -268,16 +294,45 @@ Example:
       </template>
 
       <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]">
-        <template is="dom-repeat" items="{{_suggestions}}">
-          <paper-item data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1">
-            <template is="dom-if" if="{{item.imgUrl}}">
-              <div class="icon avatar-result-icon"><img src$="[[item.imgUrl]]"></div>
+        <template is="dom-if" if="[[!groupedSuggestions]]">
+          <template is="dom-repeat" items="{{_suggestions}}">
+            <paper-icon-item class="suggestion-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
+              <template is="dom-if" if="{{item.imgUrl}}">
+                <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+              </template>
+              <template is="dom-if" if="{{!item.imgUrl}}">
+                <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+              </template>
+              <paper-item-body>
+                <div>[[item.text]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+          </template>
+        </template>
+        <template is="dom-if" if="[[groupedSuggestions]]">
+          <template is="dom-repeat" items="{{_suggestions}}">
+            <paper-icon-item class="suggestion-item suggestion-group" tabindex="-1" disabled>
+              <template is="dom-if" if="[[item.groupIcon]]">
+                <iron-icon class="icon" icon="[[item.groupIcon]]" item-icon></iron-icon>
+              </template>
+              <paper-item-body>
+                <div>[[item.groupName]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+            <template is="dom-repeat" items="{{item.items}}">
+              <paper-icon-item class="suggestion-item suggestion-group-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
+                <template is="dom-if" if="{{item.imgUrl}}">
+                  <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
+                </template>
+                <template is="dom-if" if="{{!item.imgUrl}}">
+                  <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
+                </template>
+                <paper-item-body>
+                  <div>[[item.text]]</div>
+                </paper-item-body>
+              </paper-icon-item>
             </template>
-            <template is="dom-if" if="{{!item.imgUrl}}">
-              <div class="icon avatar-result-icon">[[getInitialsFrom(item.text)]]</div>
-            </template>
-            <span>{{item.text}}</span>
-          </paper-item>
+          </template>
         </template>
       </paper-autocomplete-results>
 
@@ -381,7 +436,7 @@ Example:
         pasteHandler: {
           type: Function,
           notify: true
-        }
+        },
       },
 
       get _paperInputContainerElement() {
