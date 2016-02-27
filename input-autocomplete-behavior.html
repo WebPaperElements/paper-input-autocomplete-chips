@@ -2,7 +2,6 @@
 <link rel="import" href="../iron-behaviors/iron-control-state.html">
 
 <script>
-
   var WebPaperElem = WebPaperElem || {};
 
   WebPaperElem.InputAutoCompleteBehaviorImpl = {
@@ -99,59 +98,54 @@
     get _propertyForValue() {
       return Polymer.CaseMap.dashToCamelCase(this.attrForValue);
     },
-    
+
     /**
      * Returns a reference to the input element.
      */
     get _inputElement() {
       return this.$$('paper-input.autocomplete-input, input.autocomplete-input');
     },
-    
+
     /**
      * Returns a reference to the menu element.
      */
     get _menuElement() {
       return this.$$('paper-autocomplete-results.autocomplete-suggestions');
     },
-    
+
     get isSuggestionsOnBottom() {
       return (this.suggestionsPosition === 'bottom');
     },
-    
+
     get _safeInputValue() {
       return (this.inputValue) ? this.inputValue.trim() : '';
     },
-    
+
     get _suggestionsFocusedItem() {
       var suggestionsMenu = this._menuElement;
       return (suggestionsMenu) ? suggestionsMenu.focusedItem : null;
     },
-    
+
     setSuggestions: function (suggestions) {
       this._suggestions = this._normalizeSuggestionsList(suggestions);
     },
-    
+
     _normalizeSuggestionsList: function (suggestions) {
       if (suggestions) {
-        var tmpSuggestions = suggestions;
-        if (!this.isSuggestionsOnBottom) {
-          tmpSuggestions = suggestions.reverse();
-        }
-        
         if (this.groupedSuggestions) {
-          return this._groupSuggestions(tmpSuggestions);
+          return this._groupSuggestions(suggestions);
         } else {
-          return tmpSuggestions;
+          return this._processSuggestionArrayBeforePublish(suggestions);
         }
       } else {
         return [];
       }
     },
-    
+
     _groupSuggestions: function (suggestions) {
       var groupedSuggestions = [];
       var groupStructure = {};
-      
+
       suggestions.forEach(function (item) {
         var groupName = '{none}';
         if (item.group) {
@@ -159,24 +153,32 @@
         }
         if (!groupStructure[groupName]) {
           groupStructure[groupName] = {
-            groupIcon: item.groupIcon,  
+            groupIcon: item.groupIcon,
             items: []
           };
         }
-        groupStructure[groupName].items.push(item); 
-      }); 
-      
+        groupStructure[groupName].items.push(item);
+      });
+
       for (var key in groupStructure) {
         if (groupStructure.hasOwnProperty(key)) {
           groupedSuggestions.push({
             groupName: key,
-            groupIcon: groupStructure[key].groupIcon,  
-            items: groupStructure[key].items
+            groupIcon: groupStructure[key].groupIcon,
+            items: this._processSuggestionArrayBeforePublish(groupStructure[key].items)
           });
         }
       }
-      
+
       return groupedSuggestions;
+    },
+
+    _processSuggestionArrayBeforePublish: function (suggestionsArray) {
+      if (!this.isSuggestionsOnBottom) {
+        return suggestionsArray.slice(0, this.maxSuggestions).reverse();
+      } else {
+        return suggestionsArray.slice(0, this.maxSuggestions);
+      }
     },
 
     // Element Behavior
@@ -187,20 +189,20 @@
      */
     _keydown: function(e) {
       var defaultPreventedKeyCodes = [
-        27, /* ESC */ 
-        40, 
+        27, /* ESC */
+        40,
         38
       ];
 
       // TAB
       if ( e.which === 9) {
-        if (this._safeInputValue.length > 0 && this._suggestions.length === 0) { 
+        if (this._safeInputValue.length > 0 && this._suggestions.length === 0) {
           //console.warn('[_keydown]: IF01');
           e.preventDefault();
         } else if ((this._safeInputValue.length <= 0) || (!this._suggestionsFocusedItem)) {
           //console.warn('[_keydown]: IF02');
           return false;
-        }  
+        }
       }
 
       if ((defaultPreventedKeyCodes.indexOf(e.which) >= 0) || (this._checkTokenAcceptKeyCode(e.which))) {
@@ -248,13 +250,13 @@
       if (e.which == 27) {
         // ESC Key
         this.inputValue = '';
-        
+
         this._checkIntegrityOfSelectedItem();
         this._search(searchTerm);
       } else if (e.which == 40){
         // Down Key
         if (!suggestionsMenu) { return; }
-        
+
         suggestionsMenu.selectNext();
       } else if (e.which == 38){
         // Up Key
@@ -274,7 +276,7 @@
       } else if (e.which !== 16) {
         //console.warn('[_keyup]: ELSE: ', e.which);
         this._checkIntegrityOfSelectedItem();
-                
+
         this._search(searchTerm);
       }
     },
@@ -310,7 +312,7 @@
         }
         e.preventDefault();
       }
-      
+
     },
 
     _createChip: function(){
@@ -319,7 +321,7 @@
         this._inputElement.invalid = false;
         this._inputElement.invalid = true;
       }
-      
+
       var suggestionFocusedItem = this._suggestionsFocusedItem;
 
       if ((suggestionFocusedItem) || (!this._inputElement.invalid )) {
@@ -348,15 +350,15 @@
 
       if (selectedItemElement !== undefined) {
         if (this.selectedItem !== selectedItemElement) {
-          
+
           var selectedObject = null;
           var selectedItemText = null;
-          
+
           if (selectedItemElement !== null) {
             index = Number(suggestionsMenu.indexOfSelectable(selectedItemElement));
             if (index >= 0) {
               selectedObject = selectedItemElement.dataObject;
-              
+
               selectedItemText = selectedObject.text;
               this.setSuggestions([]);
               this.inputValue = selectedItemText;
@@ -364,23 +366,23 @@
               selectedItemElement = null;
             }
           }
-          
+
           this.selectedItemText = selectedItemText;
           this.selectedItem = selectedItemElement;
           this.selectedObject = selectedObject;
 
-        }       
+        }
       } else if (this.allowSelectUnknownToken) {
 
         if (!this.invalid) {
           var selectedItemText = this._safeInputValue;
-  
+
           if (selectedItemText.length > 0) {
             var selectedObject = {
               key: this._generateObjectKey(selectedItemText),
               text: selectedItemText
             };
-            
+
             this.selectedItemText = selectedItemText;
             this.selectedObject = selectedObject;
             this.setSuggestions([]);
@@ -396,11 +398,11 @@
         this._inputElement.invalid = false;
       }
     },
-    
+
     _generateObjectKey: function (text) {
       return 'dyn_' + this._strHashCode((text) ? text.toLowerCase() : '');
     },
-    
+
     _search: function(term){
       var that = this;
       this.xmlhttp;
@@ -416,20 +418,14 @@
 
         if ( this.localCandidates && this.localCandidates.length ){
           for (var i = 0; i < this.localCandidates.length; i ++){
-            if (matched.length == this.maxSuggestions){
-              break;
-            }
             if (patt.test(this.localCandidates[i].text.toLowerCase()) == true){
               matched.push(this.localCandidates[i]);
             }
           }
         }
-        
+
         if (typeof(this._prefetchedCandidates) !== 'undefined'){
           for (var i = 0; i < this._prefetchedCandidates.length; i ++){
-            if (matched.length == this.maxSuggestions){
-              break;
-            }
             if (patt.test(this._prefetchedCandidates[i].toLowerCase()) == true){
               matched.push(this._prefetchedCandidates[i]);
             }
@@ -453,20 +449,20 @@
               var resp = that.xmlhttp.response;
               var DATA = JSON.parse(resp);
               var responseTreatment = that.fire('response-treatment', { response : DATA }, {cancelable: true});
-              var cuttedMatched = responseTreatment.detail.response.slice(0, that.maxSuggestions);
+              var cuttedMatched = responseTreatment.detail.response;
 
               if (!responseTreatment.defaultPrevented) {
 
                 for(var i = 0; i < cuttedMatched.length; i++){
                   cuttedMatched[i].key = that._generateObjectKey(cuttedMatched[i].text);
                 }
-                
+
                 that._loading = false;
 
                 if(!that._inputElement.invalid){
                   that.setSuggestions(matched.concat(cuttedMatched));
                 }
-                
+
               }
             }
           }
@@ -477,7 +473,7 @@
         }
       },250);
     },
-    
+
     _scapeString: function(term){
       var especialChars = ['\\.', '\\*', '\\+', '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\\\'];
 
@@ -498,15 +494,15 @@
       }
       return hash;
     },
-    
+
     _checkTokenAcceptKeyCode: function (keyCode) {
       return (this.tokenAcceptKeyCodesArray.indexOf('' + keyCode + '') >= 0)
     },
   };
-  
-  WebPaperElem.InputAutoCompleteBehavior = [ 
+
+  WebPaperElem.InputAutoCompleteBehavior = [
     Polymer.IronControlState,
-    WebPaperElem.InputAutoCompleteBehaviorImpl 
+    WebPaperElem.InputAutoCompleteBehaviorImpl
   ];
 
 </script>
