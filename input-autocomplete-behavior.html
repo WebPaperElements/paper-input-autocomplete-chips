@@ -282,7 +282,8 @@
     },
 
     _blur: function(e){
-      if(!e.relatedTarget || e.relatedTarget && e.relatedTarget.tagName !== 'PAPER-ITEM'){
+      console.debug('[_blur]', e);
+      if ((!e.relatedTarget) || ((e.relatedTarget) && (e.relatedTarget.tagName !== 'PAPER-ITEM') && (e.relatedTarget.tagName !== 'PAPER-ICON-ITEM'))) {
         //this._createChip();
         this.setSuggestions([]);
         this.inputValue = '';
