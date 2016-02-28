@@ -438,6 +438,11 @@ Example:
           type: Function,
           notify: true
         },
+        
+        searchOnGotFocus: {
+          type: Boolean,
+          value: false,
+        },
       },
 
       get _paperInputContainerElement() {
@@ -789,6 +794,9 @@ Example:
       
       _onInputFocus: function (e) {
         this.fire('input-focused');
+        if (this.searchOnGotFocus) {
+          this._search(this._safeInputValue);
+        }
       },
     });
   </script>

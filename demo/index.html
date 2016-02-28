@@ -115,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-input label="Chip label prefix" value="{{chipLabelPrefix}}"></paper-input>
         <paper-input label="Chip label suffix" value="{{chipLabelSuffix}}"></paper-input>
             
-        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" chip-label-prefix="[[chipLabelPrefix]]" chip-label-suffix="[[chipLabelSuffix]]" label="Chips" placeholder-after-selected="..." on-input-focused="_onInputFocused">
+        <paper-input-autocomplete-chips id="myAutoCompletePOC" local-candidates="{{states}}" chip-label-prefix="[[chipLabelPrefix]]" chip-label-suffix="[[chipLabelSuffix]]" label="Chips" placeholder-after-selected="..." search-on-got-focus search-if-empty>
           <iron-icon icon="social:share" prefix></iron-icon>
           <paper-icon-button icon="lock-open" suffix></paper-icon-button>
         </paper-input-autocomplete-chips>
@@ -235,10 +235,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           app._pasteHandler = function( text ){
             return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
           };
-          
-          app._onInputFocused = function (e) {
-            e.target.setSuggestions(app.defaultSuggestions);
-          },
                   
           app.defaultSuggestions = [
             {
