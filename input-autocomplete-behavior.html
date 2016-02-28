@@ -92,6 +92,11 @@
         type: Boolean,
         value: false
       },
+        
+      searchOnGotFocus: {
+        type: Boolean,
+        value: false,
+      },
 	  },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
@@ -272,6 +277,10 @@
         // Return Key
         //console.warn('[_keyup]: IF01');
         this._createChip();
+        
+        if (this.searchOnGotFocus) {
+          this._search(this._safeInputValue);
+        }
       }else if (e.which === 37) { //left
 
       }else if (e.which === 39) { // right
@@ -333,7 +342,7 @@
         } else {
           this._setSelectedItem();
         }
-      }else{
+      } else{
         this.setSuggestions([]);
       }
     },
