@@ -349,6 +349,23 @@ Example:
         Polymer.PaperInputBehavior,
         WebPaperElem.InputAutoCompleteBehavior
       ],
+      
+      _suggestionFilterBeforePublish: function (suggestions) {
+        if (this.removeSelectedFromSuggestions) {
+          var selectedKeys = [];
+          this.selectedObjects.forEach(function (item) {
+            selectedKeys.push(item.key);
+          });
+          
+          var filteredSuggestions = suggestions.filter(function (item) {
+            return (selectedKeys.indexOf(item.key) < 0);
+          });
+          
+          return filteredSuggestions;
+        } else {
+          return suggestions;
+        }
+      },
 
       properties: {
         chipLabelPrefix: {
@@ -437,6 +454,11 @@ Example:
         pasteHandler: {
           type: Function,
           notify: true
+        },
+      
+        removeSelectedFromSuggestions: {
+          type: Boolean,
+          value: false
         },
       },
 

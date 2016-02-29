@@ -142,10 +142,12 @@
 
     _normalizeSuggestionsList: function (suggestions) {
       if (suggestions) {
+        var filteredSuggestions = this._suggestionFilterBeforePublish(suggestions);
+        
         if (this.groupedSuggestions) {
-          return this._groupSuggestions(suggestions);
+          return this._groupSuggestions(filteredSuggestions);
         } else {
-          return this._processSuggestionArrayBeforePublish(suggestions);
+          return this._processSuggestionArrayBeforePublish(filteredSuggestions);
         }
       } else {
         return [];
@@ -189,6 +191,10 @@
       } else {
         return suggestionsArray.slice(0, this.maxSuggestions);
       }
+    },
+    
+    _suggestionFilterBeforePublish: function (suggestions) {
+      return suggestions;
     },
 
     // Element Behavior
@@ -294,7 +300,7 @@
     },
 
     _blur: function(e){
-      console.debug('[_blur]', e);
+      //console.debug('[_blur]', e);
       if ((!e.relatedTarget) || ((e.relatedTarget) && (e.relatedTarget.tagName !== 'PAPER-ITEM') && (e.relatedTarget.tagName !== 'PAPER-ICON-ITEM'))) {
         this.setSuggestions([]);
         this.inputValue = '';
