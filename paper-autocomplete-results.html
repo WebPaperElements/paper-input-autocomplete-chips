@@ -26,11 +26,15 @@
 
       behaviors: [
       ],
+      
+      hostAttributes: {
+        'tabindex': -1
+      },
 
       properties: {
         selectableItems: {
           type: Array,
-          value: []
+          value: function() { return []; }
         }
       },
 

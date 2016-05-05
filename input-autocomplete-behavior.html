@@ -17,7 +17,7 @@
        */
       localCandidates:{
         type:Array,
-        value:[]
+        value:function () { return []; }
       },
       /**
        * Remote URL.
@@ -31,7 +31,7 @@
        */
       _suggestions:{
         type:Array,
-        value:[]
+        value: function () { return []; }
       },
       /**
        * Maximum number of suggestions to show up in typeahead.
@@ -301,7 +301,8 @@
 
     _blur: function(e){
       //console.debug('[_blur]', e);
-      if ((!e.relatedTarget) || ((e.relatedTarget) && (e.relatedTarget.tagName !== 'PAPER-ITEM') && (e.relatedTarget.tagName !== 'PAPER-ICON-ITEM'))) {
+      var relativeFocusedTarget = e.relatedTarget || e.explicitOriginalTarget;
+      if ((!relativeFocusedTarget) || ((relativeFocusedTarget) && (!this._menuElement.contains(relativeFocusedTarget)))) {
         this.setSuggestions([]);
         this.inputValue = '';
       }

@@ -87,7 +87,7 @@
       */
       _prefetchedCandidates:{
         type:Array,
-        value:[]
+        value:function () { return []; }
       },
       /**
        * Remote url to perform a search using the value in the input. The input value will be passed in as url parameter. The placeholder should be %QUERY.

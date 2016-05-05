@@ -231,116 +231,85 @@ Example:
             <template is="dom-if" if="{{item.imgUrl}}">
               <div class="icon avatar-chip-icon"><img src$="[[item.imgUrl]]"></div>
             </template>
-            <template is="dom-if" if="{{!item.imgUrl}}">
+  <template is="dom-if" if="{{!item.imgUrl}}">
               <div class="icon avatar-chip-icon">[[getInitialsFrom(item.text)]]</div>
             </template>
-          </paper-chip>
-				</template>
-        <div id="inputContainer" class="input-container">
-          <input is="iron-input" id="input" class="autocomplete-input" 
-            on-keyup="_local_keyup"
-            on-keydown="_local_keydown"
-            on-paste="_local_paste"
-            on-blur="_local_blur"
-            on-focus="_onInputFocus"
-            aria-labelledby$="[[_ariaLabelledBy]]"
-            aria-describedby$="[[_ariaDescribedBy]]"
-            disabled$="[[disabled]]"
-            bind-value="{{inputValue}}"
-            invalid="{{invalid}}"
-            prevent-invalid-input="[[preventInvalidInput]]"
-            allowed-pattern="[[allowedPattern]]"
-            validator="[[validator]]"
-            type$="[[type]]"
-            pattern$="[[pattern]]"
-            required$="[[required]]"
-            autocomplete$="[[autocomplete]]"
-            autofocus$="[[autofocus]]"
-            inputmode$="[[inputmode]]"
-            minlength$="[[minlength]]"
-            maxlength$="[[maxlength]]"
-            min$="[[min]]"
-            max$="[[max]]"
-            step$="[[step]]"
-            name$="[[name]]"
-            placeholder$="[[_placeholderAfterSelected]]"
-            readonly$="[[readonly]]"
-            list$="[[list]]"
-            size$="[[size]]"
-            autocapitalize$="[[autocapitalize]]"
-            autocorrect$="[[autocorrect]]"
-            on-change="_onChange"
-            tabindex$="[[tabindex]]"
-            autosave$="[[autosave]]"
-            results$="[[results]]"
-            accept$="[[accept]]"
-            multiple$="[[multiple]]">
-        </div>
-      </div>
-      
-      <div class="suffix-container" suffix>
-        <content select="[suffix]"></content>
-      </div>      
+  </paper-chip>
+  </template>
+  <div id="inputContainer" class="input-container">
+    <input is="iron-input" id="input" class="autocomplete-input" on-keyup="_local_keyup" on-keydown="_local_keydown" on-paste="_local_paste"
+      on-blur="_local_blur" on-focus="_onInputFocus" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]"
+      disabled$="[[disabled]]" bind-value="{{inputValue}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]"
+      allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]"
+      autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]"
+      min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[_placeholderAfterSelected]]" readonly$="[[readonly]]"
+      list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange"
+      tabindex$="[[tabindex]]" autosave$="[[autosave]]" results$="[[results]]" accept$="[[accept]]" multiple$="[[multiple]]">
+  </div>
+  </div>
 
-      <template is="dom-if" if="[[errorMessage]]">
+  <div class="suffix-container" suffix>
+    <content select="[suffix]"></content>
+  </div>
+
+  <template is="dom-if" if="[[errorMessage]]">
         <paper-input-error>[[errorMessage]]</paper-input-error>
       </template>
-    </paper-input-container>
-    <paper-material id="suggestionsPanel" elevation="3" class="autocomplete-suggestion-container" animated="[[animated]]">
-      <template is="dom-if" if="{{_loading}}">
+  </paper-input-container>
+  <paper-material id="suggestionsPanel" elevation="3" class="autocomplete-suggestion-container" animated="[[animated]]">
+    <template is="dom-if" if="{{_loading}}">
         <div id="loading">
           <content select="[loading]"></content>
         </div>
       </template>
 
-      <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]">
-        <template is="dom-if" if="[[!groupedSuggestions]]">
+    <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]">
+      <template is="dom-if" if="[[!groupedSuggestions]]">
           <template is="dom-repeat" items="{{_suggestions}}">
             <paper-icon-item class="suggestion-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
               <template is="dom-if" if="{{item.imgUrl}}">
                 <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
               </template>
-              <template is="dom-if" if="{{!item.imgUrl}}">
+      <template is="dom-if" if="{{!item.imgUrl}}">
                 <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
               </template>
-              <paper-item-body>
-                <div>[[item.text]]</div>
-              </paper-item-body>
-            </paper-icon-item>
-          </template>
-        </template>
-        <template is="dom-if" if="[[groupedSuggestions]]">
+      <paper-item-body>
+        <div>[[item.text]]</div>
+      </paper-item-body>
+      </paper-icon-item>
+      </template>
+      </template>
+      <template is="dom-if" if="[[groupedSuggestions]]">
           <template is="dom-repeat" items="{{_suggestions}}">
             <paper-icon-item class="suggestion-item suggestion-group" tabindex="-1" disabled>
               <template is="dom-if" if="[[item.groupIcon]]">
                 <iron-icon class="icon" icon="[[item.groupIcon]]" item-icon></iron-icon>
               </template>
-              <paper-item-body>
-                <div>[[item.groupName]]</div>
-              </paper-item-body>
-            </paper-icon-item>
-            <template is="dom-repeat" items="{{item.items}}">
+      <paper-item-body>
+        <div>[[item.groupName]]</div>
+      </paper-item-body>
+      </paper-icon-item>
+      <template is="dom-repeat" items="{{item.items}}">
               <paper-icon-item class="suggestion-item suggestion-group-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
                 <template is="dom-if" if="{{item.imgUrl}}">
                   <div class="icon avatar-result-icon" item-icon><img src$="[[item.imgUrl]]"></div>
                 </template>
-                <template is="dom-if" if="{{!item.imgUrl}}">
+      <template is="dom-if" if="{{!item.imgUrl}}">
                   <div class="icon avatar-result-icon" item-icon>[[getInitialsFrom(item.text)]]</div>
                 </template>
-                <paper-item-body>
-                  <div>[[item.text]]</div>
-                </paper-item-body>
-              </paper-icon-item>
-            </template>
-          </template>
-        </template>
-      </paper-autocomplete-results>
+      <paper-item-body>
+        <div>[[item.text]]</div>
+      </paper-item-body>
+      </paper-icon-item>
+      </template>
+      </template>
+      </template>
+    </paper-autocomplete-results>
 
-    </paper-material>
+  </paper-material>
   </template>
   <script>
     Polymer({
-
       is: 'paper-input-autocomplete-chips',
 
       behaviors: [
@@ -381,7 +350,7 @@ Example:
          */
         selectedObjects: {
           type: Array,
-          value:[],
+          value: function() { return []; },
           notify: true
         },
         /**
@@ -389,7 +358,7 @@ Example:
          */
         localCandidates:{
           type:Array,
-          value:[]
+          value: function() { return []; }
         },
         /**
          * Hidden Input value.
@@ -758,6 +727,7 @@ Example:
       },
 
       _onBlur: function() {
+        console.log('[_onBlur]');
         this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
       },
       
