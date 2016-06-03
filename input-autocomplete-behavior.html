@@ -97,6 +97,13 @@
         type: Boolean,
         value: false,
       },
+
+      extraHeaders: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      }
 	  },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
@@ -463,6 +470,14 @@
           this.xmlhttp = new XMLHttpRequest();
           this.xmlhttp.open('GET', url, true);
           this.xmlhttp.setRequestHeader("Content-type", "application/json");
+
+          // If there are extra headers, add them to the request
+          if (that.extraHeaders) {
+            for (var header in that.extraHeaders) {
+              this.xmlhttp.setRequestHeader(header, that.extraHeaders[header]);
+            }
+          }
+
           this.xmlhttp.onreadystatechange = function() {
             if (that.xmlhttp.readyState === 4 && that.xmlhttp.status === 200) {
               var resp = that.xmlhttp.response;
