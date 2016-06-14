@@ -26,7 +26,7 @@
 
       behaviors: [
       ],
-      
+
       hostAttributes: {
         'tabindex': -1
       },
@@ -51,33 +51,33 @@
 
       get items() {
         return this.$.paperMenu.items;
-      },      
-      
+      },
+
       get focusedItem() {
         return this.$.paperMenu.querySelector('.iron-selected');
       },
-      
+
       indexOf: function (selectableElement) {
         return this.$.paperMenu.indexOf(selectableElement);
       },
-      
+
       indexOfSelectable: function (selectableElement) {
         return this.selectableItems.indexOf(selectableElement);
       },
-      
+
       select: function (index) {
         if ((index >= 0) && (this.selectableItems.length > index)) {
-          var focusedItem = this.focusedItem; 
+          var focusedItem = this.focusedItem;
           if (focusedItem) {
             focusedItem.classList.remove('iron-selected')
             focusedItem.active = false;
           }
-          
+
           var nextElement = this.selectableItems[index];
-          
+
           nextElement.classList.add('iron-selected')
           nextElement.active = true;
-          
+
           var offset = nextElement.offsetTop + nextElement.offsetHeight;
           var clientHeightOffsetParent = (this.offsetParent) ? this.offsetParent.clientHeight : 0;
           var scrollTopValue = Math.max(0, offset - clientHeightOffsetParent);
@@ -90,7 +90,7 @@
       selectFirst: function () {
         this.select(0);
       },
-      
+
       selectPrevious: function () {
         var selectedItem = this.focusedItem;
         if (typeof(selectedItem) !== 'undefined'){
@@ -121,7 +121,7 @@
       selectLast: function () {
         this.select(this.selectableItems.length - 1);
       },
-      
+
       _onIronItemsChanged: function (e) {
           if (e.detail) {
             var that = this;
@@ -130,7 +130,7 @@
                   that.arrayDelete('selectableItems', item);
               });
             }
-            
+
             if (e.detail.addedNodes) {
               e.detail.addedNodes.forEach(function (item) {
                 if ((item.hasAttribute) && (item.hasAttribute('selectable-item'))) {
