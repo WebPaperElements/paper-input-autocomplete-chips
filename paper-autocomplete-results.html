@@ -35,6 +35,18 @@
         selectableItems: {
           type: Array,
           value: function() { return []; }
+        },
+
+        /**
+         * By default navigating of results with the keyboard is circular. i.e.
+         * when you are in the first item and you click the up arrow you will
+         * move to the last item. If you are in the last item and then click
+         * the down arrow, you will move to the first element.
+         * By setting this property to true, you prevent this behaviour
+         */
+        notCircular: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -97,7 +109,9 @@
           index = Number(this.indexOfSelectable(selectedItem));
           index = Math.max(index - 1, -1);
           if (index < 0) {
-            this.selectLast()
+            if (!this.notCircular) {
+              this.selectLast()
+            }
           } else {
             this.select(index);
           }
@@ -111,7 +125,9 @@
           index = Number(this.indexOfSelectable(selectedItem));
           index = Math.min(index + 1, this.selectableItems.length);
           if (index >= this.selectableItems.length) {
-            this.selectFirst();
+            if (!this.notCircular) {
+              this.selectFirst();
+            }
           } else {
             this.select(index);
           }
