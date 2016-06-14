@@ -43,7 +43,7 @@ Example:
           display: inline-block;
         }
       }
-      
+
       .prefix-container
       ,.suffix-container {
         line-height: var(--autocomplete-line-height, 40px);
@@ -51,16 +51,16 @@ Example:
 
      .prefix-container {
         align-self: flex-start;
-        
+
         @apply(--prefix-container);
       }
 
       .suffix-container {
         align-self: flex-end;
-        
+
         @apply(--suffix-container);
       }
-     
+
       .complete-input-container {
         display: block;
         overflow-x: hidden;
@@ -72,7 +72,7 @@ Example:
       paper-input-container .complete-input-container paper-chip {
         margin: var(--autocomplete-chip-margin, 4px 0px);
       }
-                  
+
       .input-container {
         display: inline-block;
       }
@@ -84,18 +84,18 @@ Example:
 
       paper-input-container {
         --paper-input-container-label: {
-          top: auto; 
-          height: 38px;        
+          top: auto;
+          height: 38px;
           line-height: var(--autocomplete-line-height, 40px);
         };
-        
+
         --paper-input-container-label-floating: {
-          top: 0; 
-          bottom: auto; 
+          top: 0;
+          bottom: auto;
         };
-        
+
         --paper-input-container-input: {
-          height: 38px;        
+          height: 38px;
           line-height: var(--autocomplete-line-height, 40px);
         };
       }
@@ -103,7 +103,7 @@ Example:
       paper-input-container::shadow div.complete-input-container.chip-item-added label {
         line-height: var(--autocomplete-line-height, 40px);
       }
-      
+
       paper-input-container div.complete-input-container.chip-item-added .input-container {
         width: 50%;
       }
@@ -111,7 +111,7 @@ Example:
       paper-input-container div.complete-input-container:not(.chip-item-added) .input-container {
         width: 100%;
       }
-     
+
       div.prefix-content {
         height: 100%;
       }
@@ -120,22 +120,22 @@ Example:
         left:0;
         right:0;
         position: absolute;
-        z-index: 10; 
-        max-height: 112px;
+        z-index: 10;
+        max-height: var(--autocomplete-suggestions-container-max-height, 112px);
         overflow-y: auto;
         opacity: 1;
-        
+
         @apply(--paper-input-autocomplete-chips-suggestion-container);
       }
-      
+
       paper-material.autocomplete-suggestion-container.hidden {
         display: none;
       }
-      
+
       paper-material.autocomplete-suggestion-container .suggestion-item {
         cursor: pointer;
       }
-      
+
       paper-material.autocomplete-suggestion-container .iron-selected {
         background: #E0E0E0;
       }
@@ -171,14 +171,14 @@ Example:
         width: 100%;
         height: 100%;
       }
-      
+
       .autocomplete-suggestions {
         padding: 0px;
       }
-      
+
       .autocomplete-suggestions .suggestion-item {
         --paper-item-icon-width: auto;
-        --paper-item-selected-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold); 
+        --paper-item-selected-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold);
         padding-left: 24px;
         padding-top: 8px;
         padding-bottom: 8px;
@@ -187,11 +187,11 @@ Example:
         min-height: 48px;
         @apply(--paper-input-autocomplete-chips-suggestion-item);
       }
-      
+
       .autocomplete-suggestions .suggestion-item.iron-selected {
-        font-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold); 
+        font-weight: var(--paper-input-autocomplete-chips-suggestion-item-selected-weight, bold);
       }
-      
+
       .autocomplete-suggestions .suggestion-item.suggestion-group {
         @apply(--paper-input-autocomplete-chips-suggestion-group);
       }
@@ -199,11 +199,11 @@ Example:
       .autocomplete-suggestions .suggestion-item.suggestion-group .icon {
         margin-right: 8px;
       }
-      
+
       .autocomplete-suggestions .suggestion-item.suggestion-group-item {
         padding-left: 56px;
       }
-      
+
       :host(.no-display-input-edit-line) paper-input-container {
           --paper-input-container-underline: {
               display: none;
@@ -214,11 +214,11 @@ Example:
       }
 
     </style>
-    
+
     <paper-input-container id="paperInputContainer" no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
 
-      <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}"> 
-      
+      <input is="iron-input" type="hidden" class="paper-input-input" bind-value="{{hiddenValue}}">
+
       <div class="prefix-container" prefix>
         <content select="[prefix]"></content>
       </div>
@@ -318,18 +318,18 @@ Example:
         Polymer.PaperInputBehavior,
         WebPaperElem.InputAutoCompleteBehavior
       ],
-      
+
       _suggestionFilterBeforePublish: function (suggestions) {
         if (this.removeSelectedFromSuggestions) {
           var selectedKeys = [];
           this.selectedObjects.forEach(function (item) {
             selectedKeys.push(item.key);
           });
-          
+
           var filteredSuggestions = suggestions.filter(function (item) {
             return (selectedKeys.indexOf(item.key) < 0);
           });
-          
+
           return filteredSuggestions;
         } else {
           return suggestions;
@@ -339,12 +339,12 @@ Example:
       properties: {
         chipLabelPrefix: {
           type: String,
-          value: ''  
-        },     
+          value: ''
+        },
         chipLabelSuffix: {
           type: String,
-          value: ''  
-        },     
+          value: ''
+        },
         /**
          * The candidates from local variable.
          */
@@ -367,15 +367,15 @@ Example:
           type: String,
           notify: true,
         },
-        
+
         placeholderAfterSelected: {
           type: String,
         },
-        
+
         _placeholderAfterSelected: {
           type: String,
         },
-                
+
         /**
           * Whether or not the chip uses an animated transition between opened and
           * closed states
@@ -388,8 +388,8 @@ Example:
           type: Boolean,
           value: false,
           reflectToAttribute: true
-        },    
-        
+        },
+
         noChipImage: {
           type: Boolean,
           value: false,
@@ -402,7 +402,7 @@ Example:
             return this._onBlur.bind(this);
           }
         },
-        
+
         maxSelectedItems: {
           type: Number,
           value: 0
@@ -413,7 +413,7 @@ Example:
           value: false,
           reflectToAttribute: true
         },
-        
+
         removeOnly: {
           type: Boolean,
           value: false,
@@ -424,7 +424,7 @@ Example:
           type: Function,
           notify: true
         },
-      
+
         removeSelectedFromSuggestions: {
           type: Boolean,
           value: false
@@ -434,7 +434,7 @@ Example:
       get _paperInputContainerElement() {
         return this.$.paperInputContainer;
       },
-      
+
       get hasSelectedObjects() {
         return ((this.selectedObjects) && (this.selectedObjects.length > 0));
       },
@@ -449,14 +449,14 @@ Example:
           this._inputElement.focus();
         }
       },
-      
+
       _local_keyup: function (e) {
         this._keyup(e);
       },
 
       _local_keydown: function (e) {
         if (e.which === 8) {
-          this._keydown_backspace_handler(e);        
+          this._keydown_backspace_handler(e);
         } else {
           this._keydown(e);
         }
@@ -485,9 +485,9 @@ Example:
 
       _onInputValueChange: function (inputValue) {
         var hasSelectedObjects = ((this.selectedObjects) && (this.selectedObjects.length > 0));
-        
+
         this.hiddenValue = ((inputValue === '') && hasSelectedObjects) ? ' ' : inputValue;
-        
+
         this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
       },
 
@@ -498,28 +498,28 @@ Example:
           this.hideSuggestionsPanel();
         }
       },
-      
+
       _onSelectedObjectsChange: function (selectedObjects) {
-        
+
         if (selectedObjects) {
           if (selectedObjects.indexSplices) {
             var $this = this;
             selectedObjects.indexSplices.forEach(function (spliceItem) {
               if (spliceItem.addedCount > 0) {
-                $this._fixMissingObjextKeys([ spliceItem.object[spliceItem.index] ]);          
+                $this._fixMissingObjextKeys([ spliceItem.object[spliceItem.index] ]);
               }
             });
             //console.info(this.selectedObjects);
           } else {
-            this._fixMissingObjextKeys(selectedObjects);          
+            this._fixMissingObjextKeys(selectedObjects);
           }
-        } 
-        
+        }
+
         this._updatePlaceholderAfterSelected();
         this._updateHiddenInputTextForFloatLabel();
         this.selectedObject = null;
       },
-          
+
       _updatePlaceholderAfterSelected: function () {
         if ((this.alwaysFloatLabel) && ((!this.selectedObjects) || (this.selectedObjects.length <= 0))) {
           this._placeholderAfterSelected = this.placeholder;
@@ -530,13 +530,13 @@ Example:
           this._placeholderAfterSelected = null;
         }
       },
-      
+
       getInitialsFrom: function(value) {
         if (value) {
           return value.replace(/[^A-Z]/g, '');
         }
       },
-          
+
       _fixMissingObjextKeys: function (objectArray) {
         if (objectArray) {
           for (var i=0; i < objectArray.length; i++) {
@@ -546,10 +546,10 @@ Example:
           }
         }
       },
-          
+
       _findObjectAlreadySelected: function (objValue) {
         if (!objValue) { return -1; }
-        
+
         var i = (this.selectedObjects) ? this.selectedObjects.length : 0;
         while (i--) {
           var objToCompare = this.selectedObjects[i];
@@ -557,37 +557,37 @@ Example:
         }
         return -1;
       },
-      
+
       _onAutoCompleteSelectedObjectChange: function (selectedObject) {
-        
+
         this.appendSelectedObject(selectedObject);
-        
+
         this.inputValue = null;
         this._setSelectedItem(null);
 
         this._updateHiddenInputTextForFloatLabel();
       },
-      
+
       _onChipRemove: function (e) {
-        
+
         e.preventDefault();
-        
+
         this.removeSelectedObject(e.target.dataObject);
-        
+
         this._updateHiddenInputTextForFloatLabel();
       },
-      
+
       _updateHiddenInputTextForFloatLabel: function () {
-        
+
         this.hiddenValue = (this.hasSelectedObjects) ? ' ' : null;
-        
+
         if (this.hasSelectedObjects) {
           this.$.inputTagsContainer.classList.add('chip-item-added');
         } else {
           this.$.inputTagsContainer.classList.remove('chip-item-added');
         }
       },
-      
+
       _suggestionsChanged: function (suggestions) {
         if ((this._suggestions) && (this._suggestions.length > 0)) {
           this.showSuggestionsPanel();
@@ -595,47 +595,47 @@ Example:
           this.hideSuggestionsPanel();
         }
       },
-      
+
       _cptReadOnlyOrRemoveOnly: function (readOnly, removeOnly) {
-          
+
           var ableToInputText = false;
-          
+
           ableToInputText = (readOnly || removeOnly);
-          
+
           if (ableToInputText) {
               this.$.inputContainer.hidden = true;
           } else {
               this.$.inputContainer.hidden = false;
           }
       },
-      
+
       _canRemoveChip: function (chipItem, readOnly, removeOnly) {
           var canRemoveChip = false;
-          
+
           if ((!chipItem.readOnly) && (!readOnly)) {
-              canRemoveChip = true; 
+              canRemoveChip = true;
           }
-          
+
           return canRemoveChip;
       },
 
       _canInputText: function (readOnly, removeOnly) {
           var canInputText = false;
-          
+
           if ((!readOnly) && (!removeOnly)) {
-              canInputText = true; 
+              canInputText = true;
           }
-          
+
           return canInputText;
       },
-      
+
       _cptCanInputText: function (readOnly, removeOnly) {
           if (this._canInputText(readOnly, removeOnly)) {
               this.classList.remove('no-display-input-edit-line');
           } else {
               this.classList.add('no-display-input-edit-line');
           }
-          
+
           this.updateStyles();
       },
 
@@ -643,7 +643,7 @@ Example:
 
       ready: function() {
         this._override_paperInputContainer();
-                
+
         this.addEventListener('blur', this._boundOnBlur, true);
       },
 
@@ -671,7 +671,7 @@ Example:
           }
         }, 1);
       },
-      
+
       _calculateSuggestionPanelPosition: function () {
         if (this.suggestionsPosition === 'top') {
           var inputRect = this.$.input.getBoundingClientRect();
@@ -684,7 +684,7 @@ Example:
           this.$.suggestionsPanel.style.bottom = '';
         }
       },
-      
+
       removeSelectedObject: function (selectedObject) {
         this.removeSelectedObjectByIndex(this._findObjectAlreadySelected(selectedObject));
       },
@@ -701,25 +701,25 @@ Example:
         if (!this.selectedObjects) {
           this.selectedObjects = [];
         }
-        
+
         if ((this.maxSelectedItems > 0) && (this.selectedObjects.length >= this.maxSelectedItems)) {
           return;
         }
-        
+
         var previousObjectKeyValues = {
             key: selectedObject.key,
             text: selectedObject.text,
         };
-        
+
         var eSelectingObject = this.fire('selecting-object', { selectedObject: selectedObject }, {cancelable: true});
-      
+
         if (!eSelectingObject.defaultPrevented) {
-          
-          if ((selectedObject.key === previousObjectKeyValues.key) 
+
+          if ((selectedObject.key === previousObjectKeyValues.key)
               && (selectedObject.text !== previousObjectKeyValues.text)) {
               selectedObject.key = this._generateObjectKey(selectedObject.text);
           }
-          
+
           if (this._findObjectAlreadySelected(selectedObject) < 0) {
               this.push('selectedObjects', selectedObject);
           }
@@ -730,22 +730,22 @@ Example:
         console.log('[_onBlur]');
         this._paperInputContainerElement._handleValueAndAutoValidate(this._inputElement);
       },
-      
+
       _keydown_backspace_handler: function (e) {
         if ((!this.inputValue) || (this.inputValue === '')) {
           this.removeSelectedObjectByIndex(this.selectedObjects.length-1);
         }
       },
-      
+
       _onIronInputValidate: function(event) {
         this.invalid = this._inputElement.invalid;
-      },    
-      
+      },
+
       _override_paperInputContainer: function () {
         this._paperInputContainerElement._handleValue = this._override_paperInputContainer_handleValue;
         this._paperInputContainerElement._handleValueAndAutoValidate = this._override_paperInputContainer_handleValueAndAutoValidate;
       },
-      
+
       _override_paperInputContainer_handleValue: function(inputElement) {
         inputElement = this.dataHost._inputElement;
 
@@ -762,10 +762,10 @@ Example:
           invalid: this.invalid
         });
       },
-      
+
       _override_paperInputContainer_handleValueAndAutoValidate: function(inputElement) {
         inputElement = this.dataHost._inputElement;
-        
+
         if (this.autoValidate) {
           var valid;
           if (inputElement.validate) {
@@ -778,7 +778,7 @@ Example:
         // Call this last to notify the add-ons.
         this._handleValue(inputElement);
       },
-      
+
       _onInputFocus: function (e) {
         this.fire('input-focused');
         if (this.searchOnGotFocus) {

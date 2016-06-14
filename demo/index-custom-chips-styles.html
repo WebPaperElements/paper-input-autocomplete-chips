@@ -23,18 +23,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../paper-input-autocomplete-chips.html">
   </head>
   <style is="custom-style">
-    
+
     body {
       background-color: darkgrey;
     }
-        
+
     body > paper-material {
       width: 400px;
       background-color: white;
       padding: 24px;
       margin: 24px;
     }
-    
+
     paper-material.fixed-paper {
       z-index: 99;
       position: fixed;
@@ -44,7 +44,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin-bottom: 24px;
       overflow-y: auto;
     }
-    
+
   </style>
   <body unresolved>
 
@@ -61,20 +61,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <paper-material class="demo-paper">
         <p>An example of <code>&lt;paper-input-autocomplete-chips&gt; using tags on items to turn the chips findable or layout customizable.</code>:</p>
-            
-        <paper-input-autocomplete-chips 
-          id="myAutoCompletePOCUnknownItems" 
-          local-candidates="{{states}}" 
+
+        <paper-input-autocomplete-chips
+          id="myAutoCompletePOCUnknownItems"
+          local-candidates="{{states}}"
           label="States" >
         </paper-input-autocomplete-chips>
 
       </paper-material>
-    
+
       <script>
         window.addEventListener('WebComponentsReady', function() {
-          
+
           var app = document.querySelector('#app');
-                    
+
           app.states = [
             {
               key: 1,
@@ -115,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               imgUrl: null
             }
           ];
-        });        
+        });
       </script>
     </template>
   </body>
