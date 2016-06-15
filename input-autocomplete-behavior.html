@@ -103,6 +103,15 @@
         value: function() {
           return {};
         }
+      },
+
+      /**
+       * If set to true, elements will not be automatically selected when the
+       * mouse hovers over them
+       */
+      disableHoverSelect: {
+        type: Boolean,
+        value: false
       }
 	  },
 
@@ -238,6 +247,10 @@
      *
      */
     _onMouseOverSelectable: function(e) {
+      if (this.disableHoverSelect) {
+        return;
+      }
+
       var suggestionsMenu = this._menuElement;
       if (suggestionsMenu && typeof(suggestionsMenu) !== 'undefined'){
         var selectedItem = e.currentTarget;
