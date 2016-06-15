@@ -263,7 +263,7 @@ Example:
         </div>
       </template>
 
-    <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]">
+    <paper-autocomplete-results id="autocompleteResults" class="autocomplete-suggestions" hidden="[[_loading]]" not-circular="[[notCircular]]">
       <template is="dom-if" if="[[!groupedSuggestions]]">
           <template is="dom-repeat" items="{{_suggestions}}">
             <paper-icon-item class="suggestion-item" data-key="[[item.key]]" data-text="[[item.text]]" data-tag$="[[item.tag]]" data-object="[[item]]" on-mouseover="_onMouseOverSelectable" on-tap="_onTapSelectable"  tabindex="-1" selectable-item>
@@ -429,6 +429,11 @@ Example:
           type: Boolean,
           value: false
         },
+
+        notCircular: {
+          type: Boolean,
+          value: false
+        }
       },
 
       get _paperInputContainerElement() {
