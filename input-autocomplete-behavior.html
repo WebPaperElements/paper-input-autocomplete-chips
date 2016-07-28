@@ -112,7 +112,17 @@
       disableHoverSelect: {
         type: Boolean,
         value: false
-      }
+      },
+
+      pasteHandler: {
+        type: Function,
+        notify: true
+      },
+
+      withCustomPasteActionHandler: {
+        type: Boolean,
+        value: false
+      },
 	  },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
@@ -332,26 +342,39 @@
       var text = '';
       var data = [];
 
-      if(!this.pasteHandler){
-        return;
-      }
+      if (this.withCustomPasteActionHandler) {
+        var evtObj = {
+          clipboardData : e.clipboardData
+        };
+        var respPasteAction = this.fire('paste-action', evtObj, {cancelable: true});
 
-      if (/text\/plain/.test(e.clipboardData.types)) {
-        text = e.clipboardData.getData('text/plain');
-      }
-
-      data = this.pasteHandler(text);
-
-      if(data && data.length){
-        for(var i = 0; i < data.length; i++){
-          this.selectedObject = {
-            key: this._generateObjectKey(data[i]),
-            text: data[i]
-          };
+        if (!respPasteAction.defaultPrevented) {
+          e.preventDefault();
         }
-        e.preventDefault();
+      } else {
+        /* OBSOLETE */
+        if (!this.pasteHandler){
+          return;
+        }
+
+        if (/text\/plain/.test(e.clipboardData.types)) {
+          text = e.clipboardData.getData('text/plain');
+        }
+
+        data = this.pasteHandler(text);
+
+        if(data && data.length){
+          for(var i = 0; i < data.length; i++){
+            this.selectedObject = {
+              key: this._generateObjectKey(data[i]),
+              text: data[i]
+            };
+          }
+          e.preventDefault();
+        }
       }
 
+      console.log('[autocomplete-chips][respBeforePaste]:', respBeforePaste);
     },
 
     _createChip: function(){
