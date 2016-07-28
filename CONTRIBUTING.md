@@ -64,4 +64,4 @@ When submitting pull requests, please provide:
 
  3. **At least one test for each bug fixed or feature added** as part of the pull request. Pull requests that fix bugs or add features without accompanying tests will not be considered.
 
-If a proposed change contains multiple commits, please [squash commits](https://www.google.com/url?q=http://blog.steveklabnik.com/posts/2012-11-08-how-to-squash-commits-in-a-github-pull-request) to as few as is necessary to succinctly express the change. A Polymer author can help you squash commits, so don’t be afraid to ask us if you need help with that!
+If a proposed change contains multiple commits, please [squash commits](https://www.google.com/url?q=http://blog.steveklabnik.com/posts/2012-11-08-how-to-squash-commits-in-a-github-pull-request) to as few as is necessary to succinctly express the change.
