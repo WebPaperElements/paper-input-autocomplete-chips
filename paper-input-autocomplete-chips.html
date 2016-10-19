@@ -683,7 +683,7 @@ Example:
 
       _calculateSuggestionPanelPosition: function () {
         if (this.withCustomSuggestionBoxPosition) {
-          fire('custom-suggestion-position', { 
+          fire('custom-suggestion-position', {
             inputContainer: this.$.paperInputContainer,
             inputElement: this.$input,
             suggestionPanel: this.$.suggestionsPanel
@@ -801,6 +801,11 @@ Example:
           this._search(this._safeInputValue);
         }
       },
+
+      clear: function() {
+        this.selectedObjects = [];
+      },
+      
     });
   </script>
 </dom-module>
