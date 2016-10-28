@@ -434,6 +434,11 @@ Example:
           type: Boolean,
           value: false
         },
+	      
+        noDisplayInputEditLine: {
+          type: Boolean,
+          value: false
+        },
       },
 
       get _paperInputContainerElement() {
@@ -489,7 +494,7 @@ Example:
         '_loadingChanged(_loading)',
         '_calculateSuggestionPanelPosition(suggestionsPosition)',
         '_cptReadOnlyOrRemoveOnly(readOnly, removeOnly)',
-        '_cptCanInputText(readOnly, removeOnly)'
+        '_cptInputTextStyle(readOnly, removeOnly, noDisplayInputEditLine)'
       ],
 
       _onInputValueChange: function (inputValue) {
@@ -638,12 +643,16 @@ Example:
           return canInputText;
       },
 
-      _cptCanInputText: function (readOnly, removeOnly) {
-          if (this._canInputText(readOnly, removeOnly)) {
-              this.classList.remove('no-display-input-edit-line');
-          } else {
-              this.classList.add('no-display-input-edit-line');
-          }
+      _cptInputTextStyle: function (readOnly, removeOnly, noDisplayInputEditLine) {
+	  if (noDisplayInputEditLine) {
+	      this.classList.add('no-display-input-edit-line');	  
+	  } else {
+	      if (this._canInputText(readOnly, removeOnly)) {
+	          this.classList.remove('no-display-input-edit-line');
+    	      } else {
+	          this.classList.add('no-display-input-edit-line');
+	      }
+	  }
 
           this.updateStyles();
       },
