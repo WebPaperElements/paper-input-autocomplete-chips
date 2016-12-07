@@ -123,6 +123,16 @@
         type: Boolean,
         value: false
       },
+
+      /**
+       * If set to true, candidate items which property 'active' are set to false
+       * won't be suggested
+       */
+      filterInactive: {
+        type: Boolean,
+        value: false
+      },
+
 	  },
 
     _tokenAcceptKeyCodesChanged: function (newValue) {
@@ -463,6 +473,19 @@
       return 'dyn_' + this._strHashCode((text) ? text.toLowerCase() : '');
     },
 
+
+    _getCandidates: function() {
+        var candidates = this.localCandidates;
+
+        if (this.filterInactive) {
+          candidates = this.localCandidates.filter(function(obj){
+            return typeof(obj.active) === 'undefined' ? true : obj.active;
+          });
+        }
+
+        return candidates;
+    },
+
     _search: function(term){
       var that = this;
       this.xmlhttp;
@@ -475,11 +498,12 @@
 
         var patt =  new RegExp( this._scapeString( term.toLowerCase() ) );
         var matched = [];
+        var candidates = this._getCandidates();
 
-        if ( this.localCandidates && this.localCandidates.length ){
-          for (var i = 0; i < this.localCandidates.length; i ++){
-            if (patt.test(this.localCandidates[i].text.toLowerCase()) == true){
-              matched.push(this.localCandidates[i]);
+        if (candidates && candidates.length){
+          for (var i = 0; i < candidates.length; i ++){
+            if (patt.test(candidates[i].text.toLowerCase()) == true){
+              matched.push(candidates[i]);
             }
           }
         }
