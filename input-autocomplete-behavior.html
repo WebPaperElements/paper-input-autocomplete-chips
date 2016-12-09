@@ -126,7 +126,7 @@
 
       /**
        * If set to true, candidate items which property 'active' are set to false
-       * won't be suggested
+       * won't be suggestedgit log
        */
       filterInactive: {
         type: Boolean,
@@ -473,19 +473,6 @@
       return 'dyn_' + this._strHashCode((text) ? text.toLowerCase() : '');
     },
 
-
-    _getCandidates: function() {
-        var candidates = this.localCandidates;
-
-        if (this.filterInactive) {
-          candidates = this.localCandidates.filter(function(obj){
-            return typeof(obj.active) === 'undefined' ? true : obj.active;
-          });
-        }
-
-        return candidates;
-    },
-
     _search: function(term){
       var that = this;
       this.xmlhttp;
@@ -498,12 +485,15 @@
 
         var patt =  new RegExp( this._scapeString( term.toLowerCase() ) );
         var matched = [];
-        var candidates = this._getCandidates();
+        var candidates = this.localCandidates;
 
-        if (candidates && candidates.length){
-          for (var i = 0; i < candidates.length; i ++){
-            if (patt.test(candidates[i].text.toLowerCase()) == true){
-              matched.push(candidates[i]);
+        if (candidates && candidates.length) {
+          for (var i = 0; i < candidates.length; i ++) {
+            var candidate = candidates[i];
+            if (Boolean(this.filterInactive) && !Boolean(candidate.inactive)) {
+              if (patt.test(candidate.text.toLowerCase()) == true){
+                matched.push(candidate);
+              }
             }
           }
         }

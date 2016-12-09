@@ -164,7 +164,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-material class="demo-paper" style="height: 300px; overflow: auto;">
         <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code> with the filterInactive flag set to true:</p>
         <p>Won't suggest neither Alabama nor Alaska</p>
-        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips" filter-inactive="true">
+        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips" filter-inactive>
         </paper-input-autocomplete-chips>
 
       </paper-material>
@@ -268,13 +268,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               imgUrl: 'https://lh5.googleusercontent.com/-tlQ1LE9IdgI/AAAAAAAAAAI/AAAAAAAAAAA/xTWfNFP8w_M/s32-c-mo/photo.jpg',
               tag: 'read-only',
               readOnly: false,
-              active: false
+              inactive: true
             },
             {
               key: 2,
               text: "Alaska",
               imgUrl: 'http://lorempixel.com/256/256/',
-              active: false
+              inactive: true
             },
             {
               key: 3,
