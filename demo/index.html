@@ -162,11 +162,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
       <paper-material class="demo-paper" style="height: 300px; overflow: auto;">
-        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code> with the filterInactive flag set to true:</p>
-        <p>Won't suggest neither Alabama nor Alaska</p>
-        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips" filter-inactive>
+        <p>An example of <code>&lt;paper-input-autocomplete-chips&gt;</code> with the <code>noSuggestInactive</code> attribute:</p>
+        <p>It won't suggest neither Alabama nor Alaska</p>
+        <paper-input-autocomplete-chips local-candidates="{{states}}" label="Chips" no-suggest-inactive>
         </paper-input-autocomplete-chips>
-
       </paper-material>
 
     

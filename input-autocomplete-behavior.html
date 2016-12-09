@@ -125,10 +125,10 @@
       },
 
       /**
-       * If set to true, candidate items which property 'active' are set to false
-       * won't be suggestedgit log
+       * If set to true, candidate items which property 'inactive' are set to true
+       * won't be suggested
        */
-      filterInactive: {
+      noSuggestInactive: {
         type: Boolean,
         value: false
       },
@@ -490,7 +490,7 @@
         if (candidates && candidates.length) {
           for (var i = 0; i < candidates.length; i ++) {
             var candidate = candidates[i];
-            if (Boolean(this.filterInactive) && !Boolean(candidate.inactive)) {
+            if (Boolean(this.noSuggestInactive) && !Boolean(candidate.inactive)) {
               if (patt.test(candidate.text.toLowerCase()) == true){
                 matched.push(candidate);
               }
