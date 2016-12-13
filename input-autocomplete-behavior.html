@@ -486,11 +486,18 @@
         var patt =  new RegExp( this._scapeString( term.toLowerCase() ) );
         var matched = [];
         var candidates = this.localCandidates;
+        var noSuggestInactive = Boolean(this.noSuggestInactive);
 
         if (candidates && candidates.length) {
           for (var i = 0; i < candidates.length; i ++) {
             var candidate = candidates[i];
-            if (Boolean(this.noSuggestInactive) && !Boolean(candidate.inactive)) {
+            if (noSuggestInactive) {
+              if (!Boolean(candidate.inactive)) {
+                if (patt.test(candidate.text.toLowerCase()) == true){
+                  matched.push(candidate);
+                }
+              }
+            } else {
               if (patt.test(candidate.text.toLowerCase()) == true){
                 matched.push(candidate);
               }
