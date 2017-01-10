@@ -514,7 +514,7 @@
         }
 
         if ( this.remoteUrl ){
-          var url = this.remoteUrl.replace("%QUERY", term);
+          var url = this.remoteUrl.replace("%QUERY", encodeURIComponent(term));
 
           this._loading = true;
 
