@@ -484,6 +484,8 @@
         }
 
         var patt =  new RegExp( this._scapeString( term.toLowerCase() ) );
+        var matchedStartsWith = [];
+        var matchedContains = [];
         var matched = [];
         var candidates = this.localCandidates;
         var noSuggestInactive = Boolean(this.noSuggestInactive);
@@ -493,16 +495,28 @@
             var candidate = candidates[i];
             if (noSuggestInactive) {
               if (!Boolean(candidate.inactive)) {
+                if( candidate.text.toLowerCase().startsWith(term.toLowerCase()) ){
+                  matchedStartsWith.push(candidate);
+                }
+
                 if (patt.test(candidate.text.toLowerCase()) == true){
-                  matched.push(candidate);
+                  matchedContains.push(candidate);
                 }
               }
             } else {
+              if( candidate.text.toLowerCase().startsWith(term.toLowerCase()) ){
+                matchedStartsWith.push(candidate);
+              }
+
               if (patt.test(candidate.text.toLowerCase()) == true){
-                matched.push(candidate);
+                matchedContains.push(candidate);
               }
             }
           }
+
+          matched = matchedStartsWith.concat(matchedContains).filter(function(item, pos, self) {
+            return self.indexOf(item) == pos;
+          });
         }
 
         if (typeof(this._prefetchedCandidates) !== 'undefined'){
