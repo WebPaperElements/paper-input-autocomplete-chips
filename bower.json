@@ -13,20 +13,20 @@
     "chips"
   ],
   "main": "paper-input-autocomplete-chips.html",
-  "license": "http://polymer.github.io/LICENSE.txt",
-  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "license": "MIT",
+  "homepage": "https://github.com/WebPaperElements/paper-input-autocomplete-chips",
   "ignore": [
     "/.*",
     "/test/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.2.3",
-    "paper-menu": "Polymerelements/paper-menu#~1.1.1",
-    "paper-input": "Polymerelements/paper-input#~1.0.15",
-    "paper-item": "Polymerelements/paper-item#~1.0.3",
-    "iron-icons": "Polymerelements/iron-icons#~1.0.4",
-    "paper-icon-button": "Polymerelements/paper-icon-button#~1.0.6",
-    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#~1.0.5",
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-menu": "PolymerElements/paper-menu#^1.1.1",
+    "paper-input": "PolymerElements/paper-input#^1.0.15",
+    "paper-item": "PolymerElements/paper-item#^1.0.3",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.4",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.6",
+    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0.5",
     "paper-chip": "WebPaperElements/paper-chip#^1.0.9",
     "paper-material": "PolymerElements/paper-material#^1.0.6",
     "iron-behaviors": "PolymerElements/iron-behaviors#^1.0.12",
@@ -35,6 +35,6 @@
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-    "web-component-tester": "*"
+    "web-component-tester": "Polymer/web-component-tester#^5.0.0"
   }
 }
